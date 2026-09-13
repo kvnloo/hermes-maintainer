@@ -1,12 +1,16 @@
 # What actually helps Tek (#108914)
 
-Posted 2026-09-13 as kvnloo on **VOID** pin `d65af423`: https://github.com/NousResearch/hermes-agent/pull/108914#issuecomment-5649915119
-
-Leftovers (non-blocking) posted on live HEAD `bc36ddb5`: https://github.com/NousResearch/hermes-agent/pull/108914#issuecomment-5650142924
-
 **Live HEAD:** `bc36ddb5f9696c25acc5d51cf29a961710e2d5a3`. Fourth round cherry-picked #109508 (`_fence()` before `_dispatch`). The hole in the first comment is **closed**.
 
+## Consolidation (posted on `bc36ddb5`)
+
+https://github.com/NousResearch/hermes-agent/pull/108914#issuecomment-5650222729
+
+Independent last pass of every named review/inline/issue comment against live head. Mapped Julien's original contract and every later reviewer to landed / skip / leftover. Re-raised six thread items that were never closed (4000 copy vs overlay, install `session_id` not sent from the card, SIGKILL-only install timeout, `/tmp` alloc lock path, no viewer cap, xauth cookie on argv). Did **not** remint landed P1s, in-flight wait, Layer B, or writer lock.
+
 ## Leftovers comment (posted on `bc36ddb5`)
+
+https://github.com/NousResearch/hermes-agent/pull/108914#issuecomment-5650142924
 
 The fence before `_dispatch` is in at `bc36ddb5`. That's the missing use of the generation you already had — persist, vision, and the device op now all consult it. #109508 was the right patch.
 
@@ -20,25 +24,15 @@ Takeover-doesn't-wait-for-in-flight is your ruling. Fedora nits are already on t
 
 Pinned to `bc36ddb5f969`. If the head moves, this is void.
 
-Did **not** dump: writer lock, 4000 overlay, in-flight QUIESCING, Fedora Provides nits (coe0718 already re-pinned those).
+## Origin comment (historical — posted on VOID `d65af42`)
 
-## Factory re-pin (`bc36ddb5`)
-
-**KEEP.** P1-6 probe green. ChatGPT Layer A (persist-before-epoch, approval-handoff click, fcntl) all landed. Layer B kernel/PII stays off this PR. Remaining: title `(#92524)`, `auto_start` YAML, writer lock, 4000 overlay vs “re-attach.”
-
-## Origin comment (historical — posted on `d65af42`)
+https://github.com/NousResearch/hermes-agent/pull/108914#issuecomment-5649915119
 
 The lease is the right design. Serve, gateway, and CLI don't share memory, so the generation had to live in the file. You already encoded that in `lease.py`: callers keep `admitted.epoch`, because take-over then hand-back leaves the holder as `agent` and the turn is still the human's.
 
 Third round at `d65af42` used it in the right places: fence after `backend.capture()` before persist/spill/vision, optional `fcntl`, clipboard length cap, browser fence by `features.local`. Those land.
 
-One ordering still skips it.
-
-`handle_computer_use` saves `admitted` at the top, then may wait on approval and backend start. The comment at the call lock says a human may have taken over meanwhile — then it calls `assert_agent_may_act()`, which only asks whether the holder is presently human. `_dispatch` then passes `fence` only to read-only handlers (so delivery kwargs don't leak into input). `click` / `type` never consult epoch until `_fence()` after `_dispatch` returns.
-
-So this is still legal: admit at epoch 0, approval waits, human takes over (1) and hands back (2), re-check sees `agent`, `backend.click` runs, postflight notices `epoch != 0` and returns `human_has_control`. The click already happened. `test_takeover_during_an_admitted_action_discards_its_result` patches `_dispatch`, so it cannot fail this path. Compare `admitted.epoch` immediately before `_dispatch` (or call `_fence()` there), not only after. If it moved, don't start the device op.
-
-That's one missing use of the generation you already have. One test that fails until that compare lands: approval callback does acquire+release, recording backend, do not patch `_dispatch`, assert `backend.calls == []`. Then it's a small patch.
+One ordering still skips it. (`_fence()` before `_dispatch` — now landed on `bc36ddb5`.)
 
 Related: #92524 (Linux+Desktop half only; hosted/dashboard remains — not Closes).
 
