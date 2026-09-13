@@ -6,6 +6,7 @@ import logging
 import shutil
 import subprocess
 from pathlib import Path
+from typing import Annotated
 
 import typer
 import uvicorn
@@ -14,12 +15,14 @@ from rich.table import Table
 
 from hermes_maintainer.config import load_settings
 from hermes_maintainer.db import Database
-from hermes_maintainer.reports import ingest as ingest_report
-from hermes_maintainer.reports import list_reports, load as load_report, promote as promote_report
 from hermes_maintainer.git.mirror import ensure_mirror
 from hermes_maintainer.github.ingest import deep_enrich_prs, fast_scan
 from hermes_maintainer.optimizer.cpsat import solve_cpsat
 from hermes_maintainer.optimizer.greedy import solve_greedy
+from hermes_maintainer.reports import ingest as ingest_report
+from hermes_maintainer.reports import list_reports
+from hermes_maintainer.reports import load as load_report
+from hermes_maintainer.reports import promote as promote_report
 from hermes_maintainer.scheduler.runner import analyze as run_analysis
 from hermes_maintainer.scheduler.runner import daemon as run_daemon
 
@@ -138,13 +141,13 @@ def _data_dir(data_dir: Path | None):
 
 @report_app.command("ingest")
 def report_ingest(
-    title: str = typer.Option(..., help="Short complaint title"),
-    body: str = typer.Option("", help="Complaint body / repro notes"),
-    body_file: Path | None = typer.Option(None, help="Read body from a file"),
-    target_repo: str = typer.Option("NousResearch/hermes-agent"),
-    duplicate_of: str | None = typer.Option(None),
-    competing_pr: bool = typer.Option(False),
-    data_dir: Path | None = typer.Option(None, help="Inbox parent directory"),
+    title: Annotated[str, typer.Option(help="Short complaint title")],
+    body: Annotated[str, typer.Option(help="Complaint body / repro notes")] = "",
+    body_file: Annotated[Path | None, typer.Option(help="Read body from a file")] = None,
+    target_repo: Annotated[str, typer.Option()] = "NousResearch/hermes-agent",
+    duplicate_of: Annotated[str | None, typer.Option()] = None,
+    competing_pr: Annotated[bool, typer.Option()] = False,
+    data_dir: Annotated[Path | None, typer.Option(help="Inbox parent directory")] = None,
 ):
     """Capture a complaint as a local draft. Does not open GitHub issues."""
     text = body_file.read_text(encoding="utf-8") if body_file is not None else body
@@ -160,7 +163,9 @@ def report_ingest(
 
 
 @report_app.command("list")
-def report_list(data_dir: Path | None = typer.Option(None)):
+def report_list(
+    data_dir: Annotated[Path | None, typer.Option()] = None,
+):
     """List local drafts."""
     rows = list_reports(_data_dir(data_dir))
     console.print_json(
@@ -181,8 +186,8 @@ def report_list(data_dir: Path | None = typer.Option(None)):
 
 @report_app.command("show")
 def report_show(
-    report_id: str = typer.Argument(...),
-    data_dir: Path | None = typer.Option(None),
+    report_id: Annotated[str, typer.Argument()],
+    data_dir: Annotated[Path | None, typer.Option()] = None,
 ):
     """Print one local report."""
     console.print_json(json.dumps(load_report(_data_dir(data_dir), report_id)))
@@ -190,16 +195,16 @@ def report_show(
 
 @report_app.command("promote")
 def report_promote(
-    report_id: str = typer.Argument(...),
-    action: str = typer.Option("promote_issue"),
-    reproduced: bool = typer.Option(False),
-    in_scope: bool = typer.Option(False),
-    origin_policy: str = typer.Option("unknown"),
-    github_writes: bool = typer.Option(False),
-    human_or_policy_allow: bool = typer.Option(False),
-    claimed: bool = typer.Option(False),
-    has_receipt: bool = typer.Option(False),
-    data_dir: Path | None = typer.Option(None),
+    report_id: Annotated[str, typer.Argument()],
+    action: Annotated[str, typer.Option()] = "promote_issue",
+    reproduced: Annotated[bool, typer.Option()] = False,
+    in_scope: Annotated[bool, typer.Option()] = False,
+    origin_policy: Annotated[str, typer.Option()] = "unknown",
+    github_writes: Annotated[bool, typer.Option()] = False,
+    human_or_policy_allow: Annotated[bool, typer.Option()] = False,
+    claimed: Annotated[bool, typer.Option()] = False,
+    has_receipt: Annotated[bool, typer.Option()] = False,
+    data_dir: Annotated[Path | None, typer.Option()] = None,
 ):
     """Reclassify a draft against the intake ladder. Still does not write GitHub."""
     record = promote_report(

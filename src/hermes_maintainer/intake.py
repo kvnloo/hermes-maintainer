@@ -30,7 +30,7 @@ def _bool(report: dict[str, Any], key: str, default: bool = False) -> bool:
         return default
     val = report[key]
     if not isinstance(val, bool):
-        raise ValueError(f"{key} must be a boolean")
+        raise TypeError(f"{key} must be a boolean")
     return val
 
 

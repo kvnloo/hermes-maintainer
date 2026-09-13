@@ -69,7 +69,7 @@ def load(data_dir: Path, report_id: str) -> dict[str, Any]:
         raise FileNotFoundError(report_id)
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
-        raise ValueError("report must be a JSON object")
+        raise TypeError("report must be a JSON object")
     return data
 
 
