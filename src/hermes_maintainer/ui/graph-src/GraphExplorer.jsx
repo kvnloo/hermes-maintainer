@@ -2,9 +2,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GraphCanvas } from "./GraphCanvas.jsx";
 import {
   FLOW_GESTURES,
+  NODE_CENTER,
   ZOOM_STOPS,
   architectureGraph,
+  capGraphPayload,
   describeSelection,
+  edgeLabelsVisible,
+  findNodeBySearch,
+  frameGraph,
+  isCompactViewport,
   layoutGraph,
   parseGraphSearch,
   serializeGraphSearch,
@@ -12,23 +18,6 @@ import {
 } from "./graph-model.js";
 
 const ARCHITECTURE = architectureGraph();
-const NODE_CENTER = { x: 124, y: 55 };
-
-function frameGraph(api, mode) {
-  if (!api) return;
-  const compact = typeof window !== "undefined" && window.matchMedia("(max-width: 980px)").matches;
-  if (compact && mode === "architecture") {
-    const node = api.getNode?.("arch:sqlite-backlog");
-    if (node) {
-      api.setCenter(node.position.x + NODE_CENTER.x, node.position.y + NODE_CENTER.y, {
-        zoom: 0.4,
-        duration: 180,
-      });
-      return;
-    }
-  }
-  api.fitView?.({ padding: 0.18, minZoom: 0.4, maxZoom: 2, duration: 180 });
-}
 
 function GraphToolbar({ mode, zoom, sourceLabel, onArchitecture, onCampaigns, onZoom, onFit }) {
   return (
@@ -51,6 +40,11 @@ function GraphToolbar({ mode, zoom, sourceLabel, onArchitecture, onCampaigns, on
           Campaigns
         </button>
       </div>
+      <div className="hm-fit">
+        <button type="button" className="tab" onClick={onFit}>
+          Fit view
+        </button>
+      </div>
       <div className="hm-zooms">
         {ZOOM_STOPS.map((stop) => (
           <button
@@ -63,23 +57,27 @@ function GraphToolbar({ mode, zoom, sourceLabel, onArchitecture, onCampaigns, on
             {stop}×
           </button>
         ))}
-        <button type="button" className="tab" onClick={onFit}>
-          Fit view
-        </button>
       </div>
       <div className="hm-source">{sourceLabel}</div>
     </div>
   );
 }
 
-function GraphLegend({ mode, legend }) {
+function GraphLegend({ mode, legend, truncated, visible, total, onUseSeed }) {
   return (
     <div className="hm-legend-bar" aria-label="Graph legend">
-      <span className="hm-legend-title">
-        {mode === "architecture"
-          ? "Every box is a control — subsystems, files, invariants."
-          : "Issues, PRs, files, and the invariant this campaign is trying to keep true."}
+      <span className={`hm-legend-title${truncated ? " is-truncated" : ""}`}>
+        {truncated
+          ? `Showing ${visible} of ${total} tickets. Rebuild campaigns or open the seed canvas.`
+          : mode === "architecture"
+            ? "Every box is a control — subsystems, files, invariants."
+            : "Issues, PRs, files, and the invariant this campaign is trying to keep true."}
       </span>
+      {truncated && onUseSeed ? (
+        <button type="button" className="tab" onClick={onUseSeed}>
+          Load seed families
+        </button>
+      ) : null}
       <ul>
         {legend.kinds.map((kind) => (
           <li key={kind}>
@@ -140,19 +138,31 @@ function legendItems(nodes, edges) {
   return { kinds, relations: relations.slice(0, 8) };
 }
 
-export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
-  const parsed = parseGraphSearch(search ?? (typeof window !== "undefined" ? window.location.search : ""));
+export function GraphExplorer({ payload, onSelect, search, onNavigate, onUseSeed }) {
+  const parsed = parseGraphSearch(
+    search !== undefined
+      ? search
+      : (typeof window !== "undefined" ? window.location.search : ""),
+  );
   const [mode, setMode] = useState(parsed.graph || payload?.graph || "architecture");
   const [selected, setSelected] = useState(null);
   const [zoom, setZoom] = useState(1);
   const flowRef = useRef(null);
 
   useEffect(() => {
+    if (parsed.graph) {
+      setMode(parsed.graph);
+      return;
+    }
     if (payload?.graph) setMode(payload.graph);
-  }, [payload?.graph]);
+  }, [parsed.graph, payload?.graph]);
 
   const status = payload?.status || (payload?.error ? "error" : "ready");
-  const source = mode === "architecture" ? ARCHITECTURE : payload;
+  const rawSource = mode === "architecture" ? ARCHITECTURE : payload;
+  const source = useMemo(
+    () => (mode === "architecture" ? rawSource : capGraphPayload(rawSource)),
+    [mode, rawSource],
+  );
   const nodes = useMemo(() => {
     const laid = layoutGraph(source);
     return laid.map((node) => ({
@@ -160,13 +170,14 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
       selected: selected?.type === "node" && selected.id === node.id,
     }));
   }, [source, selected]);
+  const hideLabels = !edgeLabelsVisible(source?.nodes?.length || 0, zoom);
   const edges = useMemo(() => {
-    const laid = toFlowEdges(source?.relations);
+    const laid = toFlowEdges(source?.relations, { hideLabels });
     return laid.map((edge) => ({
       ...edge,
       selected: selected?.type === "edge" && selected.id === edge.id,
     }));
-  }, [source, selected]);
+  }, [source, selected, hideLabels]);
 
   const applySelection = useCallback(
     (next) => {
@@ -179,8 +190,18 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
         const url = `${window.location.pathname}${query}${window.location.hash}`;
         window.history.replaceState(null, "", url);
       }
+      if (next?.type === "node" && isCompactViewport()) {
+        const api = flowRef.current;
+        const node = api?.getNode?.(next.id) || next.node;
+        if (node?.position && api?.setCenter) {
+          api.setCenter(node.position.x + NODE_CENTER.x, node.position.y + NODE_CENTER.y, {
+            zoom,
+            duration: 140,
+          });
+        }
+      }
     },
-    [mode, onNavigate, onSelect, payload],
+    [mode, onNavigate, onSelect, payload, zoom],
   );
 
   const clearSelection = useCallback(() => applySelection(null), [applySelection]);
@@ -188,12 +209,21 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
   const appliedLink = useRef(null);
   useEffect(() => {
     if (!parsed.node || appliedLink.current === parsed.node) return;
-    const node = layoutGraph(source).find((item) => item.id === parsed.node);
-    if (node) {
+    const fromCurrent = findNodeBySearch(layoutGraph(source), parsed.node);
+    if (fromCurrent) {
       appliedLink.current = parsed.node;
-      setSelected({ type: "node", id: node.id, node });
+      setSelected({ type: "node", id: fromCurrent.id, node: fromCurrent });
+      return;
     }
-  }, [parsed.node, source]);
+    if (mode !== "campaign") {
+      const fromPayload = findNodeBySearch(layoutGraph(payload), parsed.node);
+      if (fromPayload) {
+        appliedLink.current = parsed.node;
+        setMode("campaign");
+        setSelected({ type: "node", id: fromPayload.id, node: fromPayload });
+      }
+    }
+  }, [parsed.node, source, payload, mode]);
 
   useEffect(() => {
     const onKey = (event) => {
@@ -236,9 +266,9 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
   const fit = useCallback(() => {
     const api = flowRef.current;
     if (!api) return;
-    const compact = typeof window !== "undefined" && window.matchMedia("(max-width: 980px)").matches;
-    if (compact && mode === "architecture") setZoom(0.4);
-    frameGraph(api, mode);
+    const compact = isCompactViewport();
+    if (compact && mode === "architecture") setZoom(FLOW_GESTURES.minZoom);
+    frameGraph(api, mode, { compact });
   }, [mode]);
 
   const detail = describeSelection(selected);
@@ -249,10 +279,9 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
   useEffect(() => {
     if (status !== "ready" || campaignEmpty) return undefined;
     const timer = window.setTimeout(() => {
-      if (window.matchMedia("(max-width: 980px)").matches && mode === "architecture") {
-        setZoom(0.4);
-      }
-      frameGraph(flowRef.current, mode);
+      const compact = isCompactViewport();
+      if (compact && mode === "architecture") setZoom(FLOW_GESTURES.minZoom);
+      frameGraph(flowRef.current, mode, { compact });
     }, 120);
     return () => window.clearTimeout(timer);
   }, [graphKey, status, campaignEmpty, mode]);
@@ -286,7 +315,9 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
         sourceLabel={
           mode === "architecture"
             ? "Maintainer map · local SQLite, read-only GitHub"
-            : (payload?.campaign?.title || (payload?.families?.length ? `${payload.families.length} seed families` : "Campaign slice"))
+            : source?.truncated
+              ? `Showing ${source.nodes.length} of ${source.total}`
+              : (payload?.campaign?.title || (payload?.families?.length ? `${payload.families.length} seed families` : "Campaign slice"))
         }
         onArchitecture={() => {
           setMode("architecture");
@@ -299,12 +330,26 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
         onZoom={zoomTo}
         onFit={fit}
       />
-      <GraphLegend mode={mode} legend={legend} />
+      <GraphLegend
+        mode={mode}
+        legend={legend}
+        truncated={Boolean(source?.truncated)}
+        visible={source?.nodes?.length}
+        total={source?.total}
+        onUseSeed={onUseSeed}
+      />
 
       {campaignEmpty ? (
         <div className="graph-empty">
           This campaign slice has no members yet. Scan NousResearch/hermes-agent, or open the seed
           canvas to inspect the CI-verdict and OAuth families.
+          {onUseSeed ? (
+            <p>
+              <button type="button" className="tab" onClick={onUseSeed}>
+                Load seed families
+              </button>
+            </p>
+          ) : null}
         </div>
       ) : (
         <div className="hm-stage">
@@ -314,9 +359,8 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
             zoom={zoom}
             onZoomChange={setZoom}
             onReady={(api) => {
-              const ready = api.getNode ? { ...api, getNode: api.getNode.bind(api) } : api;
-              flowRef.current = ready;
-              frameGraph(ready, mode);
+              flowRef.current = api;
+              frameGraph(api, mode, { compact: isCompactViewport() });
             }}
             onNodeClick={onNodeClick}
             onEdgeClick={onEdgeClick}

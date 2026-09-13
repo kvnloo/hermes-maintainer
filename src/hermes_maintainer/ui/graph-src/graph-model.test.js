@@ -1,18 +1,29 @@
-import { describe, expect, it } from "vitest";
-import { SAMPLE_CAMPAIGN } from "./fixtures.js";
+import { describe, expect, it, vi } from "vitest";
+import { NAMESPACED_CAMPAIGN, SAMPLE_CAMPAIGN, stackedFixesCampaign } from "./fixtures.js";
 import {
   FLOW_GESTURES,
   HIT_MIN_PX,
   NODE_MIN_HEIGHT,
   NODE_MIN_WIDTH,
   ZOOM_STOPS,
+  ARCHITECTURE_CORE_IDS,
   architectureGraph,
+  capGraphPayload,
+  edgeLabelHitForZoom,
   edgeLabelInvScale,
+  edgeLabelsVisible,
+  findNodeBySearch,
+  formatNodeHeading,
+  formatNodeKicker,
+  frameGraph,
   hitSizeForZoom,
   labelScaleForZoom,
   layoutGraph,
+  nodeIdMatches,
   parseGraphSearch,
+  repoFromNodeId,
   serializeGraphSearch,
+  shortNodeId,
   toFlowEdges,
 } from "./graph-model.js";
 
@@ -82,10 +93,12 @@ describe("graph model", () => {
       const visualFont = 13 * labelScaleForZoom(zoom) * zoom;
       const edgeHit = sampleEdge.interactionWidth * zoom;
       const edgeFont = 11 * edgeLabelInvScale(zoom) * zoom;
+      const edgeLabelHit = edgeLabelHitForZoom(zoom) * zoom;
       expect(visualHit).toBeGreaterThanOrEqual(HIT_MIN_PX - 0.05);
       expect(visualFont).toBeGreaterThanOrEqual(11);
       expect(edgeHit).toBeGreaterThanOrEqual(HIT_MIN_PX - 0.05);
       expect(edgeFont).toBeGreaterThanOrEqual(11 - 0.05);
+      expect(edgeLabelHit).toBeGreaterThanOrEqual(HIT_MIN_PX - 0.05);
     }
   });
 
@@ -135,5 +148,136 @@ describe("graph model", () => {
     expect(serializeGraphSearch({ graph: "campaign", node: "issue:98557" })).toBe(
       "?graph=campaign&node=issue%3A98557",
     );
+    expect(
+      serializeGraphSearch({ graph: "campaign", node: "acme/widgets:issue:98557" }),
+    ).toBe("?graph=campaign&node=acme%2Fwidgets%3Aissue%3A98557");
+  });
+
+  it("matches short issue:N queries onto namespaced owner/name:issue:N ids", () => {
+    expect(shortNodeId("acme/widgets:issue:98557")).toBe("issue:98557");
+    expect(shortNodeId("issue:98557")).toBe("issue:98557");
+    expect(repoFromNodeId("acme/widgets:issue:98557")).toBe("acme/widgets");
+    expect(nodeIdMatches("acme/widgets:issue:98557", "issue:98557")).toBe(true);
+    expect(nodeIdMatches("acme/widgets:issue:98557", "acme/widgets:issue:98557")).toBe(true);
+    expect(nodeIdMatches("acme/widgets:issue:98557", "other/lib:issue:98557")).toBe(false);
+    expect(nodeIdMatches("acme/widgets:issue:10", "issue:1")).toBe(false);
+    const found = findNodeBySearch(layoutGraph(NAMESPACED_CAMPAIGN), "issue:98557");
+    expect(found?.id).toBe("acme/widgets:issue:98557");
+  });
+
+  it("puts the repo in ticket kickers and headings so --repo ids are not issue:N-only", () => {
+    const issue = NAMESPACED_CAMPAIGN.nodes.find((node) => node.kind === "issue");
+    expect(formatNodeKicker(issue)).toMatch(/acme\/widgets/i);
+    expect(formatNodeKicker(issue)).toMatch(/issue #98557/i);
+    expect(formatNodeHeading(issue)).toMatch(/issue #98557/i);
+    expect(formatNodeHeading(issue)).toMatch(/acme\/widgets/i);
+    expect(formatNodeHeading({ kind: "pr", number: 7, repo: "hyprwm/Hyprland", id: "hyprwm/Hyprland:pr:7" })).toMatch(
+      /hyprwm\/Hyprland/i,
+    );
+  });
+
+  it("keeps stacked fixes labels on distinct hit boxes at every zoom stop", () => {
+    const edges = toFlowEdges(stackedFixesCampaign(6).relations);
+    expect(edges).toHaveLength(6);
+    const offsets = edges.map((edge) => Number(edge.data?.labelOffset) || 0);
+    expect(new Set(offsets).size).toBe(edges.length);
+    for (const zoom of ZOOM_STOPS) {
+      const cssHit = edgeLabelHitForZoom(zoom);
+      expect(cssHit * zoom).toBeGreaterThanOrEqual(HIT_MIN_PX - 0.05);
+      const visualGaps = offsets
+        .slice()
+        .sort((a, b) => a - b)
+        .map((offset, index, list) => (index === 0 ? Infinity : (offset - list[index - 1]) * zoom));
+      visualGaps.slice(1).forEach((gap) => {
+        expect(gap).toBeGreaterThanOrEqual(HIT_MIN_PX - 0.05);
+      });
+    }
+  });
+
+  it("frames compact architecture around the core column, not a single node", () => {
+    const setCenter = vi.fn();
+    const fitView = vi.fn();
+    const api = {
+      getNode: (id) => (ARCHITECTURE_CORE_IDS.includes(id) ? { id, position: { x: 280, y: 510 } } : undefined),
+      setCenter,
+      fitView,
+    };
+    frameGraph(api, "architecture", { compact: true });
+    expect(fitView).toHaveBeenCalled();
+    const opts = fitView.mock.calls[0][0];
+    const ids = (opts.nodes || []).map((node) => node.id);
+    expect(ids).toEqual(expect.arrayContaining(["arch:sqlite-backlog", "arch:campaigns", "arch:local-ui"]));
+    expect(opts.minZoom).toBe(0.4);
+    expect(opts.maxZoom).toBe(0.4);
+    expect(setCenter).not.toHaveBeenCalled();
+  });
+
+  it("wraps a large unclustered ticket pile into a grid that still fits at 0.4 zoom", () => {
+    const nodes = Array.from({ length: 80 }, (_, index) => ({
+      id: `issue:${index + 1}`,
+      kind: "issue",
+      number: index + 1,
+      title: `ticket ${index + 1}`,
+    }));
+    const capped = capGraphPayload({ nodes, relations: [] }, 60);
+    expect(capped.nodes).toHaveLength(60);
+    expect(capped.truncated).toBe(20);
+    const laid = layoutGraph(capped);
+    const minX = Math.min(...laid.map((node) => node.position.x));
+    const maxX = Math.max(...laid.map((node) => node.position.x));
+    const minY = Math.min(...laid.map((node) => node.position.y));
+    const maxY = Math.max(...laid.map((node) => node.position.y));
+    const width = maxX - minX + NODE_MIN_WIDTH;
+    const height = maxY - minY + NODE_MIN_HEIGHT;
+    expect(width * 0.4).toBeLessThan(1280);
+    expect(height * 0.4).toBeLessThan(720);
+    expect(laid).toHaveLength(60);
+  });
+
+  it("keeps a late connected family when capping a dump of newer isolates", () => {
+    const isolates = Array.from({ length: 50 }, (_, index) => ({
+      id: `issue:${index + 1}`,
+      kind: "issue",
+      number: index + 1,
+      title: `isolate ${index + 1}`,
+    }));
+    const family = [
+      { id: "issue:900", kind: "issue", number: 900, title: "cluster root" },
+      { id: "pr:901", kind: "pr", number: 901, title: "cluster fix" },
+    ];
+    const relations = [{ src_id: "pr:901", dst_id: "issue:900", relation_type: "fixes" }];
+    const capped = capGraphPayload({ nodes: [...isolates, ...family], relations }, 20);
+    const ids = capped.nodes.map((node) => node.id);
+    expect(ids).toEqual(expect.arrayContaining(["issue:900", "pr:901"]));
+    expect(capped.relations).toHaveLength(1);
+    expect(capped.truncated).toBe(32);
+  });
+
+  it("layouts unassigned related tickets as separate families, not one issue tower", () => {
+    const nodes = [
+      { id: "issue:a", kind: "issue", number: 1, title: "family A" },
+      { id: "pr:a", kind: "pr", number: 2, title: "fix A" },
+      { id: "issue:b", kind: "issue", number: 3, title: "family B" },
+      { id: "pr:b", kind: "pr", number: 4, title: "fix B" },
+    ];
+    const relations = [
+      { src_id: "pr:a", dst_id: "issue:a", relation_type: "fixes" },
+      { src_id: "pr:b", dst_id: "issue:b", relation_type: "fixes" },
+    ];
+    const laid = layoutGraph({ nodes, relations });
+    const ax = laid.find((node) => node.id === "issue:a").position.x;
+    const bx = laid.find((node) => node.id === "issue:b").position.x;
+    expect(ax).not.toBe(bx);
+  });
+
+  it("hides relation labels on dense canvases so titles stay the hit target", () => {
+    expect(edgeLabelsVisible(5, 1)).toBe(true);
+    expect(edgeLabelsVisible(7, 0.4)).toBe(true);
+    expect(edgeLabelsVisible(40, 1)).toBe(false);
+    expect(edgeLabelsVisible(40, 0.4)).toBe(false);
+    const hidden = toFlowEdges([{ src_id: "pr:1", dst_id: "issue:1", relation_type: "fixes" }], { hideLabels: true });
+    expect(hidden[0].data.hideLabel).toBe(true);
+    const shown = toFlowEdges(SAMPLE_CAMPAIGN.relations, { hideLabels: false });
+    expect(shown.every((edge) => !edge.data.hideLabel)).toBe(true);
   });
 });

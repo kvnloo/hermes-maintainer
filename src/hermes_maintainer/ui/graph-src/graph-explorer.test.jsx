@@ -1,28 +1,69 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useEffect } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { SAMPLE_CAMPAIGN } from "./fixtures.js";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { NAMESPACED_CAMPAIGN, SAMPLE_CAMPAIGN } from "./fixtures.js";
 import { FLOW_GESTURES, HIT_MIN_PX, ZOOM_STOPS } from "./graph-model.js";
+
+function stubViewport(width) {
+  window.matchMedia = (query) => {
+    const max = /max-width:\s*(\d+)/.exec(String(query));
+    const min = /min-width:\s*(\d+)/.exec(String(query));
+    let matches = false;
+    if (max) matches = width <= Number(max[1]);
+    if (min) matches = width >= Number(min[1]);
+    return {
+      matches,
+      media: query,
+      onchange: null,
+      addListener() {},
+      removeListener() {},
+      addEventListener() {},
+      removeEventListener() {},
+      dispatchEvent() {
+        return false;
+      },
+    };
+  };
+}
+
+function createFlowApi(props) {
+  return Object.create({
+    fitView() {
+      document.body.setAttribute("data-fit", "1");
+    },
+    zoomTo(zoom) {
+      document.body.setAttribute("data-zoom", String(zoom));
+      props.onZoomChange?.(zoom);
+    },
+    setViewport({ zoom }) {
+      document.body.setAttribute("data-zoom", String(zoom));
+      props.onZoomChange?.(zoom);
+    },
+    getZoom() {
+      return Number(document.body.getAttribute("data-zoom") || props.zoom || 1);
+    },
+    getNode(id) {
+      const node = (props.nodes || []).find((item) => item.id === id);
+      if (node) return node;
+      if (id === "arch:sqlite-backlog") return { id, position: { x: 280, y: 510 } };
+      return undefined;
+    },
+    setCenter(x, y, opts = {}) {
+      document.body.setAttribute("data-center", `${x},${y},${opts.zoom ?? ""}`);
+      if (opts.zoom != null) {
+        document.body.setAttribute("data-zoom", String(opts.zoom));
+        props.onZoomChange?.(opts.zoom);
+      }
+    },
+  });
+}
 
 vi.mock("./GraphCanvas.jsx", () => ({
   GraphCanvas: function MockGraphCanvas(props) {
     const ref = { current: null };
     useEffect(() => {
-      props.onReady?.({
-        fitView: () => {
-          document.body.setAttribute("data-fit", "1");
-        },
-        zoomTo: (zoom) => {
-          document.body.setAttribute("data-zoom", String(zoom));
-          props.onZoomChange?.(zoom);
-        },
-        setViewport: ({ zoom }) => {
-          document.body.setAttribute("data-zoom", String(zoom));
-          props.onZoomChange?.(zoom);
-        },
-        getZoom: () => Number(document.body.getAttribute("data-zoom") || props.zoom || 1),
-      });
+      props.onReady?.(createFlowApi(props));
     }, [props]);
     useEffect(() => {
       const el = ref.current;
@@ -40,6 +81,7 @@ vi.mock("./GraphCanvas.jsx", () => ({
         data-pan-on-scroll={String(props.panOnScroll)}
         data-zoom-on-pinch={String(props.zoomOnPinch)}
         data-prevent-scrolling={String(props.preventScrolling)}
+        data-minimap={props.zoom >= 1.5 ? "off" : "on"}
         data-min-zoom={String(props.minZoom)}
         data-max-zoom={String(props.maxZoom)}
         data-nodes-focusable={String(props.nodesFocusable)}
@@ -59,11 +101,14 @@ vi.mock("./GraphCanvas.jsx", () => ({
             {node.data?.title || node.data?.label || node.id}
           </button>
         ))}
-        {(props.edges || []).map((edge) => (
+        {(props.edges || [])
+          .filter((edge) => !edge.data?.hideLabel)
+          .map((edge) => (
           <button
             key={edge.id}
             type="button"
             className="hm-edge"
+            aria-label={String(edge.label || "relation")}
             onClick={(event) => props.onEdgeClick?.(event, edge)}
           >
             {edge.label}
@@ -78,16 +123,25 @@ const { GraphExplorer } = await import("./GraphExplorer.jsx");
 
 function renderExplorer(payload, extra = {}) {
   return render(
-    <div style={{ width: 1280, height: 800 }}>
+    <div style={{ width: extra.width || 1280, height: extra.height || 800 }}>
       <GraphExplorer payload={payload} {...extra} />
     </div>,
   );
 }
 
 describe("GraphExplorer", () => {
+  const originalMatchMedia = window.matchMedia;
+
   beforeEach(() => {
+    window.history.replaceState(null, "", "/");
     document.body.removeAttribute("data-zoom");
     document.body.removeAttribute("data-fit");
+    document.body.removeAttribute("data-center");
+    stubViewport(1280);
+  });
+
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia;
   });
 
   it("renders a loading state before the graph exists", () => {
@@ -169,6 +223,20 @@ describe("GraphExplorer", () => {
     expect(screen.getByRole("region", { name: /detail/i })).toHaveTextContent(/issue #98557/i);
   });
 
+  it("focuses an edge and activates it with Enter and Space", async () => {
+    const user = userEvent.setup();
+    renderExplorer(SAMPLE_CAMPAIGN);
+    const edge = screen.getByRole("button", { name: /^fixes$/i });
+    edge.focus();
+    expect(edge).toHaveFocus();
+    await user.keyboard("{Enter}");
+    expect(screen.getByRole("region", { name: /detail/i })).toHaveTextContent(/fixes/i);
+    await user.keyboard("{Escape}");
+    edge.focus();
+    await user.keyboard(" ");
+    expect(screen.getByRole("region", { name: /detail/i })).toHaveTextContent(/fixes/i);
+  });
+
   it("deep-links ?node= onto a selected node", async () => {
     renderExplorer(SAMPLE_CAMPAIGN, { search: "?graph=campaign&node=issue:98557" });
     await waitFor(() => {
@@ -176,9 +244,34 @@ describe("GraphExplorer", () => {
     });
   });
 
+  it("deep-links ?node= without ?graph= onto the campaign issue", async () => {
+    const payload = { ...SAMPLE_CAMPAIGN };
+    delete payload.graph;
+    renderExplorer(payload, { search: "?node=issue:98557" });
+    await waitFor(() => {
+      expect(screen.getByRole("region", { name: /detail/i })).toHaveTextContent(/issue #98557/i);
+    });
+  });
+
+  it("honors ?graph=campaign when payload.graph is omitted", () => {
+    const payload = { ...SAMPLE_CAMPAIGN };
+    delete payload.graph;
+    renderExplorer(payload, { search: "?graph=campaign" });
+    expect(screen.getByRole("button", { name: /cancelled ci treated as success/i })).toBeInTheDocument();
+  });
+
+  it("deep-links a short ?node=issue:N onto a namespaced owner/name:issue:N id", async () => {
+    renderExplorer(NAMESPACED_CAMPAIGN, { search: "?graph=campaign&node=issue:98557" });
+    await waitFor(() => {
+      const detail = screen.getByRole("region", { name: /detail/i });
+      expect(detail).toHaveTextContent(/issue #98557/i);
+      expect(detail).toHaveTextContent(/acme\/widgets/i);
+    });
+  });
+
   it("renders architecture targets as buttons, not posters", async () => {
     const user = userEvent.setup();
-    renderExplorer({ status: "ready", graph: "architecture" });
+    renderExplorer({ status: "ready", graph: "architecture" }, { search: "?graph=architecture" });
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
     const sqlite = screen.getByRole("button", { name: /sqlite backlog graph/i });
     expect(sqlite.tagName).toBe("BUTTON");
@@ -221,11 +314,107 @@ describe("GraphExplorer", () => {
     expect(screen.getByRole("region", { name: /detail/i })).toHaveTextContent(/pr #103195/i);
   });
 
+  it("keeps Fit view off the wrapping zoom-chip row so 390 layouts can still hit it", () => {
+    stubViewport(390);
+    renderExplorer(SAMPLE_CAMPAIGN, { width: 390, height: 844 });
+    const fit = screen.getByRole("button", { name: /fit view/i });
+    expect(fit.closest(".hm-zooms")).toBeNull();
+    expect(fit.closest(".hm-fit")).toBeTruthy();
+  });
+
+  it("frames architecture on a 390 viewport without waiting for a mystery pan", async () => {
+    stubViewport(390);
+    renderExplorer(
+      { status: "ready", graph: "architecture" },
+      { width: 390, height: 844, search: "?graph=architecture" },
+    );
+    await waitFor(() => {
+      expect(document.body.getAttribute("data-fit")).toBe("1");
+    });
+    expect(screen.getByRole("button", { name: /sqlite backlog graph/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /campaign graph/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /local api\/ui/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /sqlite backlog graph/i })).toBeInTheDocument();
+  });
+
   it("does not hand touch moves to page scroll", () => {
     renderExplorer(SAMPLE_CAMPAIGN);
     const canvas = screen.getByTestId("graph-canvas");
     const touch = new Event("touchmove", { bubbles: true, cancelable: true });
     canvas.dispatchEvent(touch);
     expect(touch.defaultPrevented).toBe(true);
+  });
+
+  it("caps a campaign-less live dump and says how many tickets were hidden", () => {
+    const nodes = Array.from({ length: 80 }, (_, index) => ({
+      id: `issue:${index + 1}`,
+      kind: "issue",
+      number: index + 1,
+      title: `ticket ${index + 1}`,
+    }));
+    renderExplorer({ status: "ready", graph: "campaign", nodes, relations: [] });
+    expect(screen.getAllByText(/showing 60 of 80/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("button", { name: /ticket /i }).length).toBe(60);
+  });
+
+  it("keeps a late connected family when a live dump is capped", () => {
+    const nodes = [
+      ...Array.from({ length: 70 }, (_, index) => ({
+        id: `issue:${index + 1}`,
+        kind: "issue",
+        number: index + 1,
+        title: `isolate ${index + 1}`,
+      })),
+      { id: "issue:900", kind: "issue", number: 900, title: "cluster root" },
+      { id: "pr:901", kind: "pr", number: 901, title: "cluster fix" },
+    ];
+    const relations = [{ src_id: "pr:901", dst_id: "issue:900", relation_type: "fixes" }];
+    renderExplorer({ status: "ready", graph: "campaign", nodes, relations });
+    expect(screen.getByRole("button", { name: /cluster root/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /cluster fix/i })).toBeInTheDocument();
+  });
+
+  it("hides stacked relation labels on a dense dump so titles remain clickable", () => {
+    const nodes = Array.from({ length: 40 }, (_, index) => ({
+      id: `issue:${index + 1}`,
+      kind: "issue",
+      number: index + 1,
+      title: `ticket ${index + 1}`,
+    }));
+    const relations = Array.from({ length: 20 }, (_, index) => ({
+      id: `r-${index}`,
+      src_id: `issue:${index + 2}`,
+      dst_id: `issue:${index + 1}`,
+      relation_type: "fixes",
+    }));
+    renderExplorer({ status: "ready", graph: "campaign", nodes, relations });
+    expect(screen.queryByRole("button", { name: /^fixes$/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "ticket 1", exact: true })).toBeInTheDocument();
+  });
+
+  it("offers Load seed families on a truncated dump and an empty campaign", async () => {
+    const user = userEvent.setup();
+    const onUseSeed = vi.fn();
+    const nodes = Array.from({ length: 80 }, (_, index) => ({
+      id: `issue:${index + 1}`,
+      kind: "issue",
+      number: index + 1,
+      title: `ticket ${index + 1}`,
+    }));
+    renderExplorer({ status: "ready", graph: "campaign", nodes, relations: [] }, { onUseSeed });
+    await user.click(screen.getByRole("button", { name: /load seed families/i }));
+    expect(onUseSeed).toHaveBeenCalled();
+    renderExplorer({ status: "ready", graph: "campaign", nodes: [], relations: [] }, { onUseSeed });
+    expect(screen.getAllByRole("button", { name: /load seed families/i }).length).toBeGreaterThan(0);
+  });
+
+  it("recenters a selected node above the 390 detail sheet", async () => {
+    stubViewport(390);
+    const user = userEvent.setup();
+    renderExplorer(SAMPLE_CAMPAIGN, { width: 390, height: 844 });
+    document.body.removeAttribute("data-center");
+    await user.click(screen.getByRole("button", { name: /cancelled ci treated as success/i }));
+    expect(String(document.body.getAttribute("data-center") || "")).toMatch(/,/);
+    expect(screen.getByRole("region", { name: /detail/i })).toHaveTextContent(/issue #98557/i);
   });
 });

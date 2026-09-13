@@ -8,6 +8,8 @@ export const NODE_STEP_Y = 128;
 export const LANE_STEP_X = 268;
 export const FAMILY_GAP_X = 72;
 export const FAMILY_GAP_Y = 48;
+export const LANE_WRAP_ROWS = 8;
+export const MAX_VISIBLE_NODES = 60;
 
 export const FLOW_GESTURES = {
   panOnScroll: true,
@@ -85,8 +87,25 @@ export function architectureGraph() {
   };
 }
 
+export const ARCHITECTURE_FOCUS_ID = "arch:sqlite-backlog";
+export const ARCHITECTURE_CORE_IDS = [
+  "arch:sqlite-backlog",
+  "arch:normalization",
+  "arch:campaigns",
+  "arch:local-ui",
+  "arch:explicit-refs",
+  "arch:fix-atoms",
+];
+export const NODE_CENTER = { x: 124, y: 55 };
+export const EDGE_LABEL_NODE_LIMIT = 24;
+
 export function hitSizeForZoom(_zoom) {
   return NODE_MIN_HEIGHT;
+}
+
+export function edgeLabelHitForZoom(zoom) {
+  const z = Math.max(Number(zoom) || 1, FLOW_GESTURES.minZoom);
+  return HIT_MIN_PX / z;
 }
 
 export function labelScaleForZoom(zoom) {
@@ -97,6 +116,161 @@ export function labelScaleForZoom(zoom) {
 export function edgeLabelInvScale(zoom) {
   const z = Math.max(Number(zoom) || 1, FLOW_GESTURES.minZoom);
   return 1 / z;
+}
+
+export function shortNodeId(nodeId) {
+  const raw = String(nodeId || "");
+  const parts = raw.split(":");
+  if (parts.length >= 3 && parts[0].includes("/")) {
+    return parts.slice(1).join(":");
+  }
+  return raw;
+}
+
+export function repoFromNodeId(nodeId) {
+  const raw = String(nodeId || "");
+  const parts = raw.split(":");
+  if (parts.length >= 3 && parts[0].includes("/")) return parts[0];
+  return "";
+}
+
+export function nodeIdMatches(nodeId, query) {
+  if (!nodeId || !query) return false;
+  if (nodeId === query) return true;
+  if (String(query).includes("/")) return false;
+  return shortNodeId(nodeId) === query;
+}
+
+export function findNodeBySearch(nodes, query) {
+  return (nodes || []).find((node) => nodeIdMatches(node.id, query));
+}
+
+export function isCompactViewport() {
+  return typeof window !== "undefined" && window.matchMedia("(max-width: 980px)").matches;
+}
+
+export function edgeLabelsVisible(nodeCount, _zoom = 1) {
+  return Number(nodeCount) <= EDGE_LABEL_NODE_LIMIT;
+}
+
+export function frameGraph(api, mode, { compact = false } = {}) {
+  if (!api) return;
+  if (compact && mode === "architecture") {
+    const present = ARCHITECTURE_CORE_IDS.filter((id) => api.getNode?.(id));
+    if (present.length && api.fitView) {
+      api.fitView({
+        nodes: present.map((id) => ({ id })),
+        padding: 0.12,
+        minZoom: FLOW_GESTURES.minZoom,
+        maxZoom: FLOW_GESTURES.minZoom,
+        duration: 180,
+      });
+      return;
+    }
+    const node = api.getNode?.(ARCHITECTURE_FOCUS_ID);
+    if (node?.position) {
+      api.setCenter?.(node.position.x + NODE_CENTER.x, node.position.y + NODE_CENTER.y, {
+        zoom: FLOW_GESTURES.minZoom,
+        duration: 180,
+      });
+      return;
+    }
+  }
+  api.fitView?.({ padding: 0.18, minZoom: FLOW_GESTURES.minZoom, maxZoom: FLOW_GESTURES.maxZoom, duration: 180 });
+}
+
+export function staggerLabelOffsets(relations) {
+  const list = relations || [];
+  const step = HIT_MIN_PX / FLOW_GESTURES.minZoom;
+  const groups = new Map();
+  list.forEach((rel, index) => {
+    const key = `${rel.relation_type || "related"}::${rel.dst_id}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(index);
+  });
+  const offsets = Array.from({ length: list.length }, () => 0);
+  for (const indexes of groups.values()) {
+    const mid = (indexes.length - 1) / 2;
+    indexes.forEach((relIndex, rank) => {
+      offsets[relIndex] = (rank - mid) * step;
+    });
+  }
+  return offsets;
+}
+
+export function assignClusterIds(payload) {
+  const nodes = (payload?.nodes || []).map((node) => ({ ...node }));
+  const relations = payload?.relations || [];
+  const parent = new Map(nodes.map((node) => [node.id, node.id]));
+  const find = (id) => {
+    if (!parent.has(id)) parent.set(id, id);
+    const next = parent.get(id);
+    if (next !== id) {
+      const root = find(next);
+      parent.set(id, root);
+      return root;
+    }
+    return id;
+  };
+  const union = (left, right) => {
+    const rootLeft = find(left);
+    const rootRight = find(right);
+    if (rootLeft !== rootRight) parent.set(rootLeft, rootRight);
+  };
+  for (const rel of relations) {
+    if (parent.has(rel.src_id) && parent.has(rel.dst_id)) union(rel.src_id, rel.dst_id);
+  }
+  const sizes = new Map();
+  for (const node of nodes) {
+    const root = find(node.id);
+    sizes.set(root, (sizes.get(root) || 0) + 1);
+  }
+  for (const node of nodes) {
+    if (!node.campaign_id && (sizes.get(find(node.id)) || 1) > 1) {
+      node.campaign_id = `cluster:${find(node.id)}`;
+    }
+  }
+  return { ...payload, nodes, relations };
+}
+
+export function capGraphPayload(payload, limit = MAX_VISIBLE_NODES) {
+  const clustered = assignClusterIds(payload);
+  const nodes = clustered.nodes || [];
+  const relations = clustered.relations || [];
+  if (nodes.length <= limit) {
+    return { ...clustered, truncated: 0, total: nodes.length };
+  }
+  const degree = new Map(nodes.map((node) => [node.id, 0]));
+  for (const rel of relations) {
+    if (degree.has(rel.src_id)) degree.set(rel.src_id, degree.get(rel.src_id) + 1);
+    if (degree.has(rel.dst_id)) degree.set(rel.dst_id, degree.get(rel.dst_id) + 1);
+  }
+  const groups = new Map();
+  for (const node of nodes) {
+    const key = node.campaign_id || node.id;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(node);
+  }
+  const ranked = [...groups.values()].sort((left, right) => {
+    const degreeLeft = left.reduce((sum, node) => sum + (degree.get(node.id) || 0), 0);
+    const degreeRight = right.reduce((sum, node) => sum + (degree.get(node.id) || 0), 0);
+    if (degreeRight !== degreeLeft) return degreeRight - degreeLeft;
+    if (right.length !== left.length) return right.length - left.length;
+    return String(left[0]?.id || "").localeCompare(String(right[0]?.id || ""));
+  });
+  const kept = [];
+  for (const group of ranked) {
+    if (kept.length >= limit) break;
+    kept.push(...group.slice(0, limit - kept.length));
+  }
+  const ids = new Set(kept.map((node) => node.id));
+  return {
+    ...clustered,
+    nodes: kept,
+    relations: relations.filter((rel) => ids.has(rel.src_id) && ids.has(rel.dst_id)),
+    truncated: nodes.length - kept.length,
+    total: nodes.length,
+  };
 }
 
 export function parseGraphSearch(search = "") {
@@ -124,7 +298,8 @@ function laneFor(node) {
 }
 
 export function layoutGraph(payload) {
-  const rawNodes = payload?.nodes || [];
+  const clustered = assignClusterIds(payload);
+  const rawNodes = clustered.nodes || [];
   if (!rawNodes.length) return [];
 
   const groups = new Map();
@@ -149,7 +324,7 @@ export function layoutGraph(payload) {
     }
   }
 
-  const columns = autoFamilies.length > 2 ? 2 : 1;
+  const columns = autoFamilies.length > 1 ? 2 : 1;
   let column = 0;
   let originX = 0;
   let originY = 0;
@@ -184,19 +359,24 @@ function layoutFamily(members, originX, originY) {
     lanes.get(column).push(member);
   }
   const nodes = [];
+  let cursorX = originX;
   let tallest = NODE_MIN_HEIGHT;
   let widest = NODE_MIN_WIDTH;
-  for (const [column, laneNodes] of [...lanes.entries()].sort((a, b) => a[0] - b[0])) {
+  for (const [, laneNodes] of [...lanes.entries()].sort((a, b) => a[0] - b[0])) {
     laneNodes.sort((a, b) => laneFor(a) - laneFor(b) || String(a.id).localeCompare(String(b.id)));
+    const subCols = Math.max(1, Math.ceil(laneNodes.length / LANE_WRAP_ROWS));
     laneNodes.forEach((node, index) => {
-      const x = originX + column * LANE_STEP_X;
-      const y = originY + index * NODE_STEP_Y;
-      tallest = Math.max(tallest, (index + 1) * NODE_STEP_Y);
-      widest = Math.max(widest, (column + 1) * LANE_STEP_X);
+      const subCol = Math.floor(index / LANE_WRAP_ROWS);
+      const row = index % LANE_WRAP_ROWS;
+      const x = cursorX + subCol * LANE_STEP_X;
+      const y = originY + row * NODE_STEP_Y;
+      tallest = Math.max(tallest, (row + 1) * NODE_STEP_Y);
+      widest = Math.max(widest, x - originX + NODE_MIN_WIDTH);
       nodes.push(toFlowNode(node, { x, y }));
     });
+    cursorX += subCols * LANE_STEP_X;
   }
-  return { nodes, width: widest, height: tallest };
+  return { nodes, width: Math.max(widest, cursorX - originX), height: tallest };
 }
 
 function toFlowNode(node, position) {
@@ -224,8 +404,10 @@ function toFlowNode(node, position) {
   };
 }
 
-export function toFlowEdges(relations) {
-  return (relations || []).map((rel, index) => {
+export function toFlowEdges(relations, { hideLabels = false } = {}) {
+  const list = relations || [];
+  const offsets = staggerLabelOffsets(list);
+  return list.map((rel, index) => {
     const color = EDGE_COLOR[rel.relation_type] || "#ffe6cb";
     const dashed = ["possible_duplicate", "related", "similar_to", "suggests"].includes(rel.relation_type);
     return {
@@ -240,14 +422,21 @@ export function toFlowEdges(relations) {
       markerEnd: { type: "arrowclosed", color },
       style: { stroke: color, strokeWidth: 2, strokeDasharray: dashed ? "6 4" : undefined },
       labelStyle: { fill: color, fontSize: 12, fontWeight: 600 },
-      data: rel,
+      data: { ...rel, labelOffset: offsets[index], hideLabel: Boolean(hideLabels) },
     };
   });
 }
 
+function ticketRepo(data) {
+  return data?.repo || repoFromNodeId(data?.id);
+}
+
 export function formatNodeKicker(data) {
+  if (!data) return "node";
   if (data.kind === "issue" || data.kind === "pr") {
-    return `${data.kind} #${data.number}`;
+    const ticket = `${data.kind} #${data.number}`;
+    const repo = ticketRepo(data);
+    return repo ? `${ticket} · ${repo}` : ticket;
   }
   if (data.kind === "file") return "file";
   if (data.kind === "invariant") return "invariant";
@@ -257,8 +446,9 @@ export function formatNodeKicker(data) {
 
 export function formatNodeHeading(data) {
   if (!data) return "Selection";
-  if (data.kind === "issue") return `Issue #${data.number}`;
-  if (data.kind === "pr") return `PR #${data.number}`;
+  const repo = ticketRepo(data);
+  if (data.kind === "issue") return repo ? `Issue #${data.number} · ${repo}` : `Issue #${data.number}`;
+  if (data.kind === "pr") return repo ? `PR #${data.number} · ${repo}` : `PR #${data.number}`;
   if (data.kind === "campaign") return `Campaign · ${data.title || data.id}`;
   if (data.kind === "file") return `File · ${data.path || data.title || data.id}`;
   if (data.kind === "invariant") return `Invariant · ${data.title || data.id}`;
@@ -298,6 +488,7 @@ export function describeSelection(selection) {
     kicker: formatNodeKicker(data),
     summary: data.summary || data.title || "",
     meta: [
+      ticketRepo(data),
       data.state,
       data.author,
       data.role && String(data.role).replaceAll("_", " "),

@@ -91,6 +91,16 @@ function escapeHtml(s) {
   }[c]))
 }
 
+function boardTicket(n) {
+  if (window.HermesGraph?.formatNodeKicker) {
+    return window.HermesGraph.formatNodeKicker(n)
+  }
+  const repo = n.repo || (String(n.id || "").includes("/") ? String(n.id).split(":")[0] : "")
+  const kind = n.kind === "pr" ? "PR" : n.kind === "issue" ? "Issue" : (n.kind || "")
+  const num = n.number != null ? `#${n.number}` : ""
+  return [repo, kind, num].filter(Boolean).join(" ")
+}
+
 function applyTheme(name) {
   const theme = THEMES[name] || THEMES.default
   const root = document.documentElement
@@ -173,7 +183,7 @@ async function loadOptimizer() {
 async function loadNodes() {
   const data = await get(`/api/nodes?kind=${state.kind}&state=open&limit=250`)
   $("#nodes").innerHTML = rows(data, (n) => `
-    <a href="${n.url || "#"}" target="_blank" rel="noreferrer"><div class="row"><div><div class="title">#${n.number} ${escapeHtml(n.title)}</div><div class="meta">${escapeHtml(n.author || "")} · ${escapeHtml(n.updated_at || "")}</div></div><div class="badge">${n.kind}</div></div></a>`)
+    <a href="${n.url || "#"}" target="_blank" rel="noreferrer"><div class="row"><div><div class="title">${escapeHtml(boardTicket(n))} ${escapeHtml(n.title)}</div><div class="meta">${escapeHtml(n.author || "")} · ${escapeHtml(n.updated_at || "")}</div></div><div class="badge">${n.kind}</div></div></a>`)
 }
 
 function graphQuery() {
@@ -271,7 +281,15 @@ async function refreshAll() {
 function mountGraph() {
   const el = $("#flow")
   if (window.HermesGraph && window.HermesGraph.mount) {
-    window.HermesGraph.mount(el, { search: location.search })
+    window.HermesGraph.mount(el, {
+      search: location.search,
+      onUseSeed: () => {
+        state.usingSeed = true
+        state.campaignId = null
+        if (state.view !== "graph") setView("graph")
+        else loadGraph()
+      },
+    })
   } else {
     el.innerHTML = '<div class="graph-empty">xyflow bundle missing. Run <code>./scripts/build-ui.sh</code>.</div>'
   }

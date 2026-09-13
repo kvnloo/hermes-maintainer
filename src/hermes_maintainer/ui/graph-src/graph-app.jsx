@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { GraphExplorer } from "./GraphExplorer.jsx";
+import { formatNodeHeading, formatNodeKicker, nodeIdMatches } from "./graph-model.js";
 
 let current = { status: "loading", nodes: [], relations: [], campaign: null, source: "live" };
 const listeners = new Set();
@@ -20,10 +21,16 @@ function useGraphPayload() {
   return payload;
 }
 
-function MountedExplorer({ onSelect, search, onNavigate }) {
+function MountedExplorer({ onSelect, search, onNavigate, onUseSeed }) {
   const payload = useGraphPayload();
   return (
-    <GraphExplorer payload={payload} onSelect={onSelect} search={search} onNavigate={onNavigate} />
+    <GraphExplorer
+      payload={payload}
+      onSelect={onSelect}
+      search={search}
+      onNavigate={onNavigate}
+      onUseSeed={onUseSeed}
+    />
   );
 }
 
@@ -34,11 +41,12 @@ export function mount(container, options = {}) {
       onSelect={options.onSelect}
       search={options.search}
       onNavigate={options.onNavigate}
+      onUseSeed={options.onUseSeed}
     />,
   );
   return { setGraph, unmount: () => root.unmount() };
 }
 
 if (typeof window !== "undefined") {
-  window.HermesGraph = { mount, setGraph };
+  window.HermesGraph = { mount, setGraph, formatNodeKicker, formatNodeHeading, nodeIdMatches };
 }

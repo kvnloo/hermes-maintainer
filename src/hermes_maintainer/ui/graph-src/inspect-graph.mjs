@@ -73,8 +73,20 @@ async function inspectViewport(browser, vp, findings) {
     }
   }
   const fitBtn = page.getByRole("button", { name: "Fit view", exact: true });
-  if (!(await fitBtn.boundingBox())) {
+  const fitBox = await fitBtn.boundingBox();
+  if (!fitBox) {
     issue(findings, vp.name, "fit", "clip", "Fit view control is off-screen");
+  } else {
+    if (fitBox.height + 0.5 < 44) {
+      issue(findings, vp.name, "fit", "hit-target", "Fit view shorter than 44px", fitBox);
+    }
+    const zoomRow = zoomButtons[2] || zoomButtons[1] || zoomButtons[0.4];
+    if (zoomRow && vp.width <= 400) {
+      const overlapY = Math.min(fitBox.y + fitBox.height, zoomRow.y + zoomRow.height) - Math.max(fitBox.y, zoomRow.y);
+      if (overlapY > 8 && Math.abs(fitBox.y - zoomRow.y) < 8) {
+        issue(findings, vp.name, "fit", "clip", "Fit view shares the zoom-chip row on 390", { fitBox, zoomRow });
+      }
+    }
   }
 
   for (const zoom of ZOOM_STOPS) {
@@ -92,6 +104,26 @@ async function inspectViewport(browser, vp, findings) {
       issue(findings, vp.name, zoom, "hit-target", `Hit target ${Math.round(box.width)}×${Math.round(box.height)} < 44px`, { box });
     }
     await clickOpensDetail(page, node, findings, vp.name, zoom, /sqlite/i);
+
+    if (vp.width >= 981 && zoom >= 1.5) {
+      const minimap = page.locator(".react-flow__minimap");
+      if (await minimap.count()) {
+        const mini = await minimap.boundingBox();
+        if (mini && mini.width > 8 && mini.height > 8) {
+          issue(findings, vp.name, zoom, "minimap", "MiniMap still covers the canvas at 2×", { box: mini });
+        }
+      }
+    }
+  }
+
+  if (vp.width <= 400) {
+    const plus = page.locator(".react-flow__controls");
+    if (await plus.count()) {
+      const box = await plus.boundingBox();
+      if (box && box.width > 8 && box.height > 8) {
+        issue(findings, vp.name, "controls", "clip", "xyflow Controls cover the compact canvas", { box });
+      }
+    }
   }
 
   await page.getByRole("button", { name: "Fit view", exact: true }).click();
@@ -126,12 +158,88 @@ async function inspectViewport(browser, vp, findings) {
   await page.waitForTimeout(700);
   await page.getByRole("button", { name: "Fit view", exact: true }).click();
   await page.waitForTimeout(400);
-  const campaignNode = page.getByRole("button", { name: /ci verdict integrity/i }).first();
+  const campaignNode = page.locator("button.hm-node").first();
   if (await campaignNode.count()) {
-    await clickOpensDetail(page, campaignNode, findings, vp.name, "campaign", /campaign/i);
+    await clickOpensDetail(page, campaignNode, findings, vp.name, "campaign");
     const edge = page.getByRole("button", { name: /^protects$/i }).first();
     if (await edge.count()) {
       await clickOpensDetail(page, edge, findings, vp.name, "campaign-edge", /protects|relationship|typed/i);
+    }
+    const fixLabels = page.getByRole("button", { name: /^fixes$/i });
+    const fixCount = await fixLabels.count();
+    if (fixCount > 1) {
+      const boxes = [];
+      for (let i = 0; i < fixCount; i += 1) {
+        const box = await fixLabels.nth(i).boundingBox();
+        if (box) boxes.push(box);
+      }
+      for (let i = 0; i < boxes.length; i += 1) {
+        for (let j = i + 1; j < boxes.length; j += 1) {
+          const a = boxes[i];
+          const b = boxes[j];
+          const overlap =
+            Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x) > 8 &&
+            Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y) > 8;
+          if (overlap) {
+            issue(findings, vp.name, "campaign", "stacked-label", "fixes labels overlap", { a, b });
+          }
+        }
+      }
+    }
+    const titleButtons = page.locator("button.hm-node");
+    const titleCount = await titleButtons.count();
+    const labelButtons = page.locator("button.hm-edge-label");
+    const labelCount = await labelButtons.count();
+    if (titleCount && labelCount) {
+      for (let i = 0; i < Math.min(titleCount, 12); i += 1) {
+        const titleBox = await titleButtons.nth(i).boundingBox();
+        if (!titleBox) continue;
+        for (let j = 0; j < Math.min(labelCount, 12); j += 1) {
+          const labelBox = await labelButtons.nth(j).boundingBox();
+          if (!labelBox) continue;
+          const overlapW = Math.min(titleBox.x + titleBox.width, labelBox.x + labelBox.width) - Math.max(titleBox.x, labelBox.x);
+          const overlapH = Math.min(titleBox.y + titleBox.height, labelBox.y + labelBox.height) - Math.max(titleBox.y, labelBox.y);
+          if (overlapW > 24 && overlapH > 16) {
+            issue(findings, vp.name, "campaign", "label-cover", "Relation label covers a ticket title", { titleBox, labelBox });
+          }
+        }
+      }
+    }
+    if (vp.width <= 400) {
+      const seed = page.getByRole("button", { name: /load seed families/i });
+      if (await seed.count()) {
+        const seedBox = await seed.boundingBox();
+        if (seedBox && seedBox.height + 0.5 < 44) {
+          issue(findings, vp.name, "campaign", "hit-target", "Load seed families shorter than 44px", seedBox);
+        }
+      }
+      const detailBox = await detail.boundingBox().catch(() => null);
+      const selectedNode = page.locator("button.hm-node[aria-pressed='true']").first();
+      if (detailBox && (await selectedNode.count())) {
+        const nodeBox = await selectedNode.boundingBox();
+        if (nodeBox) {
+          const overlapH = Math.min(nodeBox.y + nodeBox.height, detailBox.y + detailBox.height) - Math.max(nodeBox.y, detailBox.y);
+          const overlapW = Math.min(nodeBox.x + nodeBox.width, detailBox.x + detailBox.width) - Math.max(nodeBox.x, detailBox.x);
+          if (overlapH > nodeBox.height * 0.5 && overlapW > nodeBox.width * 0.5) {
+            issue(findings, vp.name, "campaign", "detail-cover", "Mobile detail sheet covers the selected node", { nodeBox, detailBox });
+          }
+        }
+      }
+    }
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(200);
+    const keyboardNode = page.locator("button.hm-node").first();
+    if (await keyboardNode.count()) {
+      await keyboardNode.evaluate((el) => {
+        el.scrollIntoView({ block: "center", inline: "center" });
+        el.focus();
+      });
+      await page.keyboard.press("Enter");
+      try {
+        await detail.waitFor({ state: "visible", timeout: 4000 });
+      } catch {
+        issue(findings, vp.name, "keyboard", "dead-click", "Enter on focused campaign node did not open detail");
+      }
     }
   } else {
     issue(findings, vp.name, "campaign", "empty", "Campaign canvas had no CI verdict node");

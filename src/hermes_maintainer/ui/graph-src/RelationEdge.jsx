@@ -1,5 +1,5 @@
 import { BaseEdge, EdgeLabelRenderer, getBezierPath, useStore } from "@xyflow/react";
-import { edgeLabelInvScale } from "./graph-model.js";
+import { edgeLabelHitForZoom, edgeLabelInvScale } from "./graph-model.js";
 
 export const relationEdgeHandlers = { onClick: null };
 
@@ -21,6 +21,8 @@ export function RelationEdge({
 }) {
   const zoom = useStore((state) => state.transform[2]);
   const fontSize = 11 * edgeLabelInvScale(zoom);
+  const hit = edgeLabelHitForZoom(zoom);
+  const offset = Number(data?.labelOffset) || 0;
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -29,6 +31,9 @@ export function RelationEdge({
     sourcePosition,
     targetPosition,
   });
+  if (data?.hideLabel && !selected) {
+    return <BaseEdge id={id} path={edgePath} markerEnd={markerEnd} style={style} />;
+  }
   return (
     <>
       <BaseEdge id={id} path={edgePath} markerEnd={markerEnd} style={style} />
@@ -38,9 +43,11 @@ export function RelationEdge({
           className={`hm-edge-label nopan nodrag${selected ? " is-selected" : ""}`}
           style={{
             position: "absolute",
-            transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+            transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY + offset}px)`,
             pointerEvents: "all",
             fontSize: `${fontSize}px`,
+            minHeight: hit,
+            minWidth: hit,
           }}
           aria-label={String(label || "relation")}
           onClick={(event) => {
@@ -53,6 +60,12 @@ export function RelationEdge({
               data,
               selectable: true,
             });
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              event.currentTarget.click();
+            }
           }}
         >
           {label}

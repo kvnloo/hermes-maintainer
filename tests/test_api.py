@@ -103,3 +103,49 @@ def test_search_and_health(db):
     assert client.get("/api/health").status_code == 200
     hits = client.get("/api/search", params={"q": "lock"}).json()
     assert any(h["id"] == "issue:1" for h in hits)
+
+
+def test_graph_endpoints_keep_namespaced_ids(db):
+    with db.connect() as conn:
+        conn.execute(
+            "INSERT INTO nodes(id,repo,kind,number,title,state,updated_at,labels_json) "
+            "VALUES('acme/widgets:issue:9','acme/widgets','issue',9,'lock','open','2026-01-01','[]')"
+        )
+        conn.execute(
+            "INSERT INTO nodes(id,repo,kind,number,title,state,updated_at,labels_json) "
+            "VALUES('acme/widgets:pr:8','acme/widgets','pr',8,'fix','open','2026-01-02','[]')"
+        )
+    db.add_relation("acme/widgets:pr:8", "acme/widgets:issue:9", "fixes", 1)
+    rebuild_campaigns(db)
+    client = TestClient(create_app(database=db))
+    graph = client.get("/api/graph?scope=recent").json()
+    ids = {n["id"] for n in graph["nodes"]}
+    assert "acme/widgets:issue:9" in ids
+    assert "acme/widgets:pr:8" in ids
+    node = client.get("/api/nodes/acme/widgets:issue:9").json()
+    assert node["id"] == "acme/widgets:issue:9"
+    assert node["repo"] == "acme/widgets"
+
+
+def test_graph_export_prefers_connected_family_without_campaigns(db):
+    with db.connect() as conn:
+        for index in range(1, 21):
+            conn.execute(
+                "INSERT INTO nodes(id,repo,kind,number,title,state,updated_at,labels_json) "
+                f"VALUES('issue:{index}','x/y','issue',{index},'isolate {index}','open','2026-06-01','[]')"
+            )
+        conn.execute(
+            "INSERT INTO nodes(id,repo,kind,number,title,state,updated_at,labels_json) "
+            "VALUES('issue:900','x/y','issue',900,'cluster root','open','2026-01-01','[]')"
+        )
+        conn.execute(
+            "INSERT INTO nodes(id,repo,kind,number,title,state,updated_at,labels_json) "
+            "VALUES('pr:901','x/y','pr',901,'cluster fix','open','2026-01-01','[]')"
+        )
+    db.add_relation("pr:901", "issue:900", "fixes", 1)
+    client = TestClient(create_app(database=db))
+    graph = client.get("/api/graph?scope=recent&limit=10").json()
+    ids = {n["id"] for n in graph["nodes"]}
+    assert "issue:900" in ids
+    assert "pr:901" in ids
+    assert any(rel["relation_type"] == "fixes" for rel in graph["relations"])

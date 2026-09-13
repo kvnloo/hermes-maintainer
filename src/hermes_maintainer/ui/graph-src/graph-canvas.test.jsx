@@ -86,4 +86,110 @@ describe("GraphCanvas (real xyflow)", () => {
     await user.keyboard("{Enter}");
     expect(onNodeClick).toHaveBeenCalled();
   });
+
+  it("activates a focused edge with Enter and Space", async () => {
+    const onEdgeClick = vi.fn();
+    const user = userEvent.setup();
+    renderFlow(SAMPLE_CAMPAIGN, { onEdgeClick });
+    const edge = await screen.findByRole("button", { name: /^fixes$/i });
+    edge.focus();
+    expect(edge).toHaveFocus();
+    await user.keyboard("{Enter}");
+    expect(onEdgeClick).toHaveBeenCalled();
+    onEdgeClick.mockClear();
+    edge.focus();
+    await user.keyboard(" ");
+    expect(onEdgeClick).toHaveBeenCalled();
+  });
+
+  it("hides MiniMap at 2× on desktop so it cannot cover nodes", async () => {
+    window.matchMedia = (query) => ({
+      matches: String(query).includes("min-width"),
+      media: query,
+      onchange: null,
+      addListener() {},
+      removeListener() {},
+      addEventListener() {},
+      removeEventListener() {},
+      dispatchEvent() {
+        return false;
+      },
+    });
+    const atOne = renderFlow(SAMPLE_CAMPAIGN, { zoom: 1 });
+    await screen.findByRole("button", { name: /cancelled ci treated as success/i });
+    expect(document.querySelector(".hm-flow")?.getAttribute("data-minimap")).toBe("on");
+    atOne.unmount();
+    renderFlow(SAMPLE_CAMPAIGN, { zoom: 2 });
+    await screen.findByRole("button", { name: /cancelled ci treated as success/i });
+    expect(document.querySelector(".hm-flow")?.getAttribute("data-minimap")).toBe("off");
+    expect(document.querySelector(".react-flow__minimap")).toBeNull();
+  });
+
+  it("hides MiniMap on a dense campaign grid so it cannot cover tickets", async () => {
+    window.matchMedia = (query) => ({
+      matches: String(query).includes("min-width"),
+      media: query,
+      onchange: null,
+      addListener() {},
+      removeListener() {},
+      addEventListener() {},
+      removeEventListener() {},
+      dispatchEvent() {
+        return false;
+      },
+    });
+    const nodes = Array.from({ length: 40 }, (_, index) => ({
+      id: `issue:${index + 1}`,
+      kind: "issue",
+      number: index + 1,
+      title: `ticket ${index + 1}`,
+    }));
+    renderFlow({ status: "ready", graph: "campaign", nodes, relations: [] }, { zoom: 1 });
+    await screen.findByRole("button", { name: "ticket 1", exact: true });
+    expect(document.querySelector(".hm-flow")?.getAttribute("data-minimap")).toBe("off");
+  });
+
+  it("hides xyflow Controls on a compact viewport so they cannot cover nodes", async () => {
+    window.matchMedia = (query) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener() {},
+      removeListener() {},
+      addEventListener() {},
+      removeEventListener() {},
+      dispatchEvent() {
+        return false;
+      },
+    });
+    renderFlow(SAMPLE_CAMPAIGN, { zoom: 1 });
+    await screen.findByRole("button", { name: /cancelled ci treated as success/i });
+    expect(document.querySelector(".react-flow__controls")).toBeNull();
+    expect(document.querySelector(".hm-flow")?.getAttribute("data-controls")).toBe("off");
+  });
+
+  it("does not render relation labels on a dense campaign grid", async () => {
+    const nodes = Array.from({ length: 40 }, (_, index) => ({
+      id: `issue:${index + 1}`,
+      kind: "issue",
+      number: index + 1,
+      title: `ticket ${index + 1}`,
+    }));
+    const relations = Array.from({ length: 12 }, (_, index) => ({
+      id: `r-${index}`,
+      src_id: `issue:${index + 2}`,
+      dst_id: `issue:${index + 1}`,
+      relation_type: "fixes",
+    }));
+    const hideLabels = nodes.length > 24;
+    const { GraphCanvas: Canvas } = await import("./GraphCanvas.jsx");
+    const { toFlowEdges: edgesOf, layoutGraph: layout } = await import("./graph-model.js");
+    render(
+      <div className="hm-flow-host" style={{ width: 1280, height: 800 }}>
+        <Canvas nodes={layout({ nodes, relations })} edges={edgesOf(relations, { hideLabels })} />
+      </div>,
+    );
+    await screen.findByRole("button", { name: "ticket 1", exact: true });
+    expect(screen.queryByRole("button", { name: /^fixes$/i })).not.toBeInTheDocument();
+  });
 });
