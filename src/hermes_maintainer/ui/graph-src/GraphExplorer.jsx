@@ -2,9 +2,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GraphCanvas } from "./GraphCanvas.jsx";
 import {
   FLOW_GESTURES,
+  NODE_CENTER,
   ZOOM_STOPS,
   architectureGraph,
   describeSelection,
+  findNodeBySearch,
+  frameGraph,
+  isCompactViewport,
   layoutGraph,
   parseGraphSearch,
   serializeGraphSearch,
@@ -12,23 +16,6 @@ import {
 } from "./graph-model.js";
 
 const ARCHITECTURE = architectureGraph();
-const NODE_CENTER = { x: 124, y: 55 };
-
-function frameGraph(api, mode) {
-  if (!api) return;
-  const compact = typeof window !== "undefined" && window.matchMedia("(max-width: 980px)").matches;
-  if (compact && mode === "architecture") {
-    const node = api.getNode?.("arch:sqlite-backlog");
-    if (node) {
-      api.setCenter(node.position.x + NODE_CENTER.x, node.position.y + NODE_CENTER.y, {
-        zoom: 0.4,
-        duration: 180,
-      });
-      return;
-    }
-  }
-  api.fitView?.({ padding: 0.18, minZoom: 0.4, maxZoom: 2, duration: 180 });
-}
 
 function GraphToolbar({ mode, zoom, sourceLabel, onArchitecture, onCampaigns, onZoom, onFit }) {
   return (
@@ -51,6 +38,11 @@ function GraphToolbar({ mode, zoom, sourceLabel, onArchitecture, onCampaigns, on
           Campaigns
         </button>
       </div>
+      <div className="hm-fit">
+        <button type="button" className="tab" onClick={onFit}>
+          Fit view
+        </button>
+      </div>
       <div className="hm-zooms">
         {ZOOM_STOPS.map((stop) => (
           <button
@@ -63,9 +55,6 @@ function GraphToolbar({ mode, zoom, sourceLabel, onArchitecture, onCampaigns, on
             {stop}×
           </button>
         ))}
-        <button type="button" className="tab" onClick={onFit}>
-          Fit view
-        </button>
       </div>
       <div className="hm-source">{sourceLabel}</div>
     </div>
@@ -141,15 +130,23 @@ function legendItems(nodes, edges) {
 }
 
 export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
-  const parsed = parseGraphSearch(search ?? (typeof window !== "undefined" ? window.location.search : ""));
+  const parsed = parseGraphSearch(
+    search !== undefined
+      ? search
+      : (typeof window !== "undefined" ? window.location.search : ""),
+  );
   const [mode, setMode] = useState(parsed.graph || payload?.graph || "architecture");
   const [selected, setSelected] = useState(null);
   const [zoom, setZoom] = useState(1);
   const flowRef = useRef(null);
 
   useEffect(() => {
+    if (parsed.graph) {
+      setMode(parsed.graph);
+      return;
+    }
     if (payload?.graph) setMode(payload.graph);
-  }, [payload?.graph]);
+  }, [parsed.graph, payload?.graph]);
 
   const status = payload?.status || (payload?.error ? "error" : "ready");
   const source = mode === "architecture" ? ARCHITECTURE : payload;
@@ -188,12 +185,21 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
   const appliedLink = useRef(null);
   useEffect(() => {
     if (!parsed.node || appliedLink.current === parsed.node) return;
-    const node = layoutGraph(source).find((item) => item.id === parsed.node);
-    if (node) {
+    const fromCurrent = findNodeBySearch(layoutGraph(source), parsed.node);
+    if (fromCurrent) {
       appliedLink.current = parsed.node;
-      setSelected({ type: "node", id: node.id, node });
+      setSelected({ type: "node", id: fromCurrent.id, node: fromCurrent });
+      return;
     }
-  }, [parsed.node, source]);
+    if (mode !== "campaign") {
+      const fromPayload = findNodeBySearch(layoutGraph(payload), parsed.node);
+      if (fromPayload) {
+        appliedLink.current = parsed.node;
+        setMode("campaign");
+        setSelected({ type: "node", id: fromPayload.id, node: fromPayload });
+      }
+    }
+  }, [parsed.node, source, payload, mode]);
 
   useEffect(() => {
     const onKey = (event) => {
@@ -236,9 +242,9 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
   const fit = useCallback(() => {
     const api = flowRef.current;
     if (!api) return;
-    const compact = typeof window !== "undefined" && window.matchMedia("(max-width: 980px)").matches;
-    if (compact && mode === "architecture") setZoom(0.4);
-    frameGraph(api, mode);
+    const compact = isCompactViewport();
+    if (compact && mode === "architecture") setZoom(FLOW_GESTURES.minZoom);
+    frameGraph(api, mode, { compact });
   }, [mode]);
 
   const detail = describeSelection(selected);
@@ -249,10 +255,9 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
   useEffect(() => {
     if (status !== "ready" || campaignEmpty) return undefined;
     const timer = window.setTimeout(() => {
-      if (window.matchMedia("(max-width: 980px)").matches && mode === "architecture") {
-        setZoom(0.4);
-      }
-      frameGraph(flowRef.current, mode);
+      const compact = isCompactViewport();
+      if (compact && mode === "architecture") setZoom(FLOW_GESTURES.minZoom);
+      frameGraph(flowRef.current, mode, { compact });
     }, 120);
     return () => window.clearTimeout(timer);
   }, [graphKey, status, campaignEmpty, mode]);
@@ -314,9 +319,8 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
             zoom={zoom}
             onZoomChange={setZoom}
             onReady={(api) => {
-              const ready = api.getNode ? { ...api, getNode: api.getNode.bind(api) } : api;
-              flowRef.current = ready;
-              frameGraph(ready, mode);
+              flowRef.current = api;
+              frameGraph(api, mode, { compact: isCompactViewport() });
             }}
             onNodeClick={onNodeClick}
             onEdgeClick={onEdgeClick}

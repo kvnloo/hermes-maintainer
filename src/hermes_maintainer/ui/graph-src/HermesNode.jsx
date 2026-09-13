@@ -1,5 +1,5 @@
 import { Handle, Position, useStore } from "@xyflow/react";
-import { formatNodeKicker, labelScaleForZoom } from "./graph-model.js";
+import { formatNodeKicker, labelScaleForZoom, NODE_MIN_HEIGHT, NODE_MIN_WIDTH } from "./graph-model.js";
 
 export const hermesNodeHandlers = { onClick: null };
 
@@ -49,9 +49,9 @@ export function HermesNode({ id, data, selected }) {
           }
         }}
         style={{
-          minWidth: 248,
-          minHeight: 110,
-          height: 110,
+          minWidth: NODE_MIN_WIDTH,
+          minHeight: NODE_MIN_HEIGHT,
+          height: NODE_MIN_HEIGHT,
           overflow: "hidden",
           fontSize: `${13 * scale}px`,
         }}

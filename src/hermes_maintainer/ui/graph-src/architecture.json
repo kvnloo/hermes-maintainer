@@ -52,7 +52,7 @@
       "kind": "subsystem",
       "title": "Normalization layer",
       "role": "core",
-      "summary": "Turns GitHub JSON and git objects into typed nodes: issue:N, pr:N, commit:sha, file:path.",
+      "summary": "Turns GitHub JSON and git objects into typed nodes: owner/name:issue:N, owner/name:pr:N, commit:sha, file:path.",
       "position": { "x": 280, "y": 340 }
     },
     {

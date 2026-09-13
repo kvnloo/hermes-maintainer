@@ -85,8 +85,16 @@ export function architectureGraph() {
   };
 }
 
+export const ARCHITECTURE_FOCUS_ID = "arch:sqlite-backlog";
+export const NODE_CENTER = { x: 124, y: 55 };
+
 export function hitSizeForZoom(_zoom) {
   return NODE_MIN_HEIGHT;
+}
+
+export function edgeLabelHitForZoom(zoom) {
+  const z = Math.max(Number(zoom) || 1, FLOW_GESTURES.minZoom);
+  return HIT_MIN_PX / z;
 }
 
 export function labelScaleForZoom(zoom) {
@@ -97,6 +105,71 @@ export function labelScaleForZoom(zoom) {
 export function edgeLabelInvScale(zoom) {
   const z = Math.max(Number(zoom) || 1, FLOW_GESTURES.minZoom);
   return 1 / z;
+}
+
+export function shortNodeId(nodeId) {
+  const raw = String(nodeId || "");
+  const parts = raw.split(":");
+  if (parts.length >= 3 && parts[0].includes("/")) {
+    return parts.slice(1).join(":");
+  }
+  return raw;
+}
+
+export function repoFromNodeId(nodeId) {
+  const raw = String(nodeId || "");
+  const parts = raw.split(":");
+  if (parts.length >= 3 && parts[0].includes("/")) return parts[0];
+  return "";
+}
+
+export function nodeIdMatches(nodeId, query) {
+  if (!nodeId || !query) return false;
+  if (nodeId === query) return true;
+  if (String(query).includes("/")) return false;
+  return shortNodeId(nodeId) === query;
+}
+
+export function findNodeBySearch(nodes, query) {
+  return (nodes || []).find((node) => nodeIdMatches(node.id, query));
+}
+
+export function isCompactViewport() {
+  return typeof window !== "undefined" && window.matchMedia("(max-width: 980px)").matches;
+}
+
+export function frameGraph(api, mode, { compact = false } = {}) {
+  if (!api) return;
+  if (compact && mode === "architecture") {
+    const node = api.getNode?.(ARCHITECTURE_FOCUS_ID);
+    if (node?.position) {
+      api.setCenter?.(node.position.x + NODE_CENTER.x, node.position.y + NODE_CENTER.y, {
+        zoom: FLOW_GESTURES.minZoom,
+        duration: 180,
+      });
+      return;
+    }
+  }
+  api.fitView?.({ padding: 0.18, minZoom: FLOW_GESTURES.minZoom, maxZoom: FLOW_GESTURES.maxZoom, duration: 180 });
+}
+
+export function staggerLabelOffsets(relations) {
+  const list = relations || [];
+  const step = HIT_MIN_PX / FLOW_GESTURES.minZoom;
+  const groups = new Map();
+  list.forEach((rel, index) => {
+    const key = `${rel.relation_type || "related"}::${rel.dst_id}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(index);
+  });
+  const offsets = Array.from({ length: list.length }, () => 0);
+  for (const indexes of groups.values()) {
+    const mid = (indexes.length - 1) / 2;
+    indexes.forEach((relIndex, rank) => {
+      offsets[relIndex] = (rank - mid) * step;
+    });
+  }
+  return offsets;
 }
 
 export function parseGraphSearch(search = "") {
@@ -225,7 +298,9 @@ function toFlowNode(node, position) {
 }
 
 export function toFlowEdges(relations) {
-  return (relations || []).map((rel, index) => {
+  const list = relations || [];
+  const offsets = staggerLabelOffsets(list);
+  return list.map((rel, index) => {
     const color = EDGE_COLOR[rel.relation_type] || "#ffe6cb";
     const dashed = ["possible_duplicate", "related", "similar_to", "suggests"].includes(rel.relation_type);
     return {
@@ -240,14 +315,21 @@ export function toFlowEdges(relations) {
       markerEnd: { type: "arrowclosed", color },
       style: { stroke: color, strokeWidth: 2, strokeDasharray: dashed ? "6 4" : undefined },
       labelStyle: { fill: color, fontSize: 12, fontWeight: 600 },
-      data: rel,
+      data: { ...rel, labelOffset: offsets[index] },
     };
   });
 }
 
+function ticketRepo(data) {
+  return data?.repo || repoFromNodeId(data?.id);
+}
+
 export function formatNodeKicker(data) {
+  if (!data) return "node";
   if (data.kind === "issue" || data.kind === "pr") {
-    return `${data.kind} #${data.number}`;
+    const ticket = `${data.kind} #${data.number}`;
+    const repo = ticketRepo(data);
+    return repo ? `${ticket} · ${repo}` : ticket;
   }
   if (data.kind === "file") return "file";
   if (data.kind === "invariant") return "invariant";
@@ -257,8 +339,9 @@ export function formatNodeKicker(data) {
 
 export function formatNodeHeading(data) {
   if (!data) return "Selection";
-  if (data.kind === "issue") return `Issue #${data.number}`;
-  if (data.kind === "pr") return `PR #${data.number}`;
+  const repo = ticketRepo(data);
+  if (data.kind === "issue") return repo ? `Issue #${data.number} · ${repo}` : `Issue #${data.number}`;
+  if (data.kind === "pr") return repo ? `PR #${data.number} · ${repo}` : `PR #${data.number}`;
   if (data.kind === "campaign") return `Campaign · ${data.title || data.id}`;
   if (data.kind === "file") return `File · ${data.path || data.title || data.id}`;
   if (data.kind === "invariant") return `Invariant · ${data.title || data.id}`;
@@ -298,6 +381,7 @@ export function describeSelection(selection) {
     kicker: formatNodeKicker(data),
     summary: data.summary || data.title || "",
     meta: [
+      ticketRepo(data),
       data.state,
       data.author,
       data.role && String(data.role).replaceAll("_", " "),

@@ -31,6 +31,7 @@ function nodeColor(node) {
 function CanvasInner({
   nodes,
   edges,
+  zoom = 1,
   onNodeClick,
   onEdgeClick,
   onPaneClick,
@@ -51,6 +52,8 @@ function CanvasInner({
   const [showMiniMap, setShowMiniMap] = useState(() => (
     typeof window !== "undefined" && window.matchMedia("(min-width: 981px)").matches
   ));
+
+  const minimapOn = showMiniMap && Number(zoom) < 1.5;
 
   useEffect(() => {
     setNodes(nodes || []);
@@ -85,6 +88,7 @@ function CanvasInner({
       data-zoom-on-pinch={String(zoomOnPinch)}
       data-pan-on-scroll={String(panOnScroll)}
       data-touch-action={touchAction}
+      data-minimap={minimapOn ? "on" : "off"}
       style={{ width: "100%", height: "100%", touchAction }}
     >
       <ReactFlow
@@ -135,7 +139,7 @@ function CanvasInner({
       >
         <Background variant={BackgroundVariant.Dots} gap={22} size={1} color="rgba(255, 189, 56, 0.16)" />
         <Controls showInteractive={false} position="bottom-right" />
-        {showMiniMap ? (
+        {minimapOn ? (
           <MiniMap nodeColor={nodeColor} maskColor="rgba(4, 28, 28, 0.78)" position="bottom-left" pannable zoomable />
         ) : null}
       </ReactFlow>

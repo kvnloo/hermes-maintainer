@@ -86,4 +86,42 @@ describe("GraphCanvas (real xyflow)", () => {
     await user.keyboard("{Enter}");
     expect(onNodeClick).toHaveBeenCalled();
   });
+
+  it("activates a focused edge with Enter and Space", async () => {
+    const onEdgeClick = vi.fn();
+    const user = userEvent.setup();
+    renderFlow(SAMPLE_CAMPAIGN, { onEdgeClick });
+    const edge = await screen.findByRole("button", { name: /^fixes$/i });
+    edge.focus();
+    expect(edge).toHaveFocus();
+    await user.keyboard("{Enter}");
+    expect(onEdgeClick).toHaveBeenCalled();
+    onEdgeClick.mockClear();
+    edge.focus();
+    await user.keyboard(" ");
+    expect(onEdgeClick).toHaveBeenCalled();
+  });
+
+  it("hides MiniMap at 2× on desktop so it cannot cover nodes", async () => {
+    window.matchMedia = (query) => ({
+      matches: String(query).includes("min-width"),
+      media: query,
+      onchange: null,
+      addListener() {},
+      removeListener() {},
+      addEventListener() {},
+      removeEventListener() {},
+      dispatchEvent() {
+        return false;
+      },
+    });
+    const atOne = renderFlow(SAMPLE_CAMPAIGN, { zoom: 1 });
+    await screen.findByRole("button", { name: /cancelled ci treated as success/i });
+    expect(document.querySelector(".hm-flow")?.getAttribute("data-minimap")).toBe("on");
+    atOne.unmount();
+    renderFlow(SAMPLE_CAMPAIGN, { zoom: 2 });
+    await screen.findByRole("button", { name: /cancelled ci treated as success/i });
+    expect(document.querySelector(".hm-flow")?.getAttribute("data-minimap")).toBe("off");
+    expect(document.querySelector(".react-flow__minimap")).toBeNull();
+  });
 });

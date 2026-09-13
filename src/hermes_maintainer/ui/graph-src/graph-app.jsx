@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { GraphExplorer } from "./GraphExplorer.jsx";
+import { formatNodeHeading, formatNodeKicker, nodeIdMatches } from "./graph-model.js";
 
 let current = { status: "loading", nodes: [], relations: [], campaign: null, source: "live" };
 const listeners = new Set();
@@ -40,5 +41,5 @@ export function mount(container, options = {}) {
 }
 
 if (typeof window !== "undefined") {
-  window.HermesGraph = { mount, setGraph };
+  window.HermesGraph = { mount, setGraph, formatNodeKicker, formatNodeHeading, nodeIdMatches };
 }
