@@ -1,0 +1,13 @@
+{
+  "name": "hermes-maintainer-graph",
+  "private": true,
+  "description": "Bundled xyflow canvas for the local dashboard. Run ../../../scripts/build-ui.sh",
+  "dependencies": {
+    "@xyflow/react": "12.8.2",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.0"
+  }
+}

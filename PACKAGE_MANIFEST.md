@@ -15,7 +15,9 @@
 - recurring-root-cause summary
 - continuous scan daemon
 - FastAPI local dashboard
-- static no-build frontend
+- static dashboard with Hermes theme presets
+- xyflow campaign graph (bundled; source under `ui/graph-src`)
+- `/llms.txt` for agents
 - unit tests
 
 ## Planning artifacts

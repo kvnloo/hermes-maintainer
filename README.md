@@ -45,7 +45,7 @@ hermes-maintainer analyze
 hermes-maintainer serve
 ```
 
-Open `http://127.0.0.1:8766`.
+Open `http://127.0.0.1:8766`. The dashboard uses the Hermes Teal theme (switchable to the other built-in Hermes palettes) and an xyflow campaign graph. Agents can start from [`llms.txt`](./llms.txt) or `http://127.0.0.1:8766/llms.txt`.
 
 For continuous operation:
 
@@ -78,14 +78,15 @@ src/hermes_maintainer/
   analysis/     similarity, campaigns, evidence, root-cause mining
   optimizer/    greedy baseline and optional CP-SAT selection
   scheduler/    frequent batched scan loop
-  api/          local FastAPI dashboard/API
-  ui/           static dashboard
+  api/          local FastAPI dashboard/API (`/api/graph`, campaign explorer, `/llms.txt`)
+  ui/           Hermes-themed static dashboard + bundled xyflow graph
   agents/       prompts and agent work contracts
 
 docs/           PRD, architecture, security, operations, schemas, execution plan
 tasks/          parallel Codex/Cursor work packets
 seed/audit/     the prior Hermes repository coordination audit and seed campaigns
-BACKLOG-CLOSE.md  kvnloo close-table play for #109552 (comment/table only; 403 on close)
+llms.txt        agent-oriented map of this repository
+BACKLOG-CLOSE.md  kvnloo close-table play for #109552 (label audit; 403 on close)
 ```
 
 ## MVP status
@@ -101,7 +102,8 @@ The scaffold is intentionally useful before any model is connected. It can:
 - compute repository dynamics and backlog health;
 - derive PR-level fix atoms;
 - produce a greedy merge-set candidate;
-- expose all of this through a local API and dashboard.
+- expose all of this through a local API and dashboard, including an xyflow
+  campaign graph with survivor/donor/provenance roles and typed-edge filters.
 
 The roadmap then adds commit-level extraction, embeddings, code-overlap analysis, test-evidence
 receipts, campaign-specific agent workers, exact optimization, and finally a restricted publisher.

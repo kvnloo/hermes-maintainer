@@ -1,52 +1,154 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="default">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>hermes-maintainer</title>
+  <link rel="describedby" href="/llms.txt" />
+  <link rel="alternate" type="text/markdown" href="/README.md" />
+  <link rel="stylesheet" href="/static/xyflow.css" />
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
+  <div class="glow" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+
   <header>
-    <div>
-      <h1>hermes-maintainer</h1>
-      <p>Backlog graph, campaigns, fix atoms, and repository dynamics.</p>
+    <div class="brand">
+      <div class="mark" aria-hidden="true">H</div>
+      <div>
+        <h1>hermes-maintainer</h1>
+        <p>Backlog graph for NousResearch/hermes-agent. Read-only GitHub. Local SQLite.</p>
+      </div>
     </div>
-    <button id="refresh">Refresh</button>
+    <div class="header-actions">
+      <label class="theme-label">
+        Theme
+        <select id="theme" aria-label="Dashboard theme">
+          <option value="default">Hermes Teal</option>
+          <option value="default-large">Hermes Teal (Large)</option>
+          <option value="midnight">Midnight</option>
+          <option value="ember">Ember</option>
+          <option value="mono">Mono</option>
+          <option value="cyberpunk">Cyberpunk</option>
+          <option value="rose">Rosé</option>
+          <option value="nous-blue">Nous Blue</option>
+        </select>
+      </label>
+      <button type="button" id="refresh">Refresh</button>
+    </div>
   </header>
+
+  <nav class="view-tabs" aria-label="Views">
+    <button type="button" class="tab active" data-view="board">Board</button>
+    <button type="button" class="tab" data-view="graph">Graph</button>
+  </nav>
+
+  <section class="filters" aria-label="Graph filters">
+    <label>Search <input id="filter-q" type="search" placeholder="title, number, token" /></label>
+    <label>Kind
+      <select id="filter-kind">
+        <option value="">all</option>
+        <option value="issue">issues</option>
+        <option value="pr">PRs</option>
+      </select>
+    </label>
+    <label>State
+      <select id="filter-state">
+        <option value="">all</option>
+        <option value="open">open</option>
+        <option value="closed">closed</option>
+      </select>
+    </label>
+    <label>Priority
+      <select id="filter-priority">
+        <option value="">all</option>
+        <option value="p0">P0</option>
+        <option value="p1">P1</option>
+        <option value="p2">P2</option>
+      </select>
+    </label>
+    <label>Component
+      <select id="filter-component">
+        <option value="">all</option>
+      </select>
+    </label>
+    <label>Blocker
+      <select id="filter-blocker">
+        <option value="">all</option>
+        <option value="any">any blocker</option>
+        <option value="needs-repro">needs-repro</option>
+        <option value="blocked">blocked</option>
+        <option value="needs-maintainer">needs-maintainer</option>
+      </select>
+    </label>
+    <label>Age
+      <select id="filter-age">
+        <option value="">any</option>
+        <option value="7">7d</option>
+        <option value="30">30d</option>
+        <option value="90">90d</option>
+        <option value="stale">stale 30d+</option>
+      </select>
+    </label>
+    <label>Evidence
+      <select id="filter-evidence">
+        <option value="">all</option>
+        <option value="reported">reported</option>
+        <option value="source_confirmed">source confirmed</option>
+        <option value="reproduced">reproduced</option>
+        <option value="verified_candidate">verified candidate</option>
+        <option value="verified_integration">verified integration</option>
+        <option value="verified_main">verified main</option>
+      </select>
+    </label>
+    <button type="button" id="use-seed">Seed canvas</button>
+  </section>
 
   <main>
     <section id="metrics" class="grid metrics"></section>
+    <p id="graph-banner" class="banner" hidden></p>
 
-    <section class="panel">
-      <div class="panel-head">
-        <h2>Highest-leverage campaigns</h2>
-        <span id="campaign-count"></span>
-      </div>
-      <div id="campaigns"></div>
+    <section id="board-view">
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Highest-leverage campaigns</h2>
+          <span id="campaign-count"></span>
+        </div>
+        <div id="campaigns"></div>
+      </section>
+
+      <section class="two-col">
+        <div class="panel">
+          <div class="panel-head"><h2>Recurring mechanisms</h2></div>
+          <div id="root-causes"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Greedy merge-set candidate</h2></div>
+          <div id="optimizer"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Recent open work</h2></div>
+        <div class="tabs">
+          <button type="button" data-kind="issue" class="tab active">Issues</button>
+          <button type="button" data-kind="pr" class="tab">PRs</button>
+        </div>
+        <div id="nodes"></div>
+      </section>
     </section>
 
-    <section class="two-col">
-      <div class="panel">
-        <div class="panel-head"><h2>Recurring mechanisms</h2></div>
-        <div id="root-causes"></div>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><h2>Greedy merge-set candidate</h2></div>
-        <div id="optimizer"></div>
-      </div>
-    </section>
-
-    <section class="panel">
-      <div class="panel-head"><h2>Recent open work</h2></div>
-      <div class="tabs">
-        <button data-kind="issue" class="tab active">Issues</button>
-        <button data-kind="pr" class="tab">PRs</button>
-      </div>
-      <div id="nodes"></div>
+    <section id="graph-view" hidden>
+      <div id="flow" class="flow"></div>
+      <aside id="graph-detail" class="panel detail">
+        <div class="panel-head"><h2>Campaign detail</h2></div>
+        <div id="detail-body" class="empty">Select a campaign or a node.</div>
+      </aside>
     </section>
   </main>
 
+  <script src="/static/graph-app.js"></script>
   <script src="/static/app.js"></script>
 </body>
 </html>

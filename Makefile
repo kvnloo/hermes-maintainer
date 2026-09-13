@@ -1,4 +1,4 @@
-.PHONY: install dev test lint scan serve daemon doctor
+.PHONY: install dev test lint scan serve daemon doctor ui
 
 install:
 	python -m pip install -e '.[dev]'
@@ -23,3 +23,6 @@ daemon:
 
 doctor:
 	hermes-maintainer doctor
+
+ui:
+	./scripts/build-ui.sh

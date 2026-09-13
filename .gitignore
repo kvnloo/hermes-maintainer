@@ -10,3 +10,5 @@ __pycache__/
 *.db-wal
 .DS_Store
 agent-tools/
+node_modules/
+src/hermes_maintainer/ui/graph-src/node_modules/

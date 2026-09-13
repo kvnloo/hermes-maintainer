@@ -11,7 +11,8 @@ hermes-maintainer analyze
 hermes-maintainer serve
 ```
 
-Open `http://127.0.0.1:8766`.
+Open `http://127.0.0.1:8766`. Use the Graph tab for the xyflow campaign explorer
+(seed canvas works before the first scan). `GET /llms.txt` is the agent map.
 
 ## Parallel cloud implementation
 

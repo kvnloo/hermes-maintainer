@@ -16,4 +16,5 @@ Run:
 ```bash
 PYTHONPATH=src pytest -q
 ruff check .
+./scripts/build-ui.sh   # only if you change ui/graph-src
 ```

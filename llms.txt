@@ -1,0 +1,37 @@
+# hermes-maintainer
+
+> Local-first maintenance intelligence for `NousResearch/hermes-agent`. Python CLI + FastAPI dashboard over a SQLite/FTS5 backlog graph. GitHub access is **read-only**; this tool does not close issues or merge PRs.
+
+hermes-maintainer turns issues and PRs into a typed campaign graph: survivors, donors, stacked children, and superseded work. The local dashboard uses the Hermes Teal palette (with additional built-in Hermes themes) and an [xyflow](https://xyflow.com) explorer. Default listen address: `http://127.0.0.1:8766`.
+
+Do not collapse `similar`, `duplicate_of`, `same_root_cause`, `partially_addresses`, and `supersedes` into one relation. kvnloo has pull-only access on hermes-agent (foreign closes return 403).
+
+## Docs
+
+- [README](./README.md): install, scan, serve, and product principles
+- [Get started](./GET_STARTED.md): bootstrap, dashboard, and engineering order
+- [PRD](./docs/PRD.md): outcomes, dispositions, evidence levels, non-goals
+- [Architecture](./docs/ARCHITECTURE.md): scan classes, relationship ontology, campaigns, fix atoms
+- [Schemas](./docs/SCHEMAS.md): node IDs, evidence receipts, work packets
+- [Security](./docs/SECURITY.md): read-only GitHub posture and local-data boundaries
+- [Operations](./docs/OPERATIONS.md): daemon cadence and failure posture
+- [Roadmap](./docs/ROADMAP.md): M0–M6, publisher last
+- [Agent contract](./docs/AGENT_CONTRACT.md): worker roles around the graph
+- [Cloud agent prompt](./docs/CLOUD_AGENT_MASTER_PROMPT.md): parallel task rules
+- [Backlog close play](./BACKLOG-CLOSE.md): #109552 label audit; not a bulk-close list
+
+## Code
+
+- [CLI](./src/hermes_maintainer/cli.py): `init`, `scan`, `analyze`, `serve`, `daemon`, `doctor`
+- [FastAPI app](./src/hermes_maintainer/api/app.py): `/api/graph`, campaign explorer, `/llms.txt`
+- [Graph store](./src/hermes_maintainer/graph/store.py): typed edges, subgraph export, filters
+- [Campaign builder](./src/hermes_maintainer/analysis/campaigns.py): survivor/donor/provenance roles
+- [xyflow graph UI](./src/hermes_maintainer/ui/graph-src/graph-app.jsx): campaign canvas (bundled to `ui/static/graph-app.js`)
+- [Dashboard theme](./src/hermes_maintainer/ui/static/styles.css): Hermes Teal and sibling palettes
+- [SQLite schema](./src/hermes_maintainer/schema.sql): nodes, relations, FTS5, campaigns, fix atoms
+
+## Optional
+
+- [Task 04 — dashboard graph](./tasks/04_dashboard_graph.md): campaign explorer packet
+- [Seed audit](./seed/audit/HERMES_TRIAGE_AUDIT.md): historical campaign seeds, not live truth
+- [Campaign seeds](./seed/audit/campaign_seeds.json): demo graph for the xyflow canvas before a scan

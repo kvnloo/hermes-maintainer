@@ -20,3 +20,14 @@ def test_connected_components_follow_strong_edges(db):
     comps = GraphStore(db).connected_components({"issue:1", "pr:2", "issue:3"})
     assert {"issue:1", "pr:2"} in comps
     assert {"issue:3"} in comps
+
+
+def test_export_subgraph_caps_and_filters(db):
+    _node(db, "issue:1", "issue")
+    _node(db, "pr:2", "pr")
+    db.add_relation("pr:2", "issue:1", "fixes", 1.0, evidence_level="reported")
+    payload = GraphStore(db).export_subgraph(scope="recent", limit=10)
+    ids = {n["id"] for n in payload["nodes"]}
+    assert "issue:1" in ids
+    assert "pr:2" in ids
+    assert payload["relations"]

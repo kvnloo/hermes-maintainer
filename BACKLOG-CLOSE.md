@@ -2,7 +2,9 @@
 
 **Close table (posted):** https://github.com/NousResearch/hermes-agent/issues/109552
 
-2743 open tickets labeled `duplicate` or `invalid` (995 dup issues, 1550 dup PRs, 80 invalid issues, 118 invalid PRs). Tables are in the issue comments. A one-line pointer is posted on each row so the author sees it on their own ticket. This account still cannot close the rows.
+2743 open tickets **labeled** `duplicate` or `invalid`. That label is mostly alt-glitch and is **unverified**. DavidMetcalfe: the bot mislabels; do not close from the tag. liuhao1024 showed stale/backwards rows (canonical already gone, approved PRs). The issue is a label audit, not a close list: https://github.com/NousResearch/hermes-agent/issues/109552
+
+Fan-out "ready to close" pointers are being deleted except on threads that already got a reply. This account still cannot close foreign tickets.
 
 Skip: #108914, #109508, #109505, #109446.
 
@@ -18,9 +20,9 @@ Live snapshot 2026-09-13. kvnloo has **pull only** (no triage, no merge). Foreig
 
 Do not merge the 28k. Almost none are reviewed. `ci-reviewed` is the human merge gate and it is empty (Bot Screen #108914 is blocked on that label, not on red CI).
 
-## The play (≈2,750 items, already classified)
+## The play (≈2,750 items, **labels only — not validated**)
 
-Triage already applied labels and left the tickets open. Sample of 40 `duplicate` PRs: every “Duplicate of #N” pointed at another **still-open** canonical PR, not at a merged one. Closing the labeled copies keeps the first PR. That is the fix.
+We listed open tickets that already had the label. A sample of 40 `duplicate` PRs had a `Duplicate of #N` string pointing at a still-open number. That is **not** same-scope proof. It missed backwards labels (canonical closed as superseded by the "copy"), withdrawn canonicals, circular duplicates, and approved PRs. Do not bulk-close.
 
 | Label | Open issues | Open PRs | Action |
 | --- | --- | --- | --- |
