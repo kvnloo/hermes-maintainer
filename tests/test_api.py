@@ -85,8 +85,16 @@ def test_demo_graph_from_seeds(db):
     assert data["relations"]
     kinds = {n["kind"] for n in data["nodes"]}
     assert "issue" in kinds and "pr" in kinds
+    assert "campaign" in kinds and "file" in kinds and "invariant" in kinds
     family = client.get("/api/graph/demo?family=ci-verdict-integrity").json()
     assert family["campaign"]["id"] == "seed:ci-verdict-integrity"
+    architecture = client.get("/api/graph/architecture").json()
+    assert {n["id"] for n in architecture["nodes"]} >= {
+        "arch:sqlite-backlog",
+        "file:graph/store.py",
+        "invariant:evidence-before-closure",
+    }
+    assert architecture["relations"]
 
 
 def test_search_and_health(db):

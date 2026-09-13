@@ -11,5 +11,5 @@ npx esbuild graph-app.jsx \
   --format=iife \
   --outfile="$OUT_DIR/graph-app.js" \
   --minify \
-  --jsx=transform
+  --jsx=automatic
 echo "wrote src/hermes_maintainer/ui/static/graph-app.js and xyflow.css"

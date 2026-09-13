@@ -176,6 +176,10 @@ async function loadNodes() {
     <a href="${n.url || "#"}" target="_blank" rel="noreferrer"><div class="row"><div><div class="title">#${n.number} ${escapeHtml(n.title)}</div><div class="meta">${escapeHtml(n.author || "")} · ${escapeHtml(n.updated_at || "")}</div></div><div class="badge">${n.kind}</div></div></a>`)
 }
 
+function graphQuery() {
+  return new URLSearchParams(location.search)
+}
+
 function setView(view) {
   state.view = view
   document.querySelectorAll(".view-tabs .tab").forEach((btn) => {
@@ -186,63 +190,47 @@ function setView(view) {
   if (view === "graph") loadGraph()
 }
 
-function renderDetail(node, payload) {
-  const campaign = payload?.campaign
-  const relations = (payload?.relations || []).filter((rel) => {
-    if (!node) return true
-    return rel.src_id === node.id || rel.dst_id === node.id
-  })
-  const members = payload?.nodes || []
-  const title = node
-    ? `${node.kind} #${node.number} · ${(node.role || "member").replaceAll("_", " ")}`
-    : (campaign?.title || "Campaign")
-  const summary = node
-    ? `${escapeHtml(node.title || "")}<div class="meta">${escapeHtml(node.state || "")} · ${escapeHtml(node.author || "")}</div>`
-    : escapeHtml(campaign?.summary || "Typed relationships with confidence and evidence.")
-  const relHtml = relations.length
-    ? relations.map((rel) => `
-        <div class="rel">
-          <div class="title">${escapeHtml(rel.src_id)} → ${escapeHtml(rel.relation_type)} → ${escapeHtml(rel.dst_id)}</div>
-          <div class="meta">confidence ${Number(rel.confidence || 0).toFixed(2)} · ${escapeHtml(rel.evidence_level || "reported")}${rel.evidence ? ` · ${escapeHtml(rel.evidence)}` : ""}</div>
-        </div>`).join("")
-    : '<div class="empty">No typed edges in this slice.</div>'
-  const roleHtml = node
-    ? ""
-    : members.slice(0, 24).map((m) => `
-        <div class="row"><div><div class="title">${escapeHtml(m.kind)} #${m.number} ${escapeHtml(m.title || "")}</div><div class="meta">${escapeHtml((m.role || "member").replaceAll("_", " "))}</div></div><div class="badge">${escapeHtml(m.role || "member")}</div></div>`).join("")
-  $("#detail-body").innerHTML = `
-    <div class="title">${escapeHtml(title)}</div>
-    <div class="meta" style="margin:8px 0 12px">${summary}</div>
-    ${node && node.url ? `<p><a href="${escapeHtml(node.url)}" target="_blank" rel="noreferrer">Open on GitHub</a></p>` : ""}
-    <h2>Typed relationships</h2>
-    ${relHtml}
-    ${roleHtml ? `<h2 style="margin-top:16px">Roles</h2>${roleHtml}` : ""}
-  `
-}
-
 async function loadGraph() {
   const banner = $("#graph-banner")
-  let data
-  if (state.usingSeed) {
-    data = await get("/api/graph/demo")
-  } else {
-    const extra = {}
-    if (state.campaignId) extra.campaign_id = state.campaignId
-    data = await get(`/api/graph?${filterParams(extra).toString()}`)
-    if (!data.nodes || data.nodes.length === 0) {
-      data = await get("/api/graph/demo")
-      state.usingSeed = true
-    }
-  }
-  banner.hidden = data.source !== "seed"
-  banner.textContent = data.source === "seed"
-    ? "Showing audit seed campaigns (no live graph yet, or Seed canvas was requested)."
-    : (data.campaign ? `Campaign: ${data.campaign.title}` : "Live subgraph")
   if (window.HermesGraph && window.HermesGraph.setGraph) {
-    window.HermesGraph.setGraph(data)
+    window.HermesGraph.setGraph({ status: "loading", graph: graphQuery().get("graph") || undefined })
   }
-  renderDetail(null, data)
-  return data
+  try {
+    let data
+    if (state.usingSeed) {
+      data = await get("/api/graph/demo")
+    } else {
+      const extra = {}
+      if (state.campaignId) extra.campaign_id = state.campaignId
+      data = await get(`/api/graph?${filterParams(extra).toString()}`)
+      if (!data.nodes || data.nodes.length === 0) {
+        data = await get("/api/graph/demo")
+      }
+    }
+    banner.hidden = data.source !== "seed"
+    banner.textContent = data.source === "seed"
+      ? (state.usingSeed
+        ? "Seed canvas: audit families with typed edges, files, and invariants."
+        : "No live campaign graph yet. Architecture is the maintainer map; Campaigns shows audit seeds.")
+      : (data.campaign ? `Campaign: ${data.campaign.title}` : "Live subgraph")
+    const next = { status: "ready", ...data }
+    if (state.usingSeed || state.campaignId) next.graph = "campaign"
+    else if (graphQuery().get("graph")) next.graph = graphQuery().get("graph")
+    if (window.HermesGraph && window.HermesGraph.setGraph) {
+      window.HermesGraph.setGraph(next)
+    }
+    return data
+  } catch (err) {
+    banner.hidden = false
+    banner.textContent = "Graph request failed. Local SQLite was not mutated; GitHub was not contacted for writes."
+    if (window.HermesGraph && window.HermesGraph.setGraph) {
+      window.HermesGraph.setGraph({
+        status: "error",
+        error: err.message || String(err),
+      })
+    }
+    throw err
+  }
 }
 
 async function openCampaign(campaignId) {
@@ -280,11 +268,7 @@ async function refreshAll() {
 function mountGraph() {
   const el = $("#flow")
   if (window.HermesGraph && window.HermesGraph.mount) {
-    window.HermesGraph.mount(el, {
-      onSelect(node, payload) {
-        renderDetail(node, payload)
-      },
-    })
+    window.HermesGraph.mount(el, { search: location.search })
   } else {
     el.innerHTML = '<div class="graph-empty">xyflow bundle missing. Run <code>./scripts/build-ui.sh</code>.</div>'
   }
@@ -328,4 +312,11 @@ $("#theme").value = savedTheme in THEMES ? savedTheme : "default"
 applyTheme($("#theme").value)
 mountGraph()
 refreshAll().catch((err) => console.error(err))
-if (location.pathname === "/graph" || location.hash.includes("graph")) setView("graph")
+if (
+  location.pathname === "/graph"
+  || location.hash.includes("graph")
+  || graphQuery().get("node")
+  || graphQuery().get("graph")
+) {
+  setView("graph")
+}
