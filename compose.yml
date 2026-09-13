@@ -1,0 +1,19 @@
+services:
+  dashboard:
+    build: .
+    environment:
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+    volumes:
+      - maintainer-data:/app/.data
+    ports:
+      - "127.0.0.1:8766:8766"
+  scanner:
+    build: .
+    command: ["hermes-maintainer", "daemon"]
+    environment:
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+    volumes:
+      - maintainer-data:/app/.data
+
+volumes:
+  maintainer-data:

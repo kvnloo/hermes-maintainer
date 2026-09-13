@@ -1,5 +1,11 @@
 # Highest-volume easy close on NousResearch/hermes-agent
 
+**Close table (posted):** https://github.com/NousResearch/hermes-agent/issues/109552
+
+2743 open tickets labeled `duplicate` or `invalid` (995 dup issues, 1550 dup PRs, 80 invalid issues, 118 invalid PRs). Tables are in the issue comments. A one-line pointer is posted on each row so the author sees it on their own ticket. This account still cannot close the rows.
+
+Skip: #108914, #109508, #109505, #109446.
+
 Live snapshot 2026-09-13. kvnloo has **pull only** (no triage, no merge). Foreign closes 403. Authors can close their own.
 
 ## Board size

@@ -1,0 +1,21 @@
+test_current_accepts_cancelled (__main__.AuditProbes.test_current_accepts_cancelled) ... ok
+test_current_accepts_unrecognized_result (__main__.AuditProbes.test_current_accepts_unrecognized_result) ... ok
+test_current_rejects_failure (__main__.AuditProbes.test_current_rejects_failure) ... ok
+test_donor_preserves_skips (__main__.AuditProbes.test_donor_preserves_skips) ... ok
+test_donor_rejects_cancelled (__main__.AuditProbes.test_donor_rejects_cancelled) ... ok
+test_donor_rejects_unrecognized_result (__main__.AuditProbes.test_donor_rejects_unrecognized_result) ... ok
+test_invalid_page_size_is_refused (__main__.AuditProbes.test_invalid_page_size_is_refused) ... ok
+test_mutating_offsets_skip_candidates (__main__.AuditProbes.test_mutating_offsets_skip_candidates) ... ok
+test_proposed_accepts_real_success_and_authorized_skip (__main__.AuditProbes.test_proposed_accepts_real_success_and_authorized_skip) ... ok
+test_proposed_rejects_empty_report (__main__.AuditProbes.test_proposed_rejects_empty_report) ... ok
+test_proposed_rejects_malformed_report (__main__.AuditProbes.test_proposed_rejects_malformed_report) ... ok
+test_proposed_rejects_missing_expected_lane (__main__.AuditProbes.test_proposed_rejects_missing_expected_lane) ... ok
+test_proposed_rejects_required_lane_skip (__main__.AuditProbes.test_proposed_rejects_required_lane_skip) ... ok
+test_restoring_indentation_is_positive_control (__main__.AuditProbes.test_restoring_indentation_is_positive_control) ... ok
+test_retrieved_indentation_fragment_does_not_parse (__main__.AuditProbes.test_retrieved_indentation_fragment_does_not_parse) ... ok
+test_snapshot_control_processes_all_candidates (__main__.AuditProbes.test_snapshot_control_processes_all_candidates) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.002s
+
+OK

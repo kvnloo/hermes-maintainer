@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "status": "hand-curated audit seeds, not exhaustive automated clustering",
+  "publication_mode": "read_only",
+  "baseline_sha": "205645ee424163c7b6cfc032c331c3557797497b",
+  "families": [
+    {
+      "id": "ci-verdict-integrity",
+      "canonical_issue": 98557,
+      "invariant": "A required cancelled or unknown CI result cannot be accepted as a successful verification.",
+      "evidence_level": "source_inspected_plus_isolated_probe",
+      "candidate_prs": [
+        {
+          "number": 98563,
+          "head_sha": "68ca8e5b9ea2ec6be9fb4eecafef67ff2cd5896f",
+          "role": "minimal_predicate_donor",
+          "observed_mergeable": false,
+          "notes": "Allowlist success/skipped. Does not carry the complete composite lifecycle changes."
+        },
+        {
+          "number": 98684,
+          "head_sha": null,
+          "role": "overlapping_predicate",
+          "notes": "Inspected patch also changes model pricing. Full PR must not be treated as a CI-only atom."
+        },
+        {
+          "number": 103195,
+          "head_sha": null,
+          "role": "composite_campaign_candidate",
+          "observed_mergeable": false,
+          "notes": "Gate, reusable-workflow concurrency, status reporting and tests. Whole candidate not executed."
+        },
+        {
+          "number": 108055,
+          "head_sha": "c907c76a4fae8aaef29158ba8fb9041ccaade233",
+          "role": "overlapping_predicate",
+          "observed_mergeable": false,
+          "notes": "Unindented assignment escapes YAML block scalar at inspected head; reduced-fragment parser probe fails."
+        }
+      ],
+      "proposal": "Reconcile the existing composite campaign, separating distinct improvements from duplicate gate predicates. No new competing PR.",
+      "closure_ready": false,
+      "required_validation": [
+        "current-main reproduction",
+        "trusted YAML/action validation",
+        "gate and comment verdict parity",
+        "exact integration-tree tests",
+        "maintainer CI-sensitive review"
+      ]
+    },
+    {
+      "id": "mcp-oauth-issuer-relay",
+      "canonical_issue": null,
+      "related_issues": [
+        105895,
+        92758
+      ],
+      "candidate_prs": [
+        109093,
+        105610,
+        108420,
+        108455,
+        106634,
+        92765
+      ],
+      "evidence_level": "author_explicit_overlap_claim",
+      "head_observed": {
+        "109093": "5f37887af4408d6d5b74abe4170cbd640d1d7d1e"
+      },
+      "proposal": "Compare coverage per callback route and preserve SDK issuer validation. Do not infer all six proposals are complete duplicates.",
+      "closure_ready": false
+    },
+    {
+      "id": "profile-child-environment-provenance",
+      "canonical_issue": 82936,
+      "candidate_prs": [
+        94878,
+        91293,
+        83007
+      ],
+      "evidence_level": "author_description_of_recorded_survivor_decision",
+      "head_observed": {
+        "91293": "5f65be3f8b09f9d20237bc6c1bb392bf432a8ba2"
+      },
+      "recorded_survivor": 94878,
+      "proposal": "Reconcile refreshed donor work into the selected composite and validate that exact tree. Donor test results do not certify the composite.",
+      "closure_ready": false
+    },
+    {
+      "id": "session-runtime-authority",
+      "canonical_issue": null,
+      "candidate_prs": [
+        106742,
+        109338,
+        109403,
+        109404,
+        109405,
+        109412
+      ],
+      "evidence_level": "previous_turn_pr_description_and_metadata",
+      "proposal": "Model incorporated commits separately from remaining contributor deltas. Preserve explicit standalone serve/remote gaps.",
+      "closure_ready": false
+    }
+  ]
+}

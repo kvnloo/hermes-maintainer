@@ -1,0 +1,36 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #080b10;
+  color: #edf2f7;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: radial-gradient(circle at 20% 0%, #172132 0, #080b10 38%); min-height: 100vh; }
+header { display:flex; align-items:center; justify-content:space-between; padding:28px 36px 12px; max-width:1500px; margin:auto; }
+h1 { margin:0; font-size:28px; letter-spacing:-.03em; }
+header p { color:#8f9bad; margin:6px 0 0; }
+button { background:#141b26; color:#edf2f7; border:1px solid #293244; border-radius:9px; padding:8px 12px; cursor:pointer; }
+button:hover { border-color:#66758f; }
+main { max-width:1500px; margin:auto; padding:18px 36px 60px; }
+.grid { display:grid; gap:12px; }
+.metrics { grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); margin-bottom:16px; }
+.metric,.panel { background:rgba(13,18,27,.87); border:1px solid #222c3d; box-shadow:0 12px 40px rgba(0,0,0,.20); }
+.metric { border-radius:12px; padding:18px; }
+.metric .value { font-size:28px; font-weight:700; letter-spacing:-.04em; }
+.metric .label { font-size:12px; color:#8f9bad; margin-top:6px; text-transform:uppercase; letter-spacing:.06em; }
+.panel { border-radius:14px; padding:18px; margin-bottom:16px; overflow:hidden; }
+.panel-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+h2 { margin:0; font-size:16px; }
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; padding:11px 4px; border-top:1px solid #18202e; align-items:center; }
+.row:first-child { border-top:0; }
+.title { font-size:14px; color:#eef3f9; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.meta { color:#7f8da3; font-size:12px; margin-top:4px; }
+.badge { font-size:11px; color:#a9b6ca; background:#121925; border:1px solid #263147; padding:4px 7px; border-radius:999px; white-space:nowrap; }
+.score { font-variant-numeric:tabular-nums; color:#9fc3ff; }
+.tabs { display:flex; gap:6px; margin-bottom:8px; }
+.tab.active { background:#21314c; border-color:#3d5680; }
+.empty { padding:28px 8px; color:#6f7b8d; text-align:center; }
+a { color:inherit; text-decoration:none; }
+a:hover .title { color:#bcd2ff; }
+@media (max-width: 850px) { .two-col { grid-template-columns:1fr; } main,header { padding-left:16px; padding-right:16px; } }

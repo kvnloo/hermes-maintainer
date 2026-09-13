@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>hermes-maintainer</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header>
+    <div>
+      <h1>hermes-maintainer</h1>
+      <p>Backlog graph, campaigns, fix atoms, and repository dynamics.</p>
+    </div>
+    <button id="refresh">Refresh</button>
+  </header>
+
+  <main>
+    <section id="metrics" class="grid metrics"></section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Highest-leverage campaigns</h2>
+        <span id="campaign-count"></span>
+      </div>
+      <div id="campaigns"></div>
+    </section>
+
+    <section class="two-col">
+      <div class="panel">
+        <div class="panel-head"><h2>Recurring mechanisms</h2></div>
+        <div id="root-causes"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Greedy merge-set candidate</h2></div>
+        <div id="optimizer"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><h2>Recent open work</h2></div>
+      <div class="tabs">
+        <button data-kind="issue" class="tab active">Issues</button>
+        <button data-kind="pr" class="tab">PRs</button>
+      </div>
+      <div id="nodes"></div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

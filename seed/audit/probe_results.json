@@ -1,0 +1,74 @@
+{
+  "scope": "Isolated source-predicate probes and synthetic counterexamples only",
+  "not_performed": [
+    "full repository tests",
+    "GitHub workflow execution",
+    "live issue closure",
+    "candidate integration-tree validation"
+  ],
+  "python_version": "3.13.5",
+  "pyyaml_version": "6.0.3",
+  "tests_run": 16,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "source_pins": {
+    "hermes_main": "205645ee424163c7b6cfc032c331c3557797497b",
+    "pr98563_head": "68ca8e5b9ea2ec6be9fb4eecafef67ff2cd5896f",
+    "pr108055_head": "c907c76a4fae8aaef29158ba8fb9041ccaade233",
+    "opencode_dev": "95daf90670b7c039c436c85537da5fbfe2205b41"
+  },
+  "gate_predicates": [
+    {
+      "input": "success",
+      "main_predicate_accepts": true,
+      "pr98563_predicate_accepts": true,
+      "proposed_required_lane_accepts": true
+    },
+    {
+      "input": "skipped",
+      "main_predicate_accepts": true,
+      "pr98563_predicate_accepts": true,
+      "proposed_required_lane_accepts": false
+    },
+    {
+      "input": "failure",
+      "main_predicate_accepts": false,
+      "pr98563_predicate_accepts": false,
+      "proposed_required_lane_accepts": false
+    },
+    {
+      "input": "cancelled",
+      "main_predicate_accepts": true,
+      "pr98563_predicate_accepts": false,
+      "proposed_required_lane_accepts": false
+    },
+    {
+      "input": "",
+      "main_predicate_accepts": true,
+      "pr98563_predicate_accepts": false,
+      "proposed_required_lane_accepts": false
+    },
+    {
+      "input": "unrecognized",
+      "main_predicate_accepts": true,
+      "pr98563_predicate_accepts": false,
+      "proposed_required_lane_accepts": false
+    }
+  ],
+  "yaml_fragment_parse_error": "while scanning a simple key\n  in \"<unicode string>\", line 13, column 1:\n    failed = [name for name, info in ... \n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 16, column 1:\n    \n    ^",
+  "synthetic_pagination": {
+    "initial_candidates": 250,
+    "page_size": 100,
+    "mutable_offsets_processed": 150,
+    "mutable_offsets_skipped": 100,
+    "snapshot_control_processed": 250,
+    "snapshot_control_skipped": 0
+  },
+  "limitations": [
+    "Gate predicates are transcribed, not imported from a checkout.",
+    "YAML parsing uses a reduced source fragment with a synthetic wrapper.",
+    "The missing-lane and empty-report checks are proposed defenses; no live reachability claim.",
+    "Pagination models the inspected loop; it is not evidence of a specific production incident."
+  ]
+}

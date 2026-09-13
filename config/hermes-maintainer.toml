@@ -1,0 +1,38 @@
+[repo]
+name = "NousResearch/hermes-agent"
+clone_url = "https://github.com/NousResearch/hermes-agent.git"
+default_branch = "main"
+
+[paths]
+data_dir = ".data"
+mirror_dir = ".data/repos/hermes-agent.git"
+database = ".data/hermes-maintainer.db"
+
+[scan]
+fast_interval_seconds = 900
+deep_interval_seconds = 21600
+issue_pages_per_fast_scan = 10
+pr_pages_per_fast_scan = 10
+max_deep_prs_per_scan = 250
+max_similarity_candidates_per_node = 40
+
+[similarity]
+lexical_threshold = 0.58
+strong_threshold = 0.78
+minimum_shared_tokens = 4
+
+[optimizer]
+issue_weight = 100.0
+security_multiplier = 2.0
+p0_multiplier = 3.0
+p1_multiplier = 2.0
+p2_multiplier = 1.25
+pr_supersession_weight = 18.0
+conflict_penalty = 80.0
+changed_file_penalty = 0.35
+changed_line_penalty = 0.01
+new_dependency_penalty = 25.0
+
+[server]
+host = "127.0.0.1"
+port = 8766
