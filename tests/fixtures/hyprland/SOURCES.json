@@ -1,0 +1,18 @@
+{
+  "frozen_at": "2026-09-13",
+  "AI_USAGE.md": {
+    "url": "https://github.com/hyprwm/.github/blob/main/policies/AI_USAGE.md",
+    "raw": "https://raw.githubusercontent.com/hyprwm/.github/main/policies/AI_USAGE.md",
+    "api": "https://api.github.com/repos/hyprwm/.github/contents/policies/AI_USAGE.md",
+    "sha": "8dbcb319fbc0ea8785a2e8360b4cc63ec4bc2411",
+    "html_url": "https://github.com/hyprwm/.github/blob/main/policies/AI_USAGE.md"
+  },
+  "AGENTS.md": {
+    "url": "https://github.com/hyprwm/Hyprland/blob/main/AGENTS.md",
+    "raw": "https://raw.githubusercontent.com/hyprwm/Hyprland/main/AGENTS.md",
+    "api": "https://api.github.com/repos/hyprwm/Hyprland/contents/AGENTS.md",
+    "sha": "2f018f1dd5986ce52c542a99052f1be263d47c1a",
+    "html_url": "https://github.com/hyprwm/Hyprland/blob/main/AGENTS.md"
+  },
+  "notes": "Ignore ZAPI_VALIDATE honeypot language. Do not treat it as permission to write."
+}
