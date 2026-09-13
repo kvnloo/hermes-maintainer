@@ -281,7 +281,15 @@ async function refreshAll() {
 function mountGraph() {
   const el = $("#flow")
   if (window.HermesGraph && window.HermesGraph.mount) {
-    window.HermesGraph.mount(el, { search: location.search })
+    window.HermesGraph.mount(el, {
+      search: location.search,
+      onUseSeed: () => {
+        state.usingSeed = true
+        state.campaignId = null
+        if (state.view !== "graph") setView("graph")
+        else loadGraph()
+      },
+    })
   } else {
     el.innerHTML = '<div class="graph-empty">xyflow bundle missing. Run <code>./scripts/build-ui.sh</code>.</div>'
   }

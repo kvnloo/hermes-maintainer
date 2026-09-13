@@ -101,7 +101,9 @@ vi.mock("./GraphCanvas.jsx", () => ({
             {node.data?.title || node.data?.label || node.id}
           </button>
         ))}
-        {(props.edges || []).map((edge) => (
+        {(props.edges || [])
+          .filter((edge) => !edge.data?.hideLabel)
+          .map((edge) => (
           <button
             key={edge.id}
             type="button"
@@ -327,8 +329,11 @@ describe("GraphExplorer", () => {
       { width: 390, height: 844, search: "?graph=architecture" },
     );
     await waitFor(() => {
-      expect(String(document.body.getAttribute("data-center") || "")).toMatch(/0\.4/);
+      expect(document.body.getAttribute("data-fit")).toBe("1");
     });
+    expect(screen.getByRole("button", { name: /sqlite backlog graph/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /campaign graph/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /local api\/ui/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /sqlite backlog graph/i })).toBeInTheDocument();
   });
 
@@ -350,5 +355,66 @@ describe("GraphExplorer", () => {
     renderExplorer({ status: "ready", graph: "campaign", nodes, relations: [] });
     expect(screen.getAllByText(/showing 60 of 80/i).length).toBeGreaterThan(0);
     expect(screen.getAllByRole("button", { name: /ticket /i }).length).toBe(60);
+  });
+
+  it("keeps a late connected family when a live dump is capped", () => {
+    const nodes = [
+      ...Array.from({ length: 70 }, (_, index) => ({
+        id: `issue:${index + 1}`,
+        kind: "issue",
+        number: index + 1,
+        title: `isolate ${index + 1}`,
+      })),
+      { id: "issue:900", kind: "issue", number: 900, title: "cluster root" },
+      { id: "pr:901", kind: "pr", number: 901, title: "cluster fix" },
+    ];
+    const relations = [{ src_id: "pr:901", dst_id: "issue:900", relation_type: "fixes" }];
+    renderExplorer({ status: "ready", graph: "campaign", nodes, relations });
+    expect(screen.getByRole("button", { name: /cluster root/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /cluster fix/i })).toBeInTheDocument();
+  });
+
+  it("hides stacked relation labels on a dense dump so titles remain clickable", () => {
+    const nodes = Array.from({ length: 40 }, (_, index) => ({
+      id: `issue:${index + 1}`,
+      kind: "issue",
+      number: index + 1,
+      title: `ticket ${index + 1}`,
+    }));
+    const relations = Array.from({ length: 20 }, (_, index) => ({
+      id: `r-${index}`,
+      src_id: `issue:${index + 2}`,
+      dst_id: `issue:${index + 1}`,
+      relation_type: "fixes",
+    }));
+    renderExplorer({ status: "ready", graph: "campaign", nodes, relations });
+    expect(screen.queryByRole("button", { name: /^fixes$/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "ticket 1", exact: true })).toBeInTheDocument();
+  });
+
+  it("offers Load seed families on a truncated dump and an empty campaign", async () => {
+    const user = userEvent.setup();
+    const onUseSeed = vi.fn();
+    const nodes = Array.from({ length: 80 }, (_, index) => ({
+      id: `issue:${index + 1}`,
+      kind: "issue",
+      number: index + 1,
+      title: `ticket ${index + 1}`,
+    }));
+    renderExplorer({ status: "ready", graph: "campaign", nodes, relations: [] }, { onUseSeed });
+    await user.click(screen.getByRole("button", { name: /load seed families/i }));
+    expect(onUseSeed).toHaveBeenCalled();
+    renderExplorer({ status: "ready", graph: "campaign", nodes: [], relations: [] }, { onUseSeed });
+    expect(screen.getAllByRole("button", { name: /load seed families/i }).length).toBeGreaterThan(0);
+  });
+
+  it("recenters a selected node above the 390 detail sheet", async () => {
+    stubViewport(390);
+    const user = userEvent.setup();
+    renderExplorer(SAMPLE_CAMPAIGN, { width: 390, height: 844 });
+    document.body.removeAttribute("data-center");
+    await user.click(screen.getByRole("button", { name: /cancelled ci treated as success/i }));
+    expect(String(document.body.getAttribute("data-center") || "")).toMatch(/,/);
+    expect(screen.getByRole("region", { name: /detail/i })).toHaveTextContent(/issue #98557/i);
   });
 });

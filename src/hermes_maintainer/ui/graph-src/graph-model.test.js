@@ -1,17 +1,17 @@
 import { describe, expect, it, vi } from "vitest";
 import { NAMESPACED_CAMPAIGN, SAMPLE_CAMPAIGN, stackedFixesCampaign } from "./fixtures.js";
 import {
-  ARCHITECTURE_FOCUS_ID,
   FLOW_GESTURES,
   HIT_MIN_PX,
-  NODE_CENTER,
   NODE_MIN_HEIGHT,
   NODE_MIN_WIDTH,
   ZOOM_STOPS,
+  ARCHITECTURE_CORE_IDS,
   architectureGraph,
   capGraphPayload,
   edgeLabelHitForZoom,
   edgeLabelInvScale,
+  edgeLabelsVisible,
   findNodeBySearch,
   formatNodeHeading,
   formatNodeKicker,
@@ -194,21 +194,22 @@ describe("graph model", () => {
     }
   });
 
-  it("frames compact architecture onto the sqlite core instead of an empty corner", () => {
+  it("frames compact architecture around the core column, not a single node", () => {
     const setCenter = vi.fn();
     const fitView = vi.fn();
     const api = {
-      getNode: (id) => (id === ARCHITECTURE_FOCUS_ID ? { position: { x: 280, y: 510 } } : undefined),
+      getNode: (id) => (ARCHITECTURE_CORE_IDS.includes(id) ? { id, position: { x: 280, y: 510 } } : undefined),
       setCenter,
       fitView,
     };
     frameGraph(api, "architecture", { compact: true });
-    expect(setCenter).toHaveBeenCalled();
-    const [x, y, opts] = setCenter.mock.calls[0];
-    expect(x).toBe(280 + NODE_CENTER.x);
-    expect(y).toBe(510 + NODE_CENTER.y);
-    expect(opts.zoom).toBe(0.4);
-    expect(fitView).not.toHaveBeenCalled();
+    expect(fitView).toHaveBeenCalled();
+    const opts = fitView.mock.calls[0][0];
+    const ids = (opts.nodes || []).map((node) => node.id);
+    expect(ids).toEqual(expect.arrayContaining(["arch:sqlite-backlog", "arch:campaigns", "arch:local-ui"]));
+    expect(opts.minZoom).toBe(0.4);
+    expect(opts.maxZoom).toBe(0.4);
+    expect(setCenter).not.toHaveBeenCalled();
   });
 
   it("wraps a large unclustered ticket pile into a grid that still fits at 0.4 zoom", () => {
@@ -231,5 +232,52 @@ describe("graph model", () => {
     expect(width * 0.4).toBeLessThan(1280);
     expect(height * 0.4).toBeLessThan(720);
     expect(laid).toHaveLength(60);
+  });
+
+  it("keeps a late connected family when capping a dump of newer isolates", () => {
+    const isolates = Array.from({ length: 50 }, (_, index) => ({
+      id: `issue:${index + 1}`,
+      kind: "issue",
+      number: index + 1,
+      title: `isolate ${index + 1}`,
+    }));
+    const family = [
+      { id: "issue:900", kind: "issue", number: 900, title: "cluster root" },
+      { id: "pr:901", kind: "pr", number: 901, title: "cluster fix" },
+    ];
+    const relations = [{ src_id: "pr:901", dst_id: "issue:900", relation_type: "fixes" }];
+    const capped = capGraphPayload({ nodes: [...isolates, ...family], relations }, 20);
+    const ids = capped.nodes.map((node) => node.id);
+    expect(ids).toEqual(expect.arrayContaining(["issue:900", "pr:901"]));
+    expect(capped.relations).toHaveLength(1);
+    expect(capped.truncated).toBe(32);
+  });
+
+  it("layouts unassigned related tickets as separate families, not one issue tower", () => {
+    const nodes = [
+      { id: "issue:a", kind: "issue", number: 1, title: "family A" },
+      { id: "pr:a", kind: "pr", number: 2, title: "fix A" },
+      { id: "issue:b", kind: "issue", number: 3, title: "family B" },
+      { id: "pr:b", kind: "pr", number: 4, title: "fix B" },
+    ];
+    const relations = [
+      { src_id: "pr:a", dst_id: "issue:a", relation_type: "fixes" },
+      { src_id: "pr:b", dst_id: "issue:b", relation_type: "fixes" },
+    ];
+    const laid = layoutGraph({ nodes, relations });
+    const ax = laid.find((node) => node.id === "issue:a").position.x;
+    const bx = laid.find((node) => node.id === "issue:b").position.x;
+    expect(ax).not.toBe(bx);
+  });
+
+  it("hides relation labels on dense canvases so titles stay the hit target", () => {
+    expect(edgeLabelsVisible(5, 1)).toBe(true);
+    expect(edgeLabelsVisible(7, 0.4)).toBe(true);
+    expect(edgeLabelsVisible(40, 1)).toBe(false);
+    expect(edgeLabelsVisible(40, 0.4)).toBe(false);
+    const hidden = toFlowEdges([{ src_id: "pr:1", dst_id: "issue:1", relation_type: "fixes" }], { hideLabels: true });
+    expect(hidden[0].data.hideLabel).toBe(true);
+    const shown = toFlowEdges(SAMPLE_CAMPAIGN.relations, { hideLabels: false });
+    expect(shown.every((edge) => !edge.data.hideLabel)).toBe(true);
   });
 });

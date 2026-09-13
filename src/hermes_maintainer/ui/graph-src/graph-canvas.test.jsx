@@ -148,4 +148,29 @@ describe("GraphCanvas (real xyflow)", () => {
     await screen.findByRole("button", { name: "ticket 1", exact: true });
     expect(document.querySelector(".hm-flow")?.getAttribute("data-minimap")).toBe("off");
   });
+
+  it("does not render relation labels on a dense campaign grid", async () => {
+    const nodes = Array.from({ length: 40 }, (_, index) => ({
+      id: `issue:${index + 1}`,
+      kind: "issue",
+      number: index + 1,
+      title: `ticket ${index + 1}`,
+    }));
+    const relations = Array.from({ length: 12 }, (_, index) => ({
+      id: `r-${index}`,
+      src_id: `issue:${index + 2}`,
+      dst_id: `issue:${index + 1}`,
+      relation_type: "fixes",
+    }));
+    const hideLabels = nodes.length > 24;
+    const { GraphCanvas: Canvas } = await import("./GraphCanvas.jsx");
+    const { toFlowEdges: edgesOf, layoutGraph: layout } = await import("./graph-model.js");
+    render(
+      <div className="hm-flow-host" style={{ width: 1280, height: 800 }}>
+        <Canvas nodes={layout({ nodes, relations })} edges={edgesOf(relations, { hideLabels })} />
+      </div>,
+    );
+    await screen.findByRole("button", { name: "ticket 1", exact: true });
+    expect(screen.queryByRole("button", { name: /^fixes$/i })).not.toBeInTheDocument();
+  });
 });

@@ -89,6 +89,7 @@ function CanvasInner({
       data-pan-on-scroll={String(panOnScroll)}
       data-touch-action={touchAction}
       data-minimap={minimapOn ? "on" : "off"}
+      data-edge-labels={(edges || []).some((edge) => edge.data?.hideLabel) ? "off" : "on"}
       style={{ width: "100%", height: "100%", touchAction }}
     >
       <ReactFlow

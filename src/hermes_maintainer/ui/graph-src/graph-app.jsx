@@ -21,10 +21,16 @@ function useGraphPayload() {
   return payload;
 }
 
-function MountedExplorer({ onSelect, search, onNavigate }) {
+function MountedExplorer({ onSelect, search, onNavigate, onUseSeed }) {
   const payload = useGraphPayload();
   return (
-    <GraphExplorer payload={payload} onSelect={onSelect} search={search} onNavigate={onNavigate} />
+    <GraphExplorer
+      payload={payload}
+      onSelect={onSelect}
+      search={search}
+      onNavigate={onNavigate}
+      onUseSeed={onUseSeed}
+    />
   );
 }
 
@@ -35,6 +41,7 @@ export function mount(container, options = {}) {
       onSelect={options.onSelect}
       search={options.search}
       onNavigate={options.onNavigate}
+      onUseSeed={options.onUseSeed}
     />,
   );
   return { setGraph, unmount: () => root.unmount() };

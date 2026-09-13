@@ -201,7 +201,8 @@ a:hover .title { color: var(--color-success); }
   touch-action: none;
   overscroll-behavior: none;
 }
-.graph-empty {
+.hm-legend-bar .tab { min-height: 44px; min-width: 44px; }
+.graph-empty .tab { margin-top: 12px; min-height: 44px; }
   height: 100%; display: grid; place-items: center;
   color: var(--color-muted-foreground); padding: 28px 24px;
   text-align: center; max-width: 42rem; margin: auto; line-height: 1.5;
@@ -332,6 +333,9 @@ a:hover .title { color: var(--color-success); }
   .hm-detail {
     top: auto; right: 0; left: 0; bottom: 0; width: 100%;
     max-height: 38%; border-radius: calc(var(--theme-radius) + 4px) calc(var(--theme-radius) + 4px) 0 0;
+  }
+  .hm-stage:has(.hm-detail) .hm-flow {
+    padding-bottom: 38%;
   }
 }
 body.is-graph, body:has(#graph-view:not([hidden])) {

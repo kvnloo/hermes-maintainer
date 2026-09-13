@@ -7,6 +7,7 @@ import {
   architectureGraph,
   capGraphPayload,
   describeSelection,
+  edgeLabelsVisible,
   findNodeBySearch,
   frameGraph,
   isCompactViewport,
@@ -62,7 +63,7 @@ function GraphToolbar({ mode, zoom, sourceLabel, onArchitecture, onCampaigns, on
   );
 }
 
-function GraphLegend({ mode, legend, truncated, visible, total }) {
+function GraphLegend({ mode, legend, truncated, visible, total, onUseSeed }) {
   return (
     <div className="hm-legend-bar" aria-label="Graph legend">
       <span className={`hm-legend-title${truncated ? " is-truncated" : ""}`}>
@@ -72,6 +73,11 @@ function GraphLegend({ mode, legend, truncated, visible, total }) {
             ? "Every box is a control — subsystems, files, invariants."
             : "Issues, PRs, files, and the invariant this campaign is trying to keep true."}
       </span>
+      {truncated && onUseSeed ? (
+        <button type="button" className="tab" onClick={onUseSeed}>
+          Load seed families
+        </button>
+      ) : null}
       <ul>
         {legend.kinds.map((kind) => (
           <li key={kind}>
@@ -132,7 +138,7 @@ function legendItems(nodes, edges) {
   return { kinds, relations: relations.slice(0, 8) };
 }
 
-export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
+export function GraphExplorer({ payload, onSelect, search, onNavigate, onUseSeed }) {
   const parsed = parseGraphSearch(
     search !== undefined
       ? search
@@ -164,13 +170,14 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
       selected: selected?.type === "node" && selected.id === node.id,
     }));
   }, [source, selected]);
+  const hideLabels = !edgeLabelsVisible(source?.nodes?.length || 0, zoom);
   const edges = useMemo(() => {
-    const laid = toFlowEdges(source?.relations);
+    const laid = toFlowEdges(source?.relations, { hideLabels });
     return laid.map((edge) => ({
       ...edge,
       selected: selected?.type === "edge" && selected.id === edge.id,
     }));
-  }, [source, selected]);
+  }, [source, selected, hideLabels]);
 
   const applySelection = useCallback(
     (next) => {
@@ -183,8 +190,18 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
         const url = `${window.location.pathname}${query}${window.location.hash}`;
         window.history.replaceState(null, "", url);
       }
+      if (next?.type === "node" && isCompactViewport()) {
+        const api = flowRef.current;
+        const node = api?.getNode?.(next.id) || next.node;
+        if (node?.position && api?.setCenter) {
+          api.setCenter(node.position.x + NODE_CENTER.x, node.position.y + NODE_CENTER.y, {
+            zoom,
+            duration: 140,
+          });
+        }
+      }
     },
-    [mode, onNavigate, onSelect, payload],
+    [mode, onNavigate, onSelect, payload, zoom],
   );
 
   const clearSelection = useCallback(() => applySelection(null), [applySelection]);
@@ -319,12 +336,20 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
         truncated={Boolean(source?.truncated)}
         visible={source?.nodes?.length}
         total={source?.total}
+        onUseSeed={onUseSeed}
       />
 
       {campaignEmpty ? (
         <div className="graph-empty">
           This campaign slice has no members yet. Scan NousResearch/hermes-agent, or open the seed
           canvas to inspect the CI-verdict and OAuth families.
+          {onUseSeed ? (
+            <p>
+              <button type="button" className="tab" onClick={onUseSeed}>
+                Load seed families
+              </button>
+            </p>
+          ) : null}
         </div>
       ) : (
         <div className="hm-stage">

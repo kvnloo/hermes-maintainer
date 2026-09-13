@@ -166,6 +166,40 @@ class GraphStore:
             params + params,
         )
 
+    def _prefer_connected(self, candidate_ids: list[str], limit: int) -> list[str]:
+        if len(candidate_ids) <= limit:
+            return candidate_ids
+        relations = self.relations_among(candidate_ids)
+        parent = {node_id: node_id for node_id in candidate_ids}
+
+        def find(node_id: str) -> str:
+            while parent[node_id] != node_id:
+                parent[node_id] = parent[parent[node_id]]
+                node_id = parent[node_id]
+            return node_id
+
+        def union(left: str, right: str) -> None:
+            root_left, root_right = find(left), find(right)
+            if root_left != root_right:
+                parent[root_right] = root_left
+
+        for rel in relations:
+            src, dst = rel["src_id"], rel["dst_id"]
+            if src in parent and dst in parent:
+                union(src, dst)
+
+        groups: dict[str, list[str]] = defaultdict(list)
+        for node_id in candidate_ids:
+            groups[find(node_id)].append(node_id)
+        ranked = sorted(groups.values(), key=lambda group: (-len(group), group[0]))
+        filled: list[str] = []
+        for group in ranked:
+            for node_id in group:
+                filled.append(node_id)
+                if len(filled) >= limit:
+                    return filled
+        return filled
+
     def export_json(self, **filters) -> dict:
         return self.export_subgraph(**filters)
 
@@ -210,11 +244,12 @@ class GraphStore:
                 clauses.append("state=?")
                 params.append(state)
             where = " WHERE " + " AND ".join(clauses)
+            pool = max(limit * 4, limit)
             candidate_ids = [
                 r["id"]
                 for r in self.db.rows(
                     f"SELECT id FROM nodes{where} ORDER BY COALESCE(updated_at,'') DESC LIMIT ?",
-                    tuple(params + [max(limit, 1)]),
+                    tuple(params + [max(pool, 1)]),
                 )
             ]
 
@@ -245,7 +280,11 @@ class GraphStore:
             }
             candidate_ids = [node_id for node_id in candidate_ids if node_id in state_ids]
 
-        candidate_ids = candidate_ids[: max(limit, 1)]
+        candidate_ids = (
+            self._prefer_connected(candidate_ids, max(limit, 1))
+            if not campaign_id
+            else candidate_ids[: max(limit, 1)]
+        )
         if not candidate_ids:
             return {
                 "campaign": campaign,

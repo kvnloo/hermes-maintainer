@@ -176,6 +176,46 @@ async function inspectViewport(browser, vp, findings) {
         }
       }
     }
+    const titleButtons = page.locator("button.hm-node");
+    const titleCount = await titleButtons.count();
+    const labelButtons = page.locator("button.hm-edge-label");
+    const labelCount = await labelButtons.count();
+    if (titleCount && labelCount) {
+      for (let i = 0; i < Math.min(titleCount, 12); i += 1) {
+        const titleBox = await titleButtons.nth(i).boundingBox();
+        if (!titleBox) continue;
+        for (let j = 0; j < Math.min(labelCount, 12); j += 1) {
+          const labelBox = await labelButtons.nth(j).boundingBox();
+          if (!labelBox) continue;
+          const overlapW = Math.min(titleBox.x + titleBox.width, labelBox.x + labelBox.width) - Math.max(titleBox.x, labelBox.x);
+          const overlapH = Math.min(titleBox.y + titleBox.height, labelBox.y + labelBox.height) - Math.max(titleBox.y, labelBox.y);
+          if (overlapW > 24 && overlapH > 16) {
+            issue(findings, vp.name, "campaign", "label-cover", "Relation label covers a ticket title", { titleBox, labelBox });
+          }
+        }
+      }
+    }
+    if (vp.width <= 400) {
+      const seed = page.getByRole("button", { name: /load seed families/i });
+      if (await seed.count()) {
+        const seedBox = await seed.boundingBox();
+        if (seedBox && seedBox.height + 0.5 < 44) {
+          issue(findings, vp.name, "campaign", "hit-target", "Load seed families shorter than 44px", seedBox);
+        }
+      }
+      const detailBox = await detail.boundingBox().catch(() => null);
+      const selectedNode = page.locator("button.hm-node[aria-pressed='true']").first();
+      if (detailBox && (await selectedNode.count())) {
+        const nodeBox = await selectedNode.boundingBox();
+        if (nodeBox) {
+          const overlapH = Math.min(nodeBox.y + nodeBox.height, detailBox.y + detailBox.height) - Math.max(nodeBox.y, detailBox.y);
+          const overlapW = Math.min(nodeBox.x + nodeBox.width, detailBox.x + detailBox.width) - Math.max(nodeBox.x, detailBox.x);
+          if (overlapH > nodeBox.height * 0.5 && overlapW > nodeBox.width * 0.5) {
+            issue(findings, vp.name, "campaign", "detail-cover", "Mobile detail sheet covers the selected node", { nodeBox, detailBox });
+          }
+        }
+      }
+    }
     await page.keyboard.press("Escape");
     await page.waitForTimeout(200);
     const keyboardNode = page.locator("button.hm-node").first();

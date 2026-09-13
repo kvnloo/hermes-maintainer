@@ -31,6 +31,9 @@ export function RelationEdge({
     sourcePosition,
     targetPosition,
   });
+  if (data?.hideLabel && !selected) {
+    return <BaseEdge id={id} path={edgePath} markerEnd={markerEnd} style={style} />;
+  }
   return (
     <>
       <BaseEdge id={id} path={edgePath} markerEnd={markerEnd} style={style} />

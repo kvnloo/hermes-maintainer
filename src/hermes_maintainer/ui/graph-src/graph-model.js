@@ -88,7 +88,16 @@ export function architectureGraph() {
 }
 
 export const ARCHITECTURE_FOCUS_ID = "arch:sqlite-backlog";
+export const ARCHITECTURE_CORE_IDS = [
+  "arch:sqlite-backlog",
+  "arch:normalization",
+  "arch:campaigns",
+  "arch:local-ui",
+  "arch:explicit-refs",
+  "arch:fix-atoms",
+];
 export const NODE_CENTER = { x: 124, y: 55 };
+export const EDGE_LABEL_NODE_LIMIT = 24;
 
 export function hitSizeForZoom(_zoom) {
   return NODE_MIN_HEIGHT;
@@ -140,9 +149,24 @@ export function isCompactViewport() {
   return typeof window !== "undefined" && window.matchMedia("(max-width: 980px)").matches;
 }
 
+export function edgeLabelsVisible(nodeCount, _zoom = 1) {
+  return Number(nodeCount) <= EDGE_LABEL_NODE_LIMIT;
+}
+
 export function frameGraph(api, mode, { compact = false } = {}) {
   if (!api) return;
   if (compact && mode === "architecture") {
+    const present = ARCHITECTURE_CORE_IDS.filter((id) => api.getNode?.(id));
+    if (present.length && api.fitView) {
+      api.fitView({
+        nodes: present.map((id) => ({ id })),
+        padding: 0.12,
+        minZoom: FLOW_GESTURES.minZoom,
+        maxZoom: FLOW_GESTURES.minZoom,
+        duration: 180,
+      });
+      return;
+    }
     const node = api.getNode?.(ARCHITECTURE_FOCUS_ID);
     if (node?.position) {
       api.setCenter?.(node.position.x + NODE_CENTER.x, node.position.y + NODE_CENTER.y, {
@@ -174,19 +198,77 @@ export function staggerLabelOffsets(relations) {
   return offsets;
 }
 
-export function capGraphPayload(payload, limit = MAX_VISIBLE_NODES) {
-  const nodes = payload?.nodes || [];
+export function assignClusterIds(payload) {
+  const nodes = (payload?.nodes || []).map((node) => ({ ...node }));
   const relations = payload?.relations || [];
-  if (nodes.length <= limit) {
-    return { ...payload, nodes, relations, truncated: 0, total: nodes.length };
+  const parent = new Map(nodes.map((node) => [node.id, node.id]));
+  const find = (id) => {
+    if (!parent.has(id)) parent.set(id, id);
+    const next = parent.get(id);
+    if (next !== id) {
+      const root = find(next);
+      parent.set(id, root);
+      return root;
+    }
+    return id;
+  };
+  const union = (left, right) => {
+    const rootLeft = find(left);
+    const rootRight = find(right);
+    if (rootLeft !== rootRight) parent.set(rootLeft, rootRight);
+  };
+  for (const rel of relations) {
+    if (parent.has(rel.src_id) && parent.has(rel.dst_id)) union(rel.src_id, rel.dst_id);
   }
-  const kept = nodes.slice(0, limit);
+  const sizes = new Map();
+  for (const node of nodes) {
+    const root = find(node.id);
+    sizes.set(root, (sizes.get(root) || 0) + 1);
+  }
+  for (const node of nodes) {
+    if (!node.campaign_id && (sizes.get(find(node.id)) || 1) > 1) {
+      node.campaign_id = `cluster:${find(node.id)}`;
+    }
+  }
+  return { ...payload, nodes, relations };
+}
+
+export function capGraphPayload(payload, limit = MAX_VISIBLE_NODES) {
+  const clustered = assignClusterIds(payload);
+  const nodes = clustered.nodes || [];
+  const relations = clustered.relations || [];
+  if (nodes.length <= limit) {
+    return { ...clustered, truncated: 0, total: nodes.length };
+  }
+  const degree = new Map(nodes.map((node) => [node.id, 0]));
+  for (const rel of relations) {
+    if (degree.has(rel.src_id)) degree.set(rel.src_id, degree.get(rel.src_id) + 1);
+    if (degree.has(rel.dst_id)) degree.set(rel.dst_id, degree.get(rel.dst_id) + 1);
+  }
+  const groups = new Map();
+  for (const node of nodes) {
+    const key = node.campaign_id || node.id;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(node);
+  }
+  const ranked = [...groups.values()].sort((left, right) => {
+    const degreeLeft = left.reduce((sum, node) => sum + (degree.get(node.id) || 0), 0);
+    const degreeRight = right.reduce((sum, node) => sum + (degree.get(node.id) || 0), 0);
+    if (degreeRight !== degreeLeft) return degreeRight - degreeLeft;
+    if (right.length !== left.length) return right.length - left.length;
+    return String(left[0]?.id || "").localeCompare(String(right[0]?.id || ""));
+  });
+  const kept = [];
+  for (const group of ranked) {
+    if (kept.length >= limit) break;
+    kept.push(...group.slice(0, limit - kept.length));
+  }
   const ids = new Set(kept.map((node) => node.id));
   return {
-    ...payload,
+    ...clustered,
     nodes: kept,
     relations: relations.filter((rel) => ids.has(rel.src_id) && ids.has(rel.dst_id)),
-    truncated: nodes.length - limit,
+    truncated: nodes.length - kept.length,
     total: nodes.length,
   };
 }
@@ -216,7 +298,8 @@ function laneFor(node) {
 }
 
 export function layoutGraph(payload) {
-  const rawNodes = payload?.nodes || [];
+  const clustered = assignClusterIds(payload);
+  const rawNodes = clustered.nodes || [];
   if (!rawNodes.length) return [];
 
   const groups = new Map();
@@ -241,7 +324,7 @@ export function layoutGraph(payload) {
     }
   }
 
-  const columns = autoFamilies.length > 2 ? 2 : 1;
+  const columns = autoFamilies.length > 1 ? 2 : 1;
   let column = 0;
   let originX = 0;
   let originY = 0;
@@ -321,7 +404,7 @@ function toFlowNode(node, position) {
   };
 }
 
-export function toFlowEdges(relations) {
+export function toFlowEdges(relations, { hideLabels = false } = {}) {
   const list = relations || [];
   const offsets = staggerLabelOffsets(list);
   return list.map((rel, index) => {
@@ -339,7 +422,7 @@ export function toFlowEdges(relations) {
       markerEnd: { type: "arrowclosed", color },
       style: { stroke: color, strokeWidth: 2, strokeDasharray: dashed ? "6 4" : undefined },
       labelStyle: { fill: color, fontSize: 12, fontWeight: 600 },
-      data: { ...rel, labelOffset: offsets[index] },
+      data: { ...rel, labelOffset: offsets[index], hideLabel: Boolean(hideLabels) },
     };
   });
 }
