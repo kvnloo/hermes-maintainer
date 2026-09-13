@@ -3,11 +3,29 @@ import { formatNodeKicker, labelScaleForZoom } from "./graph-model.js";
 
 export const hermesNodeHandlers = { onClick: null };
 
+function NodeKicker({ data }) {
+  const ticket = data.kind === "issue" || data.kind === "pr";
+  return (
+    <span className="hm-kicker">
+      <span>{formatNodeKicker(data)}</span>
+      {ticket ? <span>{(data.role || "member").replaceAll("_", " ")}</span> : null}
+    </span>
+  );
+}
+
+function NodeMeta({ data, compact }) {
+  if (compact) return null;
+  const ticket = data.kind === "issue" || data.kind === "pr";
+  const text = ticket
+    ? (data.state || data.author ? `${data.state || "open"}${data.author ? ` · ${data.author}` : ""}` : null)
+    : (data.summary || null);
+  return text ? <span className="hm-meta">{text}</span> : null;
+}
+
 export function HermesNode({ id, data, selected }) {
   const zoom = useStore((state) => state.transform[2]);
   const scale = labelScaleForZoom(zoom);
   const title = data.title || data.label || id;
-  const compact = zoom < 0.75;
   const kind = data.kind || "subsystem";
 
   const activate = (event) => {
@@ -38,18 +56,9 @@ export function HermesNode({ id, data, selected }) {
           fontSize: `${13 * scale}px`,
         }}
       >
-        <span className="hm-kicker">
-          <span>{formatNodeKicker(data)}</span>
-          {data.kind === "issue" || data.kind === "pr" ? (
-            <span>{(data.role || "member").replaceAll("_", " ")}</span>
-          ) : null}
-        </span>
+        <NodeKicker data={data} />
         <span className="hm-title">{title}</span>
-        {data.kind === "issue" || data.kind === "pr"
-          ? (!compact && (data.state || data.author) ? (
-            <span className="hm-meta">{`${data.state || "open"}${data.author ? ` · ${data.author}` : ""}`}</span>
-          ) : null)
-          : (!compact && data.summary ? <span className="hm-meta">{data.summary}</span> : null)}
+        <NodeMeta data={data} compact={zoom < 0.75} />
       </button>
       <Handle type="source" position={Position.Bottom} isConnectable={false} />
     </div>

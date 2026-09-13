@@ -276,12 +276,14 @@ a:hover .title { color: var(--color-success); }
   color: #ffbd38;
   border: 1px solid var(--color-border);
   border-radius: 999px;
-  padding: 6px 10px;
+  padding: 4px 8px;
   font-size: 11px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   cursor: pointer;
   touch-action: manipulation;
+  min-height: 28px;
+  white-space: nowrap;
 }
 .hm-edge-label:hover, .hm-edge-label:focus-visible, .hm-edge-label.is-selected {
   border-color: #ffbd38;
@@ -308,7 +310,8 @@ a:hover .title { color: var(--color-success); }
   .hm-source { display: none; }
   .hm-legend-bar .hm-legend-title { display: none; }
   .hm-toolbar { gap: 8px; }
-  .hm-zooms { flex: 1 0 100%; }
+  .hm-zooms { flex: 1 0 100%; justify-content: flex-start; }
+  .hm-toolbar .tab { padding: 8px 9px; }
   .flow { height: min(82vh, 760px); min-height: 480px; }
   .react-flow__minimap { display: none !important; }
   .hm-detail {

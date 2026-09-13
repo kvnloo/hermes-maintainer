@@ -4,10 +4,10 @@ export const ZOOM_STOPS = [0.4, 0.75, 1, 1.5, 2];
 export const HIT_MIN_PX = 44;
 export const NODE_MIN_HEIGHT = HIT_MIN_PX / 0.4;
 export const NODE_MIN_WIDTH = 248;
-export const NODE_STEP_Y = 176;
-export const LANE_STEP_X = 280;
-export const FAMILY_GAP_X = 88;
-export const FAMILY_GAP_Y = 56;
+export const NODE_STEP_Y = 128;
+export const LANE_STEP_X = 268;
+export const FAMILY_GAP_X = 72;
+export const FAMILY_GAP_Y = 48;
 
 export const FLOW_GESTURES = {
   panOnScroll: true,
@@ -170,18 +170,24 @@ export function layoutGraph(payload) {
   return out;
 }
 
+function familyColumn(node) {
+  if (node.kind === "pr") return 2;
+  if (node.kind === "issue") return 1;
+  return 0;
+}
+
 function layoutFamily(members, originX, originY) {
   const lanes = new Map();
   for (const member of members) {
-    const lane = laneFor(member);
-    if (!lanes.has(lane)) lanes.set(lane, []);
-    lanes.get(lane).push(member);
+    const column = familyColumn(member);
+    if (!lanes.has(column)) lanes.set(column, []);
+    lanes.get(column).push(member);
   }
-  const sorted = [...lanes.entries()].sort((a, b) => a[0] - b[0]);
   const nodes = [];
   let tallest = NODE_MIN_HEIGHT;
   let widest = NODE_MIN_WIDTH;
-  sorted.forEach(([, laneNodes], column) => {
+  for (const [column, laneNodes] of [...lanes.entries()].sort((a, b) => a[0] - b[0])) {
+    laneNodes.sort((a, b) => laneFor(a) - laneFor(b) || String(a.id).localeCompare(String(b.id)));
     laneNodes.forEach((node, index) => {
       const x = originX + column * LANE_STEP_X;
       const y = originY + index * NODE_STEP_Y;
@@ -189,7 +195,7 @@ function layoutFamily(members, originX, originY) {
       widest = Math.max(widest, (column + 1) * LANE_STEP_X);
       nodes.push(toFlowNode(node, { x, y }));
     });
-  });
+  }
   return { nodes, width: widest, height: tallest };
 }
 
@@ -229,7 +235,7 @@ export function toFlowEdges(relations) {
       label: String(rel.relation_type || "related").replaceAll("_", " "),
       selectable: true,
       focusable: true,
-      interactionWidth: 32,
+      interactionWidth: HIT_MIN_PX / FLOW_GESTURES.minZoom,
       type: "relation",
       markerEnd: { type: "arrowclosed", color },
       style: { stroke: color, strokeWidth: 2, strokeDasharray: dashed ? "6 4" : undefined },

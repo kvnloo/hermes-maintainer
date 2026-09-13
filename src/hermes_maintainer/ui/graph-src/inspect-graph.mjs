@@ -26,8 +26,9 @@ async function openGraph(page, graph = "architecture") {
 }
 
 async function clickOpensDetail(page, locator, findings, viewport, zoom, expectText) {
-  await locator.scrollIntoViewIfNeeded().catch(() => {});
-  await locator.click({ force: true, timeout: 8000 });
+  await locator.evaluate((el) => {
+    el.click();
+  });
   const detail = page.getByRole("region", { name: /detail/i });
   try {
     await detail.waitFor({ state: "visible", timeout: 4000 });

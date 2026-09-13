@@ -12,6 +12,111 @@ import {
 } from "./graph-model.js";
 
 const ARCHITECTURE = architectureGraph();
+const NODE_CENTER = { x: 124, y: 55 };
+
+function frameGraph(api, mode) {
+  if (!api) return;
+  const compact = typeof window !== "undefined" && window.matchMedia("(max-width: 980px)").matches;
+  if (compact && mode === "architecture") {
+    const node = api.getNode?.("arch:sqlite-backlog");
+    if (node) {
+      api.setCenter(node.position.x + NODE_CENTER.x, node.position.y + NODE_CENTER.y, {
+        zoom: 0.4,
+        duration: 180,
+      });
+      return;
+    }
+  }
+  api.fitView?.({ padding: 0.18, minZoom: 0.4, maxZoom: 2, duration: 180 });
+}
+
+function GraphToolbar({ mode, zoom, sourceLabel, onArchitecture, onCampaigns, onZoom, onFit }) {
+  return (
+    <div className="hm-toolbar" role="toolbar" aria-label="Graph controls">
+      <div className="hm-mode">
+        <button
+          type="button"
+          className={mode === "architecture" ? "tab active" : "tab"}
+          aria-pressed={mode === "architecture"}
+          onClick={onArchitecture}
+        >
+          Architecture
+        </button>
+        <button
+          type="button"
+          className={mode === "campaign" ? "tab active" : "tab"}
+          aria-pressed={mode === "campaign"}
+          onClick={onCampaigns}
+        >
+          Campaigns
+        </button>
+      </div>
+      <div className="hm-zooms">
+        {ZOOM_STOPS.map((stop) => (
+          <button
+            key={stop}
+            type="button"
+            className={Math.abs(zoom - stop) < 0.02 ? "tab active" : "tab"}
+            aria-label={`Zoom ${stop}`}
+            onClick={() => onZoom(stop)}
+          >
+            {stop}×
+          </button>
+        ))}
+        <button type="button" className="tab" onClick={onFit}>
+          Fit view
+        </button>
+      </div>
+      <div className="hm-source">{sourceLabel}</div>
+    </div>
+  );
+}
+
+function GraphLegend({ mode, legend }) {
+  return (
+    <div className="hm-legend-bar" aria-label="Graph legend">
+      <span className="hm-legend-title">
+        {mode === "architecture"
+          ? "Every box is a control — subsystems, files, invariants."
+          : "Issues, PRs, files, and the invariant this campaign is trying to keep true."}
+      </span>
+      <ul>
+        {legend.kinds.map((kind) => (
+          <li key={kind}>
+            <span className={`swatch kind-${kind}`} />
+            {kind}
+          </li>
+        ))}
+      </ul>
+      {legend.relations.length ? (
+        <span className="hm-legend-rels">{legend.relations.join(" · ")}</span>
+      ) : null}
+    </div>
+  );
+}
+
+function GraphDetail({ detail, onBack }) {
+  return (
+    <aside className="hm-detail" role="region" aria-label="Detail">
+      <div className="hm-detail-head">
+        <button type="button" onClick={onBack}>
+          Back
+        </button>
+        <span className="hm-kicker">{detail.kicker}</span>
+      </div>
+      <h2>{detail.heading}</h2>
+      <p>{detail.summary}</p>
+      {detail.meta?.length ? <p className="meta">{detail.meta.join(" · ")}</p> : null}
+      {detail.url ? (
+        <p>
+          <a href={detail.url} target="_blank" rel="noreferrer">
+            Open on GitHub
+          </a>
+        </p>
+      ) : null}
+    </aside>
+  );
+}
 
 function legendItems(nodes, edges) {
   const kinds = [];
@@ -86,9 +191,9 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
     const node = layoutGraph(source).find((item) => item.id === parsed.node);
     if (node) {
       appliedLink.current = parsed.node;
-      applySelection({ type: "node", id: node.id, node });
+      setSelected({ type: "node", id: node.id, node });
     }
-  }, [applySelection, parsed.node, source]);
+  }, [parsed.node, source]);
 
   useEffect(() => {
     const onKey = (event) => {
@@ -121,7 +226,7 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
     if (selected?.type === "node") {
       const node = api.getNode?.(selected.id);
       if (node) {
-        api.setCenter(node.position.x + 124, node.position.y + 55, { zoom: value, duration: 140 });
+        api.setCenter(node.position.x + NODE_CENTER.x, node.position.y + NODE_CENTER.y, { zoom: value, duration: 140 });
         return;
       }
     }
@@ -129,8 +234,12 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
   }, [selected]);
 
   const fit = useCallback(() => {
-    flowRef.current?.fitView?.({ padding: 0.18, minZoom: 0.4, maxZoom: 2 });
-  }, []);
+    const api = flowRef.current;
+    if (!api) return;
+    const compact = typeof window !== "undefined" && window.matchMedia("(max-width: 980px)").matches;
+    if (compact && mode === "architecture") setZoom(0.4);
+    frameGraph(api, mode);
+  }, [mode]);
 
   const detail = describeSelection(selected);
   const legend = legendItems(nodes, edges);
@@ -139,11 +248,14 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
 
   useEffect(() => {
     if (status !== "ready" || campaignEmpty) return undefined;
-    const frame = window.requestAnimationFrame(() => {
-      flowRef.current?.fitView?.({ padding: 0.2, minZoom: 0.4, maxZoom: 2, duration: 180 });
-    });
-    return () => window.cancelAnimationFrame(frame);
-  }, [graphKey, status, campaignEmpty]);
+    const timer = window.setTimeout(() => {
+      if (window.matchMedia("(max-width: 980px)").matches && mode === "architecture") {
+        setZoom(0.4);
+      }
+      frameGraph(flowRef.current, mode);
+    }, 120);
+    return () => window.clearTimeout(timer);
+  }, [graphKey, status, campaignEmpty, mode]);
 
   if (status === "loading") {
     return (
@@ -168,71 +280,26 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
 
   return (
     <div className="graph-shell" style={{ ["--graph-zoom"]: String(zoom) }}>
-      <div className="hm-toolbar" role="toolbar" aria-label="Graph controls">
-        <div className="hm-mode">
-          <button
-            type="button"
-            className={mode === "architecture" ? "tab active" : "tab"}
-            aria-pressed={mode === "architecture"}
-            onClick={() => {
-              setMode("architecture");
-              setSelected(null);
-            }}
-          >
-            Architecture
-          </button>
-          <button
-            type="button"
-            className={mode === "campaign" ? "tab active" : "tab"}
-            aria-pressed={mode === "campaign"}
-            onClick={() => {
-              setMode("campaign");
-              setSelected(null);
-            }}
-          >
-            Campaigns
-          </button>
-        </div>
-        <div className="hm-zooms">
-          {ZOOM_STOPS.map((stop) => (
-            <button
-              key={stop}
-              type="button"
-              className={Math.abs(zoom - stop) < 0.02 ? "tab active" : "tab"}
-              aria-label={`Zoom ${stop}`}
-              onClick={() => zoomTo(stop)}
-            >
-              {stop}×
-            </button>
-          ))}
-          <button type="button" className="tab" onClick={fit}>
-            Fit view
-          </button>
-        </div>
-        <div className="hm-source">
-          {mode === "architecture"
+      <GraphToolbar
+        mode={mode}
+        zoom={zoom}
+        sourceLabel={
+          mode === "architecture"
             ? "Maintainer map · local SQLite, read-only GitHub"
-            : (payload?.campaign?.title || (payload?.families?.length ? `${payload.families.length} seed families` : "Campaign slice"))}
-        </div>
-      </div>
-      <div className="hm-legend-bar" aria-label="Graph legend">
-        <span className="hm-legend-title">
-          {mode === "architecture"
-            ? "Every box is a control — subsystems, files, invariants."
-            : "Issues, PRs, files, and the invariant this campaign is trying to keep true."}
-        </span>
-        <ul>
-          {legend.kinds.map((kind) => (
-            <li key={kind}>
-              <span className={`swatch kind-${kind}`} />
-              {kind}
-            </li>
-          ))}
-        </ul>
-        {legend.relations.length ? (
-          <span className="hm-legend-rels">{legend.relations.join(" · ")}</span>
-        ) : null}
-      </div>
+            : (payload?.campaign?.title || (payload?.families?.length ? `${payload.families.length} seed families` : "Campaign slice"))
+        }
+        onArchitecture={() => {
+          setMode("architecture");
+          setSelected(null);
+        }}
+        onCampaigns={() => {
+          setMode("campaign");
+          setSelected(null);
+        }}
+        onZoom={zoomTo}
+        onFit={fit}
+      />
+      <GraphLegend mode={mode} legend={legend} />
 
       {campaignEmpty ? (
         <div className="graph-empty">
@@ -247,12 +314,9 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
             zoom={zoom}
             onZoomChange={setZoom}
             onReady={(api) => {
-              flowRef.current = api;
-              if (api.getNode) {
-                const ready = { ...api, getNode: api.getNode.bind(api) };
-                flowRef.current = ready;
-              }
-              api.fitView?.({ padding: 0.2, minZoom: 0.4, maxZoom: 2 });
+              const ready = api.getNode ? { ...api, getNode: api.getNode.bind(api) } : api;
+              flowRef.current = ready;
+              frameGraph(ready, mode);
             }}
             onNodeClick={onNodeClick}
             onEdgeClick={onEdgeClick}
@@ -266,26 +330,7 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
             edgesFocusable={FLOW_GESTURES.edgesFocusable}
             touchAction={FLOW_GESTURES.touchAction}
           />
-          {detail ? (
-            <aside className="hm-detail" role="region" aria-label="Detail">
-              <div className="hm-detail-head">
-                <button type="button" onClick={clearSelection}>
-                  Back
-                </button>
-                <span className="hm-kicker">{detail.kicker}</span>
-              </div>
-              <h2>{detail.heading}</h2>
-              <p>{detail.summary}</p>
-              {detail.meta?.length ? <p className="meta">{detail.meta.join(" · ")}</p> : null}
-              {detail.url ? (
-                <p>
-                  <a href={detail.url} target="_blank" rel="noreferrer">
-                    Open on GitHub
-                  </a>
-                </p>
-              ) : null}
-            </aside>
-          ) : null}
+          {detail ? <GraphDetail detail={detail} onBack={clearSelection} /> : null}
         </div>
       )}
     </div>

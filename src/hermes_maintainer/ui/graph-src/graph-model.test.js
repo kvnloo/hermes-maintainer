@@ -76,13 +76,16 @@ describe("graph model", () => {
   });
 
   it("keeps labels and hit targets usable at every inspection zoom", () => {
+    const sampleEdge = toFlowEdges(SAMPLE_CAMPAIGN.relations)[0];
     for (const zoom of ZOOM_STOPS) {
       const visualHit = hitSizeForZoom(zoom) * zoom;
       const visualFont = 13 * labelScaleForZoom(zoom) * zoom;
-      const edgeScreen = HIT_MIN_PX * edgeLabelInvScale(zoom) * zoom;
+      const edgeHit = sampleEdge.interactionWidth * zoom;
+      const edgeFont = 11 * edgeLabelInvScale(zoom) * zoom;
       expect(visualHit).toBeGreaterThanOrEqual(HIT_MIN_PX - 0.05);
       expect(visualFont).toBeGreaterThanOrEqual(11);
-      expect(edgeScreen).toBeGreaterThanOrEqual(HIT_MIN_PX - 0.05);
+      expect(edgeHit).toBeGreaterThanOrEqual(HIT_MIN_PX - 0.05);
+      expect(edgeFont).toBeGreaterThanOrEqual(11 - 0.05);
     }
   });
 
