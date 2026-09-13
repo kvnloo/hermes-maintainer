@@ -1,5 +1,7 @@
 # What actually helps Tek (#108914)
 
+Board hygiene (2026-09-13): `BACKLOG-CLOSE.md`. kvnloo cannot triage. Closed our own duplicate #102262. The ~2,750-item play is `label:duplicate` + obvious `invalid` — already classified, still open. See that file for maintainer commands.
+
 **Live HEAD:** `bc36ddb5f9696c25acc5d51cf29a961710e2d5a3`. Fourth round cherry-picked #109508 (`_fence()` before `_dispatch`). The hole in the first comment is **closed**.
 
 ## Consolidation (posted on `bc36ddb5`)
