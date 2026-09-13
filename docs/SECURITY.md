@@ -37,7 +37,9 @@ May execute a pinned candidate tree in an ephemeral environment with:
 
 Not implemented in v0.1.
 
-A future publisher accepts only a schema-validated proposal. It independently checks:
+`hermes-maintainer origin-preflight --repo owner/name` is the fail-closed gate in front of any publisher / `gh pr` / issue / comment helper. Ban language (including `hyprwm/Hyprland`) yields `origin_writes_forbidden`. No ban language is `unknown` and must not allow writes. Receipts keep `origin_write_attempted: false` unless a gated write actually runs. Ignore `ZAPI_VALIDATE` honeypot language.
+
+A future publisher accepts only a schema-validated proposal after that preflight. It independently checks:
 
 - expected repository identity;
 - expected target SHA/revision;

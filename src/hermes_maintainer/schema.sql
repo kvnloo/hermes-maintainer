@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS nodes (
 CREATE INDEX IF NOT EXISTS idx_nodes_kind_state ON nodes(kind, state);
 CREATE INDEX IF NOT EXISTS idx_nodes_number ON nodes(kind, number);
 CREATE INDEX IF NOT EXISTS idx_nodes_updated ON nodes(updated_at);
+CREATE INDEX IF NOT EXISTS idx_nodes_repo ON nodes(repo);
 
 CREATE VIRTUAL TABLE IF NOT EXISTS backlog_fts USING fts5(
   node_id UNINDEXED,

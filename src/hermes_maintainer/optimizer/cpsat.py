@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from hermes_maintainer.db import Database
+from hermes_maintainer.github.ids import node_kind
 from hermes_maintainer.optimizer.greedy import load_atoms
 
 
@@ -30,7 +31,7 @@ def solve_cpsat(db: Database, max_atoms: int = 50) -> dict:
         objective_terms.append(int(atom.value * 100) * x[atom.id])
         objective_terms.append(-int(atom.cost * 25) * x[atom.id])
     for target, var in y.items():
-        objective_terms.append((10000 if target.startswith("issue:") else 1200) * var)
+        objective_terms.append((10000 if node_kind(target) == "issue" else 1200) * var)
     model.maximize(sum(objective_terms))
 
     solver = cp_model.CpSolver()

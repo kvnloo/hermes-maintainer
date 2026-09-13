@@ -11,7 +11,7 @@ This project follows the [Verified OSS Loop](https://github.com/kvnloo/verified-
 - Verified OSS Loop kit: `.verified-oss-loop/`, `skills/`, `prompt.md`
 - CI and Pages: `.github/workflows/`, `scripts/build-pages.py`
 
-GitHub writes from this repo stay on `kvnloo/hermes-maintainer`. Do not comment, open issues, or open PRs on `NousResearch/hermes-agent` from a claim here. Scanning that repository is read-only.
+GitHub ingest from this toolkit is GET-only. Origin writes (publisher / `gh pr` / issue / comment helpers) stay fail-closed behind `hermes-maintainer origin-preflight --repo owner/name`. `hyprwm/Hyprland` and any repo whose AI policy is `unknown` refuse writes (`origin_write_attempted: false`). Do not comment, open issues, or open PRs on `NousResearch/hermes-agent` or `hyprwm/*` from a claim here. Do not dump Verified OSS Loop labels onto foreign origin repositories.
 
 ## First 60 seconds
 
@@ -73,4 +73,4 @@ Commands were filled by `init-oss-repo.sh` / `oss-onboard` from the tree it saw.
 - Duplicate `AGENTS.md` into `CLAUDE.md` / `GEMINI.md` / copilot-instructions.
 - Run `gitnexus analyze` as a side effect of a claim.
 - Dump the pstack plugin or Dr Eggbot marketplace pack into this tree. Pointers: `skills/pstack/SKILL.md`, `skills/dr-eggbot/SKILL.md`.
-- Post on `NousResearch/hermes-agent`.
+- Post on `NousResearch/hermes-agent` or `hyprwm/*`.

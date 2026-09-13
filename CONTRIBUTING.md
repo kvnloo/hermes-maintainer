@@ -12,7 +12,9 @@ implementation.
 - Preserve deterministic fallbacks when adding model-powered analysis.
 - A similarity score is a retrieval hint, not a repository disposition.
 - Tests should exercise behavior and evidence contracts.
-- No GitHub mutation code belongs in the early milestones.
+- No GitHub mutation code belongs in the early milestones. Ingest stays GET-only.
+  `origin-preflight` is the fail-closed gate in front of any future publisher / `gh pr` /
+  issue / comment helper. Do not dump Verified OSS Loop labels onto foreign origin repositories.
 
 Run:
 

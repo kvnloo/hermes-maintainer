@@ -1,7 +1,6 @@
 # hermes-maintainer
 
-`hermes-maintainer` is a local-first maintenance intelligence system for
-`NousResearch/hermes-agent`.
+`hermes-maintainer` is a local-first maintenance intelligence toolkit for agents contributing to **any GitHub repository**. This checkout still defaults to `NousResearch/hermes-agent`; pass `--repo owner/name` to target another origin.
 
 Its goal is not to create more review comments. Its goal is to continuously turn the live
 repository into a durable **backlog graph** that answers:
@@ -24,7 +23,7 @@ and an optional optimization layer.
 2. **Fix atoms, not whole PRs.** Stacked PRs and salvage PRs must not be double-counted.
 3. **Evidence before closure.** `duplicate_of`, `same_root_cause`, `partially_addresses`, and
    `verified_fixed_on` are different relationships.
-4. **Read-only reasoning, restricted writes.** The MVP has no GitHub mutation path.
+4. **Read-only reasoning, restricted writes.** GitHub ingest is GET-only. Origin writes fail closed until `origin-preflight` returns an explicit allow.
 5. **Deterministic core first.** Git, SQLite, FTS5, and explicit relations are the source of
    truth. Embeddings and solver support are optional accelerators.
 6. **Optimize integration, not output volume.** The system should redirect agents toward
@@ -41,6 +40,8 @@ cp .env.example .env
 
 hermes-maintainer init
 hermes-maintainer scan --mode fast
+hermes-maintainer scan --repo owner/name --mode fast
+hermes-maintainer origin-preflight --repo owner/name
 hermes-maintainer analyze
 hermes-maintainer serve
 ```

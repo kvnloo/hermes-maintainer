@@ -4,6 +4,7 @@ import json
 
 from hermes_maintainer.config import Settings
 from hermes_maintainer.db import Database
+from hermes_maintainer.github.ids import node_kind
 
 
 def _priority_multiplier(labels: list[str], settings: Settings) -> float:
@@ -32,8 +33,8 @@ def rebuild_pr_atoms(settings: Settings) -> dict[str, int]:
             "SELECT dst_id,relation_type,confidence FROM relations WHERE src_id=? AND relation_type IN ('fixes','supersedes')",
             (pr["id"],),
         )
-        issue_coverage = [c for c in coverage if c["dst_id"].startswith("issue:")]
-        pr_coverage = [c for c in coverage if c["dst_id"].startswith("pr:")]
+        issue_coverage = [c for c in coverage if node_kind(c["dst_id"]) == "issue"]
+        pr_coverage = [c for c in coverage if node_kind(c["dst_id"]) == "pr"]
         value = sum(
             settings.optimizer.issue_weight * _priority_multiplier(labels, settings)
             for _ in issue_coverage

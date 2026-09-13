@@ -2,13 +2,18 @@ from __future__ import annotations
 
 import time
 from collections.abc import Iterator
+from dataclasses import replace
 from typing import Any
 
 import httpx
 
+from hermes_maintainer.github.origin_policy import OriginWriteAttestation, require_origin_writes
+
+_WRITE_METHODS = frozenset({"POST", "PATCH", "PUT", "DELETE"})
+
 
 class GitHubClient:
-    def __init__(self, token: str | None = None, timeout: float = 30.0):
+    def __init__(self, token: str | None = None, timeout: float = 30.0, transport: httpx.BaseTransport | None = None):
         headers = {
             "Accept": "application/vnd.github+json",
             "X-GitHub-Api-Version": "2022-11-28",
@@ -16,7 +21,14 @@ class GitHubClient:
         }
         if token:
             headers["Authorization"] = f"Bearer {token}"
-        self.client = httpx.Client(base_url="https://api.github.com", headers=headers, timeout=timeout)
+        kwargs: dict[str, Any] = {
+            "base_url": "https://api.github.com",
+            "headers": headers,
+            "timeout": timeout,
+        }
+        if transport is not None:
+            kwargs["transport"] = transport
+        self.client = httpx.Client(**kwargs)
 
     def close(self) -> None:
         self.client.close()
@@ -29,6 +41,40 @@ class GitHubClient:
             raise RuntimeError(f"GitHub rate limit exhausted; resets in ~{delay}s")
         response.raise_for_status()
         return response
+
+    def get_text_file(self, repo: str, path: str, ref: str | None = None) -> str | None:
+        """GET file contents as text. 404 returns None. Never writes."""
+        params = {"ref": ref} if ref else None
+        response = self.client.get(
+            f"/repos/{repo}/contents/{path}",
+            params=params,
+            headers={"Accept": "application/vnd.github.raw"},
+        )
+        if response.status_code == 404:
+            return None
+        if response.status_code == 403 and response.headers.get("x-ratelimit-remaining") == "0":
+            reset = int(response.headers.get("x-ratelimit-reset", "0"))
+            delay = max(0, reset - int(time.time()))
+            raise RuntimeError(f"GitHub rate limit exhausted; resets in ~{delay}s")
+        response.raise_for_status()
+        return response.text
+
+    def origin_write(
+        self,
+        attestation: OriginWriteAttestation,
+        method: str,
+        path: str,
+        *,
+        json: dict[str, Any] | None = None,
+    ) -> OriginWriteAttestation:
+        """Single origin-mutating entry. Fail-closed until preflight verdict is allowed."""
+        require_origin_writes(attestation)
+        method_u = method.upper()
+        if method_u not in _WRITE_METHODS:
+            raise ValueError(f"unsupported origin write method: {method}")
+        response = self.client.request(method_u, path, json=json)
+        response.raise_for_status()
+        return replace(attestation, origin_write_attempted=True)
 
     def iter_pages(
         self,
