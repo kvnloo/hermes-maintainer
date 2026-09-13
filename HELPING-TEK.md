@@ -1,12 +1,14 @@
 # What actually helps Tek (#108914)
 
-Posted 2026-09-13 as kvnloo: https://github.com/NousResearch/hermes-agent/pull/108914#issuecomment-5649915119
+Posted 2026-09-13 as kvnloo on **VOID** pin `d65af423`: https://github.com/NousResearch/hermes-agent/pull/108914#issuecomment-5649915119
 
-Live head at post **and at the factory re-run:** `d65af42305c4b51227e51aafb17fe7f00ba4de50`. Capture fence / fcntl / clipboard cap / provenance had already landed; remaining hole is still epoch-before-input-dispatch.
+**Live HEAD now:** `bc36ddb5f9696c25acc5d51cf29a961710e2d5a3`. Fourth round cherry-picked #109508 (`_fence()` before `_dispatch`). The hole in that comment is **closed**. Do **not** post again unless asked.
 
-Factory re-run (same 10-scanner pass as `d947fc8`, now HEAD-only): **CHANGES REQUIRED**. P1-6 probe RED: approval acquire+release, recording backend, no `_dispatch` patch → `code=human_has_control` **and** `click` landed, `epoch=2`. @smfworks confirmed; **#109508** is the cherry-pick (`_fence()` before `_dispatch`). Do **not** post another origin comment unless asked. The previous review pin `d947fc83` is void.
+## Factory re-pin (`bc36ddb5`)
 
-## Origin comment (posted on `d65af42`)
+**KEEP.** P1-6 probe green. ChatGPT Layer A (persist-before-epoch, approval-handoff click, fcntl) all landed. Layer B kernel/PII stays off this PR. Remaining: title `(#92524)`, `auto_start` YAML, writer lock, 4000 overlay vs “re-attach.”
+
+## Origin comment (historical — posted on `d65af42`)
 
 The lease is the right design. Serve, gateway, and CLI don't share memory, so the generation had to live in the file. You already encoded that in `lease.py`: callers keep `admitted.epoch`, because take-over then hand-back leaves the holder as `agent` and the turn is still the human's.
 
@@ -24,14 +26,6 @@ Related: #92524 (Linux+Desktop half only; hosted/dashboard remains — not Close
 
 Pinned to `d65af42305c4`. If the head moves, this is void.
 
-## Remaining test (red on `d65af42`; JSON-only is a false green)
+## What landed (round 4)
 
-Keep `test_takeover_during_an_admitted_action_discards_its_result` (postflight only) and Tek's `test_computer_use_capture_fence.py` (persist/vision). Do **not** rewrite the browser fence test to `commands == []`.
-
-**`test_stale_epoch_after_approval_handoff_never_clicks`** (`tests/tools/test_bot_desktop_lease.py`)
-
-- Approval callback does the full take-over / hand-back (`acquire` then `release`), returns `approve_once`. Recording backend (`click` appends). Do **not** patch `_dispatch`.
-- Act: `handle_computer_use({"action": "click", "element": 1})`.
-- Assert: `code == human_has_control` **and** `backend.calls == []`.
-- Pin: holder-only re-check admits AGENT + new epoch; `_dispatch` passes `fence` only to read-only handlers; `backend.click` runs; outer `_fence()` discards the result.
-- Patch: immediately before `_dispatch`, if `get().epoch != admitted.epoch` refuse. Keep the existing postflight compare.
+`tool.py:303` `_fence()` before `_dispatch`. Test `test_takeover_handback_during_approval_does_not_start_the_device_op` green on `bc36ddb5`. Tek credited kvnloo + smfworks; cherry-picked #109508 with authorship.
