@@ -73,8 +73,20 @@ async function inspectViewport(browser, vp, findings) {
     }
   }
   const fitBtn = page.getByRole("button", { name: "Fit view", exact: true });
-  if (!(await fitBtn.boundingBox())) {
+  const fitBox = await fitBtn.boundingBox();
+  if (!fitBox) {
     issue(findings, vp.name, "fit", "clip", "Fit view control is off-screen");
+  } else {
+    if (fitBox.height + 0.5 < 44) {
+      issue(findings, vp.name, "fit", "hit-target", "Fit view shorter than 44px", fitBox);
+    }
+    const zoomRow = zoomButtons[2] || zoomButtons[1] || zoomButtons[0.4];
+    if (zoomRow && vp.width <= 400) {
+      const overlapY = Math.min(fitBox.y + fitBox.height, zoomRow.y + zoomRow.height) - Math.max(fitBox.y, zoomRow.y);
+      if (overlapY > 8 && Math.abs(fitBox.y - zoomRow.y) < 8) {
+        issue(findings, vp.name, "fit", "clip", "Fit view shares the zoom-chip row on 390", { fitBox, zoomRow });
+      }
+    }
   }
 
   for (const zoom of ZOOM_STOPS) {
@@ -92,6 +104,16 @@ async function inspectViewport(browser, vp, findings) {
       issue(findings, vp.name, zoom, "hit-target", `Hit target ${Math.round(box.width)}×${Math.round(box.height)} < 44px`, { box });
     }
     await clickOpensDetail(page, node, findings, vp.name, zoom, /sqlite/i);
+
+    if (vp.width >= 981 && zoom >= 1.5) {
+      const minimap = page.locator(".react-flow__minimap");
+      if (await minimap.count()) {
+        const mini = await minimap.boundingBox();
+        if (mini && mini.width > 8 && mini.height > 8) {
+          issue(findings, vp.name, zoom, "minimap", "MiniMap still covers the canvas at 2×", { box: mini });
+        }
+      }
+    }
   }
 
   await page.getByRole("button", { name: "Fit view", exact: true }).click();
@@ -126,12 +148,48 @@ async function inspectViewport(browser, vp, findings) {
   await page.waitForTimeout(700);
   await page.getByRole("button", { name: "Fit view", exact: true }).click();
   await page.waitForTimeout(400);
-  const campaignNode = page.getByRole("button", { name: /ci verdict integrity/i }).first();
+  const campaignNode = page.locator("button.hm-node").first();
   if (await campaignNode.count()) {
-    await clickOpensDetail(page, campaignNode, findings, vp.name, "campaign", /campaign/i);
+    await clickOpensDetail(page, campaignNode, findings, vp.name, "campaign");
     const edge = page.getByRole("button", { name: /^protects$/i }).first();
     if (await edge.count()) {
       await clickOpensDetail(page, edge, findings, vp.name, "campaign-edge", /protects|relationship|typed/i);
+    }
+    const fixLabels = page.getByRole("button", { name: /^fixes$/i });
+    const fixCount = await fixLabels.count();
+    if (fixCount > 1) {
+      const boxes = [];
+      for (let i = 0; i < fixCount; i += 1) {
+        const box = await fixLabels.nth(i).boundingBox();
+        if (box) boxes.push(box);
+      }
+      for (let i = 0; i < boxes.length; i += 1) {
+        for (let j = i + 1; j < boxes.length; j += 1) {
+          const a = boxes[i];
+          const b = boxes[j];
+          const overlap =
+            Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x) > 8 &&
+            Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y) > 8;
+          if (overlap) {
+            issue(findings, vp.name, "campaign", "stacked-label", "fixes labels overlap", { a, b });
+          }
+        }
+      }
+    }
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(200);
+    const keyboardNode = page.locator("button.hm-node").first();
+    if (await keyboardNode.count()) {
+      await keyboardNode.evaluate((el) => {
+        el.scrollIntoView({ block: "center", inline: "center" });
+        el.focus();
+      });
+      await page.keyboard.press("Enter");
+      try {
+        await detail.waitFor({ state: "visible", timeout: 4000 });
+      } catch {
+        issue(findings, vp.name, "keyboard", "dead-click", "Enter on focused campaign node did not open detail");
+      }
     }
   } else {
     issue(findings, vp.name, "campaign", "empty", "Campaign canvas had no CI verdict node");

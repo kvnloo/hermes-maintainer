@@ -9,6 +9,7 @@ import {
   NODE_MIN_WIDTH,
   ZOOM_STOPS,
   architectureGraph,
+  capGraphPayload,
   edgeLabelHitForZoom,
   edgeLabelInvScale,
   findNodeBySearch,
@@ -208,5 +209,27 @@ describe("graph model", () => {
     expect(y).toBe(510 + NODE_CENTER.y);
     expect(opts.zoom).toBe(0.4);
     expect(fitView).not.toHaveBeenCalled();
+  });
+
+  it("wraps a large unclustered ticket pile into a grid that still fits at 0.4 zoom", () => {
+    const nodes = Array.from({ length: 80 }, (_, index) => ({
+      id: `issue:${index + 1}`,
+      kind: "issue",
+      number: index + 1,
+      title: `ticket ${index + 1}`,
+    }));
+    const capped = capGraphPayload({ nodes, relations: [] }, 60);
+    expect(capped.nodes).toHaveLength(60);
+    expect(capped.truncated).toBe(20);
+    const laid = layoutGraph(capped);
+    const minX = Math.min(...laid.map((node) => node.position.x));
+    const maxX = Math.max(...laid.map((node) => node.position.x));
+    const minY = Math.min(...laid.map((node) => node.position.y));
+    const maxY = Math.max(...laid.map((node) => node.position.y));
+    const width = maxX - minX + NODE_MIN_WIDTH;
+    const height = maxY - minY + NODE_MIN_HEIGHT;
+    expect(width * 0.4).toBeLessThan(1280);
+    expect(height * 0.4).toBeLessThan(720);
+    expect(laid).toHaveLength(60);
   });
 });

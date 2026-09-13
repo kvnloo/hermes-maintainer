@@ -314,6 +314,7 @@ a:hover .title { color: var(--color-success); }
   h1 { font-size: 1.18rem; }
   .hm-source { display: none; }
   .hm-legend-bar .hm-legend-title { display: none; }
+  .hm-legend-bar .hm-legend-title.is-truncated { display: block; }
   .hm-toolbar {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;

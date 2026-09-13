@@ -339,4 +339,16 @@ describe("GraphExplorer", () => {
     canvas.dispatchEvent(touch);
     expect(touch.defaultPrevented).toBe(true);
   });
+
+  it("caps a campaign-less live dump and says how many tickets were hidden", () => {
+    const nodes = Array.from({ length: 80 }, (_, index) => ({
+      id: `issue:${index + 1}`,
+      kind: "issue",
+      number: index + 1,
+      title: `ticket ${index + 1}`,
+    }));
+    renderExplorer({ status: "ready", graph: "campaign", nodes, relations: [] });
+    expect(screen.getAllByText(/showing 60 of 80/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("button", { name: /ticket /i }).length).toBe(60);
+  });
 });

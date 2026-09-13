@@ -124,4 +124,28 @@ describe("GraphCanvas (real xyflow)", () => {
     expect(document.querySelector(".hm-flow")?.getAttribute("data-minimap")).toBe("off");
     expect(document.querySelector(".react-flow__minimap")).toBeNull();
   });
+
+  it("hides MiniMap on a dense campaign grid so it cannot cover tickets", async () => {
+    window.matchMedia = (query) => ({
+      matches: String(query).includes("min-width"),
+      media: query,
+      onchange: null,
+      addListener() {},
+      removeListener() {},
+      addEventListener() {},
+      removeEventListener() {},
+      dispatchEvent() {
+        return false;
+      },
+    });
+    const nodes = Array.from({ length: 40 }, (_, index) => ({
+      id: `issue:${index + 1}`,
+      kind: "issue",
+      number: index + 1,
+      title: `ticket ${index + 1}`,
+    }));
+    renderFlow({ status: "ready", graph: "campaign", nodes, relations: [] }, { zoom: 1 });
+    await screen.findByRole("button", { name: "ticket 1", exact: true });
+    expect(document.querySelector(".hm-flow")?.getAttribute("data-minimap")).toBe("off");
+  });
 });

@@ -5,6 +5,7 @@ import {
   NODE_CENTER,
   ZOOM_STOPS,
   architectureGraph,
+  capGraphPayload,
   describeSelection,
   findNodeBySearch,
   frameGraph,
@@ -61,13 +62,15 @@ function GraphToolbar({ mode, zoom, sourceLabel, onArchitecture, onCampaigns, on
   );
 }
 
-function GraphLegend({ mode, legend }) {
+function GraphLegend({ mode, legend, truncated, visible, total }) {
   return (
     <div className="hm-legend-bar" aria-label="Graph legend">
-      <span className="hm-legend-title">
-        {mode === "architecture"
-          ? "Every box is a control — subsystems, files, invariants."
-          : "Issues, PRs, files, and the invariant this campaign is trying to keep true."}
+      <span className={`hm-legend-title${truncated ? " is-truncated" : ""}`}>
+        {truncated
+          ? `Showing ${visible} of ${total} tickets. Rebuild campaigns or open the seed canvas.`
+          : mode === "architecture"
+            ? "Every box is a control — subsystems, files, invariants."
+            : "Issues, PRs, files, and the invariant this campaign is trying to keep true."}
       </span>
       <ul>
         {legend.kinds.map((kind) => (
@@ -149,7 +152,11 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
   }, [parsed.graph, payload?.graph]);
 
   const status = payload?.status || (payload?.error ? "error" : "ready");
-  const source = mode === "architecture" ? ARCHITECTURE : payload;
+  const rawSource = mode === "architecture" ? ARCHITECTURE : payload;
+  const source = useMemo(
+    () => (mode === "architecture" ? rawSource : capGraphPayload(rawSource)),
+    [mode, rawSource],
+  );
   const nodes = useMemo(() => {
     const laid = layoutGraph(source);
     return laid.map((node) => ({
@@ -291,7 +298,9 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
         sourceLabel={
           mode === "architecture"
             ? "Maintainer map · local SQLite, read-only GitHub"
-            : (payload?.campaign?.title || (payload?.families?.length ? `${payload.families.length} seed families` : "Campaign slice"))
+            : source?.truncated
+              ? `Showing ${source.nodes.length} of ${source.total}`
+              : (payload?.campaign?.title || (payload?.families?.length ? `${payload.families.length} seed families` : "Campaign slice"))
         }
         onArchitecture={() => {
           setMode("architecture");
@@ -304,7 +313,13 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
         onZoom={zoomTo}
         onFit={fit}
       />
-      <GraphLegend mode={mode} legend={legend} />
+      <GraphLegend
+        mode={mode}
+        legend={legend}
+        truncated={Boolean(source?.truncated)}
+        visible={source?.nodes?.length}
+        total={source?.total}
+      />
 
       {campaignEmpty ? (
         <div className="graph-empty">

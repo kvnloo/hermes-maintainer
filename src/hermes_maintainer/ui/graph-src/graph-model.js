@@ -8,6 +8,8 @@ export const NODE_STEP_Y = 128;
 export const LANE_STEP_X = 268;
 export const FAMILY_GAP_X = 72;
 export const FAMILY_GAP_Y = 48;
+export const LANE_WRAP_ROWS = 8;
+export const MAX_VISIBLE_NODES = 60;
 
 export const FLOW_GESTURES = {
   panOnScroll: true,
@@ -172,6 +174,23 @@ export function staggerLabelOffsets(relations) {
   return offsets;
 }
 
+export function capGraphPayload(payload, limit = MAX_VISIBLE_NODES) {
+  const nodes = payload?.nodes || [];
+  const relations = payload?.relations || [];
+  if (nodes.length <= limit) {
+    return { ...payload, nodes, relations, truncated: 0, total: nodes.length };
+  }
+  const kept = nodes.slice(0, limit);
+  const ids = new Set(kept.map((node) => node.id));
+  return {
+    ...payload,
+    nodes: kept,
+    relations: relations.filter((rel) => ids.has(rel.src_id) && ids.has(rel.dst_id)),
+    truncated: nodes.length - limit,
+    total: nodes.length,
+  };
+}
+
 export function parseGraphSearch(search = "") {
   const raw = String(search || "");
   const params = new URLSearchParams(raw.startsWith("?") ? raw.slice(1) : raw);
@@ -257,19 +276,24 @@ function layoutFamily(members, originX, originY) {
     lanes.get(column).push(member);
   }
   const nodes = [];
+  let cursorX = originX;
   let tallest = NODE_MIN_HEIGHT;
   let widest = NODE_MIN_WIDTH;
-  for (const [column, laneNodes] of [...lanes.entries()].sort((a, b) => a[0] - b[0])) {
+  for (const [, laneNodes] of [...lanes.entries()].sort((a, b) => a[0] - b[0])) {
     laneNodes.sort((a, b) => laneFor(a) - laneFor(b) || String(a.id).localeCompare(String(b.id)));
+    const subCols = Math.max(1, Math.ceil(laneNodes.length / LANE_WRAP_ROWS));
     laneNodes.forEach((node, index) => {
-      const x = originX + column * LANE_STEP_X;
-      const y = originY + index * NODE_STEP_Y;
-      tallest = Math.max(tallest, (index + 1) * NODE_STEP_Y);
-      widest = Math.max(widest, (column + 1) * LANE_STEP_X);
+      const subCol = Math.floor(index / LANE_WRAP_ROWS);
+      const row = index % LANE_WRAP_ROWS;
+      const x = cursorX + subCol * LANE_STEP_X;
+      const y = originY + row * NODE_STEP_Y;
+      tallest = Math.max(tallest, (row + 1) * NODE_STEP_Y);
+      widest = Math.max(widest, x - originX + NODE_MIN_WIDTH);
       nodes.push(toFlowNode(node, { x, y }));
     });
+    cursorX += subCols * LANE_STEP_X;
   }
-  return { nodes, width: widest, height: tallest };
+  return { nodes, width: Math.max(widest, cursorX - originX), height: tallest };
 }
 
 function toFlowNode(node, position) {

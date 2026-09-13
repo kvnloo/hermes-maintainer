@@ -53,7 +53,7 @@ function CanvasInner({
     typeof window !== "undefined" && window.matchMedia("(min-width: 981px)").matches
   ));
 
-  const minimapOn = showMiniMap && Number(zoom) < 1.5;
+  const minimapOn = showMiniMap && Number(zoom) < 1.5 && (nodes || []).length <= 24;
 
   useEffect(() => {
     setNodes(nodes || []);
