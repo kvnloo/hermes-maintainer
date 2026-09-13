@@ -2,7 +2,25 @@
 
 Posted 2026-09-13 as kvnloo on **VOID** pin `d65af423`: https://github.com/NousResearch/hermes-agent/pull/108914#issuecomment-5649915119
 
-**Live HEAD now:** `bc36ddb5f9696c25acc5d51cf29a961710e2d5a3`. Fourth round cherry-picked #109508 (`_fence()` before `_dispatch`). The hole in that comment is **closed**. Do **not** post again unless asked.
+Leftovers (non-blocking) posted on live HEAD `bc36ddb5`: https://github.com/NousResearch/hermes-agent/pull/108914#issuecomment-5650142924
+
+**Live HEAD:** `bc36ddb5f9696c25acc5d51cf29a961710e2d5a3`. Fourth round cherry-picked #109508 (`_fence()` before `_dispatch`). The hole in the first comment is **closed**.
+
+## Leftovers comment (posted on `bc36ddb5`)
+
+The fence before `_dispatch` is in at `bc36ddb5`. That's the missing use of the generation you already had — persist, vision, and the device op now all consult it. #109508 was the right patch.
+
+Three leftovers that aren't a second P1 round:
+
+1. Title still ends `(#92524)`. That issue is hosted cloud-browser. The body already says Related and does not close it; the parenthetical still points at the other product.
+2. `bot-screen.md` YAML shows `auto_start: true` while the default is off. `computer-use.md` still says Hermes "starts on first use." The prose one paragraph up ("off by default") is already honest.
+3. #109508 / #109505 / #109446 are cherry-picked and dirty against this head. Close them when this lands.
+
+Takeover-doesn't-wait-for-in-flight is your ruling. Fedora nits are already on the receipt.
+
+Pinned to `bc36ddb5f969`. If the head moves, this is void.
+
+Did **not** dump: writer lock, 4000 overlay, in-flight QUIESCING, Fedora Provides nits (coe0718 already re-pinned those).
 
 ## Factory re-pin (`bc36ddb5`)
 
