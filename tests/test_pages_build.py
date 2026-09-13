@@ -30,3 +30,4 @@ def test_pages_snapshot_has_llms_and_seed_graph(tmp_path: Path):
     assert (site / "static" / "graph-app.js").is_file()
     assert (site / ".nojekyll").is_file()
     assert (site / "docs" / "PRD.md").is_file()
+    assert (site / "docs" / "COMMUNITY_AUTODEVELOP.md").is_file()

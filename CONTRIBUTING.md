@@ -13,6 +13,7 @@ implementation.
 - A similarity score is a retrieval hint, not a repository disposition.
 - Tests should exercise behavior and evidence contracts.
 - No GitHub mutation code belongs in the early milestones.
+- The `report` inbox is local-only (`performed_origin_write` stays false; origin Hermes is refused).
 
 Run:
 
