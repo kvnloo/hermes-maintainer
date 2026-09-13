@@ -149,6 +149,25 @@ describe("GraphCanvas (real xyflow)", () => {
     expect(document.querySelector(".hm-flow")?.getAttribute("data-minimap")).toBe("off");
   });
 
+  it("hides xyflow Controls on a compact viewport so they cannot cover nodes", async () => {
+    window.matchMedia = (query) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener() {},
+      removeListener() {},
+      addEventListener() {},
+      removeEventListener() {},
+      dispatchEvent() {
+        return false;
+      },
+    });
+    renderFlow(SAMPLE_CAMPAIGN, { zoom: 1 });
+    await screen.findByRole("button", { name: /cancelled ci treated as success/i });
+    expect(document.querySelector(".react-flow__controls")).toBeNull();
+    expect(document.querySelector(".hm-flow")?.getAttribute("data-controls")).toBe("off");
+  });
+
   it("does not render relation labels on a dense campaign grid", async () => {
     const nodes = Array.from({ length: 40 }, (_, index) => ({
       id: `issue:${index + 1}`,

@@ -271,6 +271,10 @@ a:hover .title { color: var(--color-success); }
 .react-flow__controls-button {
   width: 44px !important; height: 44px !important;
 }
+.hm-flow[data-controls="off"] .react-flow__controls {
+  display: none !important;
+  pointer-events: none !important;
+}
 .react-flow__edge-text { paint-order: stroke fill; stroke: var(--background-base); stroke-width: 3px; }
 .hm-edge-label {
   background: color-mix(in srgb, var(--background-base) 82%, #000);

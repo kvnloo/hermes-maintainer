@@ -90,6 +90,7 @@ function CanvasInner({
       data-touch-action={touchAction}
       data-minimap={minimapOn ? "on" : "off"}
       data-edge-labels={(edges || []).some((edge) => edge.data?.hideLabel) ? "off" : "on"}
+      data-controls={showMiniMap ? "on" : "off"}
       style={{ width: "100%", height: "100%", touchAction }}
     >
       <ReactFlow
@@ -139,7 +140,7 @@ function CanvasInner({
         noWheelClassName="nowheel"
       >
         <Background variant={BackgroundVariant.Dots} gap={22} size={1} color="rgba(255, 189, 56, 0.16)" />
-        <Controls showInteractive={false} position="bottom-right" />
+        {showMiniMap ? <Controls showInteractive={false} position="bottom-right" /> : null}
         {minimapOn ? (
           <MiniMap nodeColor={nodeColor} maskColor="rgba(4, 28, 28, 0.78)" position="bottom-left" pannable zoomable />
         ) : null}

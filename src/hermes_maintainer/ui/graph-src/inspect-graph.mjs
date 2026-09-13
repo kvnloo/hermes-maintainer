@@ -116,6 +116,16 @@ async function inspectViewport(browser, vp, findings) {
     }
   }
 
+  if (vp.width <= 400) {
+    const plus = page.locator(".react-flow__controls");
+    if (await plus.count()) {
+      const box = await plus.boundingBox();
+      if (box && box.width > 8 && box.height > 8) {
+        issue(findings, vp.name, "controls", "clip", "xyflow Controls cover the compact canvas", { box });
+      }
+    }
+  }
+
   await page.getByRole("button", { name: "Fit view", exact: true }).click();
   await page.waitForTimeout(300);
   await page.screenshot({ path: join(OUT, `${vp.name}-fit.png`) });
