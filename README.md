@@ -47,6 +47,8 @@ hermes-maintainer serve
 
 Open `http://127.0.0.1:8766`. The dashboard uses the Hermes Teal theme (switchable to the other built-in Hermes palettes) and an xyflow campaign graph. Agents can start from [`llms.txt`](./llms.txt) or `http://127.0.0.1:8766/llms.txt`.
 
+Public snapshot (GitHub Pages): https://kvnloo.github.io/hermes-maintainer/ (`llms.txt`, docs, and the dashboard on audit seed campaigns). The live graph still needs a local scan.
+
 For continuous operation:
 
 ```bash
@@ -107,6 +109,25 @@ The scaffold is intentionally useful before any model is connected. It can:
 
 The roadmap then adds commit-level extraction, embeddings, code-overlap analysis, test-evidence
 receipts, campaign-specific agent workers, exact optimization, and finally a restricted publisher.
+
+## CI and GitHub Pages
+
+This repo is onboarded to the [Verified OSS Loop](https://github.com/kvnloo/verified-oss-loop)
+(`./bin/oss-onboard --with-automation --scheme rolling`). Workers never merge `main` or `dev`.
+
+- CI (`.github/workflows/ci.yml`): `ruff`, `python -m pytest`, Pages snapshot, and the xyflow
+  frontend (`npm test` when `scripts.test` exists, otherwise an esbuild bundle check).
+- Pages (`.github/workflows/pages.yml`): Actions deploy of `python3 scripts/build-pages.py`
+  to https://kvnloo.github.io/hermes-maintainer/ — not the old branch-source hack.
+
+If the site 404s after the first successful `pages` workflow:
+
+1. Settings → Pages → Source: **GitHub Actions**
+2. Settings → Actions → General → Workflow permissions: **Read and write**
+   (the Pages job needs `pages: write` and `id-token: write`)
+
+Protect `main` and `dev` (PR required, no worker merge). `preview` and `nightly` stay loose
+under the default rolling scheme (`.verified-oss-loop/rollout.yml`).
 
 ## Seed context
 

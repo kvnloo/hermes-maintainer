@@ -34,3 +34,9 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+extend-exclude = [
+  ".verified-oss-loop",
+  ".github/scripts",
+  "scripts/rollout.py",
+  "scripts/cluster-similar-issues.py",
+]

@@ -1,4 +1,4 @@
-.PHONY: install dev test lint scan serve daemon doctor ui
+.PHONY: install dev test lint scan serve daemon doctor ui pages
 
 install:
 	python -m pip install -e '.[dev]'
@@ -26,3 +26,6 @@ doctor:
 
 ui:
 	./scripts/build-ui.sh
+
+pages:
+	python3 scripts/build-pages.py

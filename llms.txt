@@ -10,6 +10,8 @@ Do not collapse `similar`, `duplicate_of`, `same_root_cause`, `partially_address
 
 - [README](./README.md): install, scan, serve, and product principles
 - [Get started](./GET_STARTED.md): bootstrap, dashboard, and engineering order
+- [AGENTS.md](./AGENTS.md): Verified OSS Loop claim contract (workers never merge)
+- [GitHub Pages](https://kvnloo.github.io/hermes-maintainer/): static llms.txt + seed dashboard
 - [PRD](./docs/PRD.md): outcomes, dispositions, evidence levels, non-goals
 - [Architecture](./docs/ARCHITECTURE.md): scan classes, relationship ontology, campaigns, fix atoms
 - [Schemas](./docs/SCHEMAS.md): node IDs, evidence receipts, work packets
@@ -26,7 +28,7 @@ Do not collapse `similar`, `duplicate_of`, `same_root_cause`, `partially_address
 - [FastAPI app](./src/hermes_maintainer/api/app.py): `/api/graph`, campaign explorer, `/llms.txt`
 - [Graph store](./src/hermes_maintainer/graph/store.py): typed edges, subgraph export, filters
 - [Campaign builder](./src/hermes_maintainer/analysis/campaigns.py): survivor/donor/provenance roles
-- [xyflow graph UI](./src/hermes_maintainer/ui/graph-src/graph-app.jsx): campaign canvas (bundled to `ui/static/graph-app.js`)
+- [xyflow graph UI](./src/hermes_maintainer/ui/graph-src/graph-app.jsx): clickable architecture + campaign canvases (bundled to `ui/static/graph-app.js`)
 - [Dashboard theme](./src/hermes_maintainer/ui/static/styles.css): Hermes Teal and sibling palettes
 - [SQLite schema](./src/hermes_maintainer/schema.sql): nodes, relations, FTS5, campaigns, fix atoms
 

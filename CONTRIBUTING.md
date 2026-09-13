@@ -1,5 +1,8 @@
 # Contributing
 
+This repository follows the [Verified OSS Loop](https://github.com/kvnloo/verified-oss-loop).
+See `AGENTS.md`. Workers open PRs; they never merge `main` or `dev`.
+
 Hermes-maintainer optimizes coordination, so its own development must avoid duplicate parallel
 implementation.
 
@@ -14,7 +17,9 @@ implementation.
 Run:
 
 ```bash
-PYTHONPATH=src pytest -q
+PYTHONPATH=src python -m pytest -q
 ruff check .
+npm test --prefix src/hermes_maintainer/ui/graph-src   # when the script exists
 ./scripts/build-ui.sh   # only if you change ui/graph-src
+python3 scripts/build-pages.py
 ```
