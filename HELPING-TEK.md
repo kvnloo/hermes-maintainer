@@ -2,7 +2,17 @@
 
 Board hygiene (2026-09-13): `BACKLOG-CLOSE.md`. kvnloo cannot triage. Closed our own duplicate #102262. The ~2,750-item play is `label:duplicate` + obvious `invalid` — already classified, still open. See that file for maintainer commands.
 
-**Live HEAD:** `bc36ddb5f9696c25acc5d51cf29a961710e2d5a3`. Fourth round cherry-picked #109508 (`_fence()` before `_dispatch`). The hole in the first comment is **closed**.
+## Live GET 2026-09-13T13:32Z
+
+No newer **teknium1** PR for headed cloud / DisplayTarget / WebVNC / cloud-computer-control through CUA. Open CUA-desktop product remains [#108914](https://github.com/NousResearch/hermes-agent/pull/108914) @ `77123c0ef3e1c24d6712a37720e912f3fc68d9b3`. Prior pin `bc36ddb5` is **void**.
+
+HEAD moved: leftover pass Tek promised at 12:37 **is in tree** (4000 re-attach, install `session_id`, SIGTERM, `_ALLOC_LOCK` out of `/tmp`, xauth via stdin, honest `auto_start` docs) **plus** `Merge origin/main`, so [#109649](https://github.com/NousResearch/hermes-agent/pull/109649) fail-closed CU gate sits next to the lease fence. Do not remint those. Do not remint landed fence comments.
+
+Hero “Last seen” has vitest. Docs YAML `auto_start: false`. Remaining claimed-test gaps stay on PER-1563 (not for Tek unless he asks).
+
+`github_writes=0` on origin until Kevin moves [PER-1596](https://linear.app/0ism/issue/PER-1596) Backlog→Todo. Research umbrella (Triage, no Todo): [PER-1595](https://linear.app/0ism/issue/PER-1595).
+
+**Live HEAD (Bot Screen):** `77123c0ef3e1c24d6712a37720e912f3fc68d9b3`. Fourth round cherry-picked #109508 (`_fence()` before `_dispatch`). The hole in the first comment is **closed**.
 
 ## Consolidation (posted on `bc36ddb5`)
 

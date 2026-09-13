@@ -30,5 +30,11 @@
   "PR108055_SOURCE": "https://github.com/crazyief/hermes-agent/blob/c907c76a4fae8aaef29158ba8fb9041ccaade233/.github/workflows/ci.yaml",
   "PR109093": "https://github.com/NousResearch/hermes-agent/pull/109093",
   "PR91293": "https://github.com/NousResearch/hermes-agent/pull/91293",
-  "PR106742": "https://github.com/NousResearch/hermes-agent/pull/106742"
+  "PR106742": "https://github.com/NousResearch/hermes-agent/pull/106742",
+  "H_MAIN_LIVE": "https://github.com/NousResearch/hermes-agent/blob/b05a47b9d2df4d62124a80f70d657c6b8e1b07fb/AGENTS.md",
+  "PR108914": "https://github.com/NousResearch/hermes-agent/pull/108914",
+  "PR108914_HEAD": "https://github.com/NousResearch/hermes-agent/tree/77123c0ef3e1c24d6712a37720e912f3fc68d9b3",
+  "PR109649": "https://github.com/NousResearch/hermes-agent/pull/109649",
+  "ISSUE108592": "https://github.com/NousResearch/hermes-agent/issues/108592",
+  "PR108878": "https://github.com/NousResearch/hermes-agent/pull/108878"
 }

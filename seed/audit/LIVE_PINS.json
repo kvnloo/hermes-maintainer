@@ -1,0 +1,38 @@
+{
+  "fetched_at_utc": "2026-09-13T13:32:00Z",
+  "github_writes": 0,
+  "hermes_main": {
+    "sha": "b05a47b9d2df4d62124a80f70d657c6b8e1b07fb",
+    "short": "b05a47b9",
+    "commit_date": "2026-09-13T13:11:49Z",
+    "subject": "feat(desktop): reasoning effort gets its own composer pill",
+    "note": "Includes merged #109649 computer_use approval fail-closed through tools.approval._run_approval_gate."
+  },
+  "pr_108914_bot_screen": {
+    "number": 108914,
+    "url": "https://github.com/NousResearch/hermes-agent/pull/108914",
+    "author": "teknium1",
+    "state": "OPEN",
+    "head": "77123c0ef3e1c24d6712a37720e912f3fc68d9b3",
+    "short": "77123c0e",
+    "base": "735831f77685e1064e6f7f2608427e800cc7693a",
+    "title": "feat: Bot Screen — per-bot Xfce desktop streamed into Hermes Desktop, take over and hand back (related #92524)",
+    "files": 98,
+    "commits": 90,
+    "note": "Live GET 2026-09-13T13:32Z. No newer teknium1 PR for headed-cloud / DisplayTarget / WebVNC / CUA cloud-computer-control. HEAD moved from bc36ddb5: leftover pass (4000 re-attach, install session_id, SIGTERM, ALLOC_LOCK, xauth stdin, auto_start docs) plus merge origin/main so #109649 fail-closed CU gate is on this branch next to the lease fence. Branch hermes/hermes-b802e898."
+  },
+  "pr_109649_cua_approval_gate": {
+    "number": 109649,
+    "url": "https://github.com/NousResearch/hermes-agent/pull/109649",
+    "author": "teknium1",
+    "state": "MERGED",
+    "head": "9d7860b5794453310e66eadf628d3477a956e617",
+    "merged_to_main": "b05a47b9d2df4d62124a80f70d657c6b8e1b07fb",
+    "note": "Now also present on #108914 HEAD via merge origin/main (77123c0e). Not headed cloud."
+  },
+  "related": {
+    "headed_cloud_issue": "https://github.com/NousResearch/hermes-agent/issues/108592",
+    "display_target_rfc": "https://github.com/NousResearch/hermes-agent/pull/108878",
+    "display_requirement": "https://github.com/NousResearch/hermes-agent/pull/61310"
+  }
+}
