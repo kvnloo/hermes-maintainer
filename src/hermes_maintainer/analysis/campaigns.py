@@ -20,7 +20,7 @@ def rebuild_campaigns(db: Database) -> dict[str, int]:
     with db.connect() as conn:
         conn.execute("DELETE FROM campaign_members")
         conn.execute("DELETE FROM campaigns")
-        for component in sorted(meaningful, key=lambda x: (-len(x), sorted(x)[0])):
+        for component in sorted(meaningful, key=lambda x: (-len(x), min(x))):
             digest = hashlib.sha1("|".join(sorted(component)).encode()).hexdigest()[:12]
             campaign_id = f"campaign:{digest}"
             members = db.rows(
@@ -31,9 +31,9 @@ def rebuild_campaigns(db: Database) -> dict[str, int]:
             prs = [m for m in members if m["kind"] == "pr"]
             canonical = None
             if prs:
-                canonical = sorted(prs, key=lambda r: r.get("updated_at") or "", reverse=True)[0]
+                canonical = max(prs, key=lambda r: r.get("updated_at") or "")
             elif issues:
-                canonical = sorted(issues, key=lambda r: r.get("updated_at") or "", reverse=True)[0]
+                canonical = max(issues, key=lambda r: r.get("updated_at") or "")
             title = (canonical or members[0])["title"]
             score = len(issues) * 100 + len(prs) * 15
             conn.execute(

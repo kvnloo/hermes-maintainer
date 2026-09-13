@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from collections import Counter
 
-from hermes_maintainer.db import Database
 from hermes_maintainer.analysis.similarity import tokens
+from hermes_maintainer.db import Database
 
 
 def recurring_mechanisms(db: Database, limit: int = 50) -> list[dict]:

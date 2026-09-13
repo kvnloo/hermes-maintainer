@@ -1,6 +1,5 @@
-from pathlib import Path
 import json
-import zipfile
+from pathlib import Path
 
 root = Path('/mnt/data/hermes_triage_audit')
 H = '205645ee424163c7b6cfc032c331c3557797497b'
@@ -11,7 +10,7 @@ S = '50666ae0b9a51e260b52b7efbab2e4e020346e94'
 def blob(repo, sha, path):
     return f'https://github.com/{repo}/blob/{sha}/{path}'
 
-workflows = '''case-collision-check.yml ci-review-comment.yml ci.yaml contributor-check.yml deploy-site.yml docker-lint.yml docker.yml docs-site-checks.yml e2e-desktop.yml history-check.yml infographic-check.yml install-e2e-macos-run.yml install-e2e-run.yml install-e2e-windows-run.yml install-e2e.yml installer-tests.yml js-autofix.yml js-tests.yml label-rerun.yml lint.yml lockfile-diff.yml nix.yml osv-scanner.yml plugin-catalog-ci.yml profile-artifact-check.yml publish-e2e-evidence.yml review-labels.yml rust-tests.yml skills-index-freshness.yml skills-index.yml supply-chain-audit.yml tests-os.yml tests.yml uv-lockfile-check.yml windows-venv-e2e.yml'''.split()
+workflows = ['case-collision-check.yml', 'ci-review-comment.yml', 'ci.yaml', 'contributor-check.yml', 'deploy-site.yml', 'docker-lint.yml', 'docker.yml', 'docs-site-checks.yml', 'e2e-desktop.yml', 'history-check.yml', 'infographic-check.yml', 'install-e2e-macos-run.yml', 'install-e2e-run.yml', 'install-e2e-windows-run.yml', 'install-e2e.yml', 'installer-tests.yml', 'js-autofix.yml', 'js-tests.yml', 'label-rerun.yml', 'lint.yml', 'lockfile-diff.yml', 'nix.yml', 'osv-scanner.yml', 'plugin-catalog-ci.yml', 'profile-artifact-check.yml', 'publish-e2e-evidence.yml', 'review-labels.yml', 'rust-tests.yml', 'skills-index-freshness.yml', 'skills-index.yml', 'supply-chain-audit.yml', 'tests-os.yml', 'tests.yml', 'uv-lockfile-check.yml', 'windows-venv-e2e.yml']
 assert len(workflows) == 35
 sources = {
  'H_POLICY': blob('NousResearch/hermes-agent', H, 'AGENTS.md'),

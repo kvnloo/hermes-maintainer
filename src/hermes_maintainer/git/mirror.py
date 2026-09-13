@@ -34,5 +34,6 @@ def is_ancestor(mirror_dir: Path, ancestor: str, descendant: str) -> bool:
         cwd=mirror_dir,
         text=True,
         capture_output=True,
+        check=False,
     )
     return proc.returncode == 0

@@ -5,9 +5,9 @@ import re
 from typing import Any
 
 _REF_RE = re.compile(r"(?<![\w/])#(?P<num>\d+)\b")
-_FIX_RE = re.compile(r"\b(?:fix(?:e[sd])?|close[sd]?|resolve[sd]?)\s+#(?P<num>\d+)\b", re.I)
-_SUPERSEDE_RE = re.compile(r"\b(?:supersedes?|replaces?)\s+#(?P<num>\d+)\b", re.I)
-_RELATED_RE = re.compile(r"\b(?:related(?:\s+to)?|refs?|see)\s*:?[ ]*#(?P<num>\d+)\b", re.I)
+_FIX_RE = re.compile(r"\b(?:fix(?:e[sd])?|close[sd]?|resolve[sd]?)\s+#(?P<num>\d+)\b", re.IGNORECASE)
+_SUPERSEDE_RE = re.compile(r"\b(?:supersedes?|replaces?)\s+#(?P<num>\d+)\b", re.IGNORECASE)
+_RELATED_RE = re.compile(r"\b(?:related(?:\s+to)?|refs?|see)\s*:?[ ]*#(?P<num>\d+)\b", re.IGNORECASE)
 _PR_URL_RE = re.compile(r"github\.com/[^/]+/[^/]+/pull/(?P<num>\d+)")
 _ISSUE_URL_RE = re.compile(r"github\.com/[^/]+/[^/]+/issues/(?P<num>\d+)")
 

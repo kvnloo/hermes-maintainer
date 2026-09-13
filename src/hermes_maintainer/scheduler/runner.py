@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import UTC, datetime
 
 from hermes_maintainer.analysis.campaigns import rebuild_campaigns
 from hermes_maintainer.analysis.fix_atoms import rebuild_pr_atoms

@@ -5,17 +5,12 @@ import json
 import logging
 import shutil
 import subprocess
-from pathlib import Path
 
 import typer
 import uvicorn
 from rich.console import Console
 from rich.table import Table
 
-from hermes_maintainer.analysis.campaigns import rebuild_campaigns
-from hermes_maintainer.analysis.fix_atoms import rebuild_pr_atoms
-from hermes_maintainer.analysis.health import snapshot_metrics
-from hermes_maintainer.analysis.similarity import build_similarity_edges
 from hermes_maintainer.config import load_settings
 from hermes_maintainer.db import Database
 from hermes_maintainer.git.mirror import ensure_mirror
@@ -111,7 +106,13 @@ def doctor():
     table.add_row("database", "OK" if s.paths.database.exists() else "NEW", str(s.paths.database))
     table.add_row("mirror", "OK" if s.paths.mirror_dir.exists() else "NEW", str(s.paths.mirror_dir))
     if git and s.paths.mirror_dir.exists():
-        p = subprocess.run([git, "fsck", "--no-dangling"], cwd=s.paths.mirror_dir, capture_output=True, text=True)
+        p = subprocess.run(
+            [git, "fsck", "--no-dangling"],
+            cwd=s.paths.mirror_dir,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
         table.add_row("git fsck", "OK" if p.returncode == 0 else "FAIL", (p.stderr or p.stdout).strip()[:140])
     console.print(table)
 

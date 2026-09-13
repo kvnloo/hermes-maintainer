@@ -17,6 +17,7 @@ def stable_patch_id(mirror_dir: Path, commit_sha: str) -> str | None:
         stdin=show.stdout,
         text=True,
         capture_output=True,
+        check=False,
     )
     if show.stdout:
         show.stdout.close()
