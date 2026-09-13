@@ -182,11 +182,14 @@ function graphQuery() {
 
 function setView(view) {
   state.view = view
+  document.body.classList.toggle("is-graph", view === "graph")
   document.querySelectorAll(".view-tabs .tab").forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.view === view)
   })
   $("#board-view").hidden = view !== "board"
   $("#graph-view").hidden = view !== "graph"
+  const filters = document.querySelector(".filters")
+  if (filters) filters.hidden = view === "graph"
   if (view === "graph") loadGraph()
 }
 

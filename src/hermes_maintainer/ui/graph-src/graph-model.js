@@ -4,6 +4,10 @@ export const ZOOM_STOPS = [0.4, 0.75, 1, 1.5, 2];
 export const HIT_MIN_PX = 44;
 export const NODE_MIN_HEIGHT = HIT_MIN_PX / 0.4;
 export const NODE_MIN_WIDTH = 248;
+export const NODE_STEP_Y = 176;
+export const LANE_STEP_X = 280;
+export const FAMILY_GAP_X = 88;
+export const FAMILY_GAP_Y = 56;
 
 export const FLOW_GESTURES = {
   panOnScroll: true,
@@ -90,6 +94,11 @@ export function labelScaleForZoom(zoom) {
   return Math.max(1, 11 / (13 * z));
 }
 
+export function edgeLabelInvScale(zoom) {
+  const z = Math.max(Number(zoom) || 1, FLOW_GESTURES.minZoom);
+  return 1 / z;
+}
+
 export function parseGraphSearch(search = "") {
   const raw = String(search || "");
   const params = new URLSearchParams(raw.startsWith("?") ? raw.slice(1) : raw);
@@ -126,7 +135,7 @@ export function layoutGraph(payload) {
   }
 
   const out = [];
-  let groupY = 0;
+  const autoFamilies = [];
   for (const members of groups.values()) {
     const hasPositions = members.every(
       (node) => Number.isFinite(node.position?.x) && Number.isFinite(node.position?.y),
@@ -135,25 +144,53 @@ export function layoutGraph(payload) {
       for (const node of members) {
         out.push(toFlowNode(node, node.position));
       }
-      continue;
+    } else {
+      autoFamilies.push(members);
     }
-    const lanes = new Map();
-    for (const member of members) {
-      const lane = laneFor(member);
-      if (!lanes.has(lane)) lanes.set(lane, []);
-      lanes.get(lane).push(member);
+  }
+
+  const columns = autoFamilies.length > 2 ? 2 : 1;
+  let column = 0;
+  let originX = 0;
+  let originY = 0;
+  let rowHeight = 0;
+  for (const members of autoFamilies) {
+    if (column >= columns) {
+      column = 0;
+      originX = 0;
+      originY += rowHeight + FAMILY_GAP_Y;
+      rowHeight = 0;
     }
-    let tallest = 0;
-    for (const [lane, laneNodes] of [...lanes.entries()].sort((a, b) => a[0] - b[0])) {
-      laneNodes.forEach((node, index) => {
-        const y = groupY + index * 132;
-        tallest = Math.max(tallest, (index + 1) * 132);
-        out.push(toFlowNode(node, { x: lane * 300, y }));
-      });
-    }
-    groupY += Math.max(tallest, 140) + 56;
+    const family = layoutFamily(members, originX, originY);
+    out.push(...family.nodes);
+    originX += family.width + FAMILY_GAP_X;
+    rowHeight = Math.max(rowHeight, family.height);
+    column += 1;
   }
   return out;
+}
+
+function layoutFamily(members, originX, originY) {
+  const lanes = new Map();
+  for (const member of members) {
+    const lane = laneFor(member);
+    if (!lanes.has(lane)) lanes.set(lane, []);
+    lanes.get(lane).push(member);
+  }
+  const sorted = [...lanes.entries()].sort((a, b) => a[0] - b[0]);
+  const nodes = [];
+  let tallest = NODE_MIN_HEIGHT;
+  let widest = NODE_MIN_WIDTH;
+  sorted.forEach(([, laneNodes], column) => {
+    laneNodes.forEach((node, index) => {
+      const x = originX + column * LANE_STEP_X;
+      const y = originY + index * NODE_STEP_Y;
+      tallest = Math.max(tallest, (index + 1) * NODE_STEP_Y);
+      widest = Math.max(widest, (column + 1) * LANE_STEP_X);
+      nodes.push(toFlowNode(node, { x, y }));
+    });
+  });
+  return { nodes, width: widest, height: tallest };
 }
 
 function toFlowNode(node, position) {
@@ -172,6 +209,7 @@ function toFlowNode(node, position) {
       minWidth: NODE_MIN_WIDTH,
       minHeight: NODE_MIN_HEIGHT,
       width: NODE_MIN_WIDTH,
+      height: NODE_MIN_HEIGHT,
     },
     draggable: false,
     selectable: true,

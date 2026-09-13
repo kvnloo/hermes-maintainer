@@ -3,8 +3,11 @@ import { SAMPLE_CAMPAIGN } from "./fixtures.js";
 import {
   FLOW_GESTURES,
   HIT_MIN_PX,
+  NODE_MIN_HEIGHT,
+  NODE_MIN_WIDTH,
   ZOOM_STOPS,
   architectureGraph,
+  edgeLabelInvScale,
   hitSizeForZoom,
   labelScaleForZoom,
   layoutGraph,
@@ -76,9 +79,49 @@ describe("graph model", () => {
     for (const zoom of ZOOM_STOPS) {
       const visualHit = hitSizeForZoom(zoom) * zoom;
       const visualFont = 13 * labelScaleForZoom(zoom) * zoom;
+      const edgeScreen = HIT_MIN_PX * edgeLabelInvScale(zoom) * zoom;
       expect(visualHit).toBeGreaterThanOrEqual(HIT_MIN_PX - 0.05);
       expect(visualFont).toBeGreaterThanOrEqual(11);
+      expect(edgeScreen).toBeGreaterThanOrEqual(HIT_MIN_PX - 0.05);
     }
+  });
+
+  it("packs several campaign families into a grid that still fits at 0.4 zoom", () => {
+    const nodes = [];
+    for (const family of ["a", "b", "c", "d"]) {
+      nodes.push({
+        id: `campaign:${family}`,
+        kind: "campaign",
+        campaign_id: family,
+        title: family,
+      });
+      nodes.push({
+        id: `issue:${family}`,
+        kind: "issue",
+        campaign_id: family,
+        title: `${family} issue`,
+        role: "canonical_problem",
+      });
+      for (let index = 0; index < 4; index += 1) {
+        nodes.push({
+          id: `pr:${family}-${index}`,
+          kind: "pr",
+          campaign_id: family,
+          title: `${family} pr ${index}`,
+          role: "survivor",
+        });
+      }
+    }
+    const laid = layoutGraph({ nodes });
+    const minX = Math.min(...laid.map((node) => node.position.x));
+    const maxX = Math.max(...laid.map((node) => node.position.x));
+    const minY = Math.min(...laid.map((node) => node.position.y));
+    const maxY = Math.max(...laid.map((node) => node.position.y));
+    const width = maxX - minX + NODE_MIN_WIDTH;
+    const height = maxY - minY + NODE_MIN_HEIGHT;
+    expect(width * 0.4).toBeLessThan(1280);
+    expect(height * 0.4).toBeLessThan(720);
+    expect(laid).toHaveLength(nodes.length);
   });
 
   it("round-trips graph deep links", () => {

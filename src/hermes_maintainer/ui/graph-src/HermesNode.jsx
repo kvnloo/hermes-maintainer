@@ -1,12 +1,19 @@
 import { Handle, Position, useStore } from "@xyflow/react";
 import { formatNodeKicker, labelScaleForZoom } from "./graph-model.js";
 
+export const hermesNodeHandlers = { onClick: null };
+
 export function HermesNode({ id, data, selected }) {
   const zoom = useStore((state) => state.transform[2]);
   const scale = labelScaleForZoom(zoom);
   const title = data.title || data.label || id;
   const compact = zoom < 0.75;
   const kind = data.kind || "subsystem";
+
+  const activate = (event) => {
+    event.stopPropagation();
+    hermesNodeHandlers.onClick?.(event, { id, type: "hermes", data, selected });
+  };
 
   return (
     <div className={`hm-node-shell kind-${kind} role-${data.role || "member"}${selected ? " is-selected" : ""}`}>
@@ -16,9 +23,18 @@ export function HermesNode({ id, data, selected }) {
         className="hm-node nopan nodrag"
         aria-label={title}
         aria-pressed={selected ? "true" : "false"}
+        onClick={activate}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            activate(event);
+          }
+        }}
         style={{
           minWidth: 248,
           minHeight: 110,
+          height: 110,
+          overflow: "hidden",
           fontSize: `${13 * scale}px`,
         }}
       >
@@ -29,13 +45,11 @@ export function HermesNode({ id, data, selected }) {
           ) : null}
         </span>
         <span className="hm-title">{title}</span>
-        {!compact && (data.summary || data.state || data.author) ? (
-          <span className="hm-meta">
-            {data.kind === "issue" || data.kind === "pr"
-              ? `${data.state || "open"}${data.author ? ` · ${data.author}` : ""}`
-              : data.summary}
-          </span>
-        ) : null}
+        {data.kind === "issue" || data.kind === "pr"
+          ? (!compact && (data.state || data.author) ? (
+            <span className="hm-meta">{`${data.state || "open"}${data.author ? ` · ${data.author}` : ""}`}</span>
+          ) : null)
+          : (!compact && data.summary ? <span className="hm-meta">{data.summary}</span> : null)}
       </button>
       <Handle type="source" position={Position.Bottom} isConnectable={false} />
     </div>

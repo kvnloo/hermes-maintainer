@@ -99,7 +99,7 @@
     {
       "id": "arch:campaigns",
       "kind": "subsystem",
-      "title": "Campaigns",
+      "title": "Campaign graph",
       "role": "coordination",
       "summary": "A campaign is a problem family: canonical issue, survivor, donors, provenance, stacked children, superseded work.",
       "position": { "x": 280, "y": 850 }

@@ -206,7 +206,7 @@ describe("GraphExplorer", () => {
     expect(canvas).toHaveAttribute("data-max-zoom", "2");
 
     for (const zoom of ZOOM_STOPS) {
-      await user.click(screen.getByRole("button", { name: `Zoom ${zoom}` }));
+      await user.click(screen.getByRole("button", { name: `Zoom ${zoom}`, exact: true }));
       expect(document.body.getAttribute("data-zoom")).toBe(String(zoom));
       const node = screen.getByRole("button", { name: /cancelled ci treated as success/i });
       expect(Number.parseFloat(node.style.minHeight)).toBeGreaterThanOrEqual(HIT_MIN_PX / 0.4);

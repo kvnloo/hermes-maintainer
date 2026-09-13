@@ -86,9 +86,9 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
     const node = layoutGraph(source).find((item) => item.id === parsed.node);
     if (node) {
       appliedLink.current = parsed.node;
-      setSelected({ type: "node", id: node.id, node });
+      applySelection({ type: "node", id: node.id, node });
     }
-  }, [parsed.node, source]);
+  }, [applySelection, parsed.node, source]);
 
   useEffect(() => {
     const onKey = (event) => {
@@ -109,12 +109,24 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
     (_event, edge) => applySelection({ type: "edge", id: edge.id, edge }),
     [applySelection],
   );
+  const onPaneClick = useCallback((event) => {
+    if (event?.target?.closest?.(".hm-node, .hm-edge-label, button")) return;
+    clearSelection();
+  }, [clearSelection]);
 
   const zoomTo = useCallback((value) => {
     setZoom(value);
-    flowRef.current?.zoomTo?.(value, { duration: 80 });
-    flowRef.current?.setViewport?.({ x: 60, y: 40, zoom: value });
-  }, []);
+    const api = flowRef.current;
+    if (!api) return;
+    if (selected?.type === "node") {
+      const node = api.getNode?.(selected.id);
+      if (node) {
+        api.setCenter(node.position.x + 124, node.position.y + 55, { zoom: value, duration: 140 });
+        return;
+      }
+    }
+    api.zoomTo?.(value, { duration: 140 });
+  }, [selected]);
 
   const fit = useCallback(() => {
     flowRef.current?.fitView?.({ padding: 0.18, minZoom: 0.4, maxZoom: 2 });
@@ -123,6 +135,15 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
   const detail = describeSelection(selected);
   const legend = legendItems(nodes, edges);
   const campaignEmpty = mode === "campaign" && status === "ready" && !(payload?.nodes || []).length;
+  const graphKey = `${mode}:${nodes.map((node) => node.id).join("|")}`;
+
+  useEffect(() => {
+    if (status !== "ready" || campaignEmpty) return undefined;
+    const frame = window.requestAnimationFrame(() => {
+      flowRef.current?.fitView?.({ padding: 0.2, minZoom: 0.4, maxZoom: 2, duration: 180 });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [graphKey, status, campaignEmpty]);
 
   if (status === "loading") {
     return (
@@ -188,6 +209,29 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
             Fit view
           </button>
         </div>
+        <div className="hm-source">
+          {mode === "architecture"
+            ? "Maintainer map · local SQLite, read-only GitHub"
+            : (payload?.campaign?.title || (payload?.families?.length ? `${payload.families.length} seed families` : "Campaign slice"))}
+        </div>
+      </div>
+      <div className="hm-legend-bar" aria-label="Graph legend">
+        <span className="hm-legend-title">
+          {mode === "architecture"
+            ? "Every box is a control — subsystems, files, invariants."
+            : "Issues, PRs, files, and the invariant this campaign is trying to keep true."}
+        </span>
+        <ul>
+          {legend.kinds.map((kind) => (
+            <li key={kind}>
+              <span className={`swatch kind-${kind}`} />
+              {kind}
+            </li>
+          ))}
+        </ul>
+        {legend.relations.length ? (
+          <span className="hm-legend-rels">{legend.relations.join(" · ")}</span>
+        ) : null}
       </div>
 
       {campaignEmpty ? (
@@ -204,10 +248,15 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
             onZoomChange={setZoom}
             onReady={(api) => {
               flowRef.current = api;
+              if (api.getNode) {
+                const ready = { ...api, getNode: api.getNode.bind(api) };
+                flowRef.current = ready;
+              }
+              api.fitView?.({ padding: 0.2, minZoom: 0.4, maxZoom: 2 });
             }}
             onNodeClick={onNodeClick}
             onEdgeClick={onEdgeClick}
-            onPaneClick={clearSelection}
+            onPaneClick={onPaneClick}
             panOnScroll={FLOW_GESTURES.panOnScroll}
             zoomOnPinch={FLOW_GESTURES.zoomOnPinch}
             preventScrolling={FLOW_GESTURES.preventScrolling}
@@ -217,25 +266,6 @@ export function GraphExplorer({ payload, onSelect, search, onNavigate }) {
             edgesFocusable={FLOW_GESTURES.edgesFocusable}
             touchAction={FLOW_GESTURES.touchAction}
           />
-          <aside className="hm-legend" aria-label="Graph legend">
-            <div className="hm-legend-title">Read this canvas</div>
-            <p>
-              {mode === "architecture"
-                ? "Subsystems, files, and invariants of the maintainer. Every box is a control."
-                : "Issues, PRs, files, and the invariant this campaign is trying to keep true."}
-            </p>
-            <ul>
-              {legend.kinds.map((kind) => (
-                <li key={kind}>
-                  <span className={`swatch kind-${kind}`} />
-                  {kind}
-                </li>
-              ))}
-            </ul>
-            {legend.relations.length ? (
-              <p className="hm-legend-rels">{legend.relations.join(" · ")}</p>
-            ) : null}
-          </aside>
           {detail ? (
             <aside className="hm-detail" role="region" aria-label="Detail">
               <div className="hm-detail-head">

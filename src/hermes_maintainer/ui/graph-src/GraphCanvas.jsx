@@ -8,8 +8,8 @@ import {
   useEdgesState,
   useNodesState,
 } from "@xyflow/react";
-import { useEffect, useMemo, useRef } from "react";
-import { HermesNode } from "./HermesNode.jsx";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { HermesNode, hermesNodeHandlers } from "./HermesNode.jsx";
 import { RelationEdge, relationEdgeHandlers } from "./RelationEdge.jsx";
 import { attachTouchLock, FLOW_GESTURES } from "./graph-model.js";
 
@@ -48,6 +48,9 @@ function CanvasInner({
   const rootRef = useRef(null);
   const [rfNodes, setNodes, onNodesChange] = useNodesState(nodes);
   const [rfEdges, setEdges, onEdgesChange] = useEdgesState(edges);
+  const [showMiniMap, setShowMiniMap] = useState(() => (
+    typeof window !== "undefined" && window.matchMedia("(min-width: 981px)").matches
+  ));
 
   useEffect(() => {
     setNodes(nodes || []);
@@ -57,11 +60,21 @@ function CanvasInner({
   useEffect(() => attachTouchLock(rootRef.current), []);
 
   useEffect(() => {
+    const mq = window.matchMedia("(min-width: 981px)");
+    const onChange = () => setShowMiniMap(mq.matches);
+    onChange();
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  useEffect(() => {
+    hermesNodeHandlers.onClick = onNodeClick || null;
     relationEdgeHandlers.onClick = onEdgeClick || null;
     return () => {
+      if (hermesNodeHandlers.onClick === onNodeClick) hermesNodeHandlers.onClick = null;
       if (relationEdgeHandlers.onClick === onEdgeClick) relationEdgeHandlers.onClick = null;
     };
-  }, [onEdgeClick]);
+  }, [onEdgeClick, onNodeClick]);
 
   const fitViewOptions = useMemo(() => ({ padding: 0.18, minZoom, maxZoom }), [minZoom, maxZoom]);
 
@@ -122,7 +135,9 @@ function CanvasInner({
       >
         <Background variant={BackgroundVariant.Dots} gap={22} size={1} color="rgba(255, 189, 56, 0.16)" />
         <Controls showInteractive={false} position="bottom-right" />
-        <MiniMap nodeColor={nodeColor} maskColor="rgba(4, 28, 28, 0.78)" position="top-right" pannable zoomable />
+        {showMiniMap ? (
+          <MiniMap nodeColor={nodeColor} maskColor="rgba(4, 28, 28, 0.78)" position="bottom-left" pannable zoomable />
+        ) : null}
       </ReactFlow>
     </div>
   );
