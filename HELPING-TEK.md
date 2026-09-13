@@ -2,7 +2,9 @@
 
 Posted 2026-09-13 as kvnloo: https://github.com/NousResearch/hermes-agent/pull/108914#issuecomment-5649915119
 
-Live head at post: `d65af42305c4` (review pin `d947fc83` had moved). Capture fence / fcntl / clipboard cap / provenance had already landed; origin comment is the remaining hole: epoch-before-input-dispatch.
+Live head at post **and at the factory re-run:** `d65af42305c4b51227e51aafb17fe7f00ba4de50`. Capture fence / fcntl / clipboard cap / provenance had already landed; remaining hole is still epoch-before-input-dispatch.
+
+Factory re-run (same 10-scanner pass as `d947fc8`, now HEAD-only): **CHANGES REQUIRED**. P1-6 probe RED: approval acquire+release, recording backend, no `_dispatch` patch → `code=human_has_control` **and** `click` landed, `epoch=2`. @smfworks confirmed; **#109508** is the cherry-pick (`_fence()` before `_dispatch`). Do **not** post another origin comment unless asked. The previous review pin `d947fc83` is void.
 
 ## Origin comment (posted on `d65af42`)
 
