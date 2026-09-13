@@ -1,0 +1,178 @@
+{
+  "graph": "architecture",
+  "source": "architecture",
+  "campaign": {
+    "id": "architecture:hermes-maintainer",
+    "title": "hermes-maintainer architecture",
+    "summary": "Read-only coordination plane: ingest GitHub and git, normalize into SQLite, cluster campaigns, and select fix atoms. Nothing here writes back to NousResearch/hermes-agent."
+  },
+  "nodes": [
+    {
+      "id": "arch:github-api",
+      "kind": "subsystem",
+      "title": "GitHub API",
+      "role": "source",
+      "summary": "Issue and PR metadata. hermes-maintainer is pull-only; foreign ticket closes return 403.",
+      "position": { "x": 0, "y": 0 }
+    },
+    {
+      "id": "arch:git-remote",
+      "kind": "subsystem",
+      "title": "git remote",
+      "role": "source",
+      "summary": "The hermes-agent remote. Ancestry, patch-id, and donor commits come from the mirror, not from GitHub HTML.",
+      "position": { "x": 560, "y": 0 }
+    },
+    {
+      "id": "invariant:evidence-before-closure",
+      "kind": "invariant",
+      "title": "Evidence before closure",
+      "role": "invariant",
+      "summary": "duplicate_of, same_root_cause, partially_addresses, and verified_fixed_on stay distinct. An LLM confidence score is never an authorization signal.",
+      "position": { "x": 1120, "y": 0 }
+    },
+    {
+      "id": "arch:metadata-ingest",
+      "kind": "subsystem",
+      "title": "Metadata ingest",
+      "role": "ingest",
+      "summary": "Fast scan of recently updated issues and PRs. Labels, state, and explicit references land here first.",
+      "position": { "x": 0, "y": 170 }
+    },
+    {
+      "id": "arch:bare-mirror",
+      "kind": "subsystem",
+      "title": "Bare mirror",
+      "role": "ingest",
+      "summary": "Local git fetch. Patch hashes, stacked-on edges, and incorporate-commit checks read this tree.",
+      "position": { "x": 560, "y": 170 }
+    },
+    {
+      "id": "arch:normalization",
+      "kind": "subsystem",
+      "title": "Normalization layer",
+      "role": "core",
+      "summary": "Turns GitHub JSON and git objects into typed nodes: issue:N, pr:N, commit:sha, file:path.",
+      "position": { "x": 280, "y": 340 }
+    },
+    {
+      "id": "arch:sqlite-backlog",
+      "kind": "subsystem",
+      "title": "SQLite backlog graph",
+      "role": "core",
+      "summary": "Source of truth for maintenance state. FTS5 for lexical retrieval. Ordinary tables, not a graph database, until measured complexity says otherwise.",
+      "position": { "x": 280, "y": 510 }
+    },
+    {
+      "id": "file:graph/store.py",
+      "kind": "file",
+      "title": "graph/store.py",
+      "path": "src/hermes_maintainer/graph/store.py",
+      "role": "file",
+      "summary": "Typed subgraph export, filters, and connected components used by the campaign canvas.",
+      "position": { "x": 1120, "y": 510 }
+    },
+    {
+      "id": "arch:explicit-refs",
+      "kind": "subsystem",
+      "title": "Explicit refs",
+      "role": "analysis",
+      "summary": "Fixes, duplicate_of, stacked_on, and other relations parsed from issue/PR prose — not inferred from title similarity alone.",
+      "position": { "x": 0, "y": 680 }
+    },
+    {
+      "id": "arch:similarity",
+      "kind": "subsystem",
+      "title": "Similarity engine",
+      "role": "analysis",
+      "summary": "Lexical (and optional embedding) candidates. These become possible_duplicate edges that still need a human or a probe.",
+      "position": { "x": 280, "y": 680 }
+    },
+    {
+      "id": "arch:git-analysis",
+      "kind": "subsystem",
+      "title": "git analysis",
+      "role": "analysis",
+      "summary": "Patch-id, overlapping hunks, incorporated commits. Distinguishes a donor atom from a whole competing PR.",
+      "position": { "x": 560, "y": 680 }
+    },
+    {
+      "id": "arch:campaigns",
+      "kind": "subsystem",
+      "title": "Campaign graph",
+      "role": "coordination",
+      "summary": "A campaign is a problem family: canonical issue, survivor, donors, provenance, stacked children, superseded work.",
+      "position": { "x": 280, "y": 850 }
+    },
+    {
+      "id": "campaign:ci-verdict-integrity",
+      "kind": "campaign",
+      "title": "CI verdict integrity",
+      "role": "campaign",
+      "summary": "Pilot family: a cancelled or unknown required check must not count as green. Reconcile existing patches; do not open another PR.",
+      "position": { "x": 1120, "y": 850 }
+    },
+    {
+      "id": "arch:fix-atoms",
+      "kind": "subsystem",
+      "title": "Fix atoms",
+      "role": "coordination",
+      "summary": "Smallest reviewable unit that can be selected. MVP is PR-level; the target model is commit- and hunk-aware.",
+      "position": { "x": 280, "y": 1020 }
+    },
+    {
+      "id": "arch:evidence",
+      "kind": "subsystem",
+      "title": "Evidence engine",
+      "role": "selection",
+      "summary": "Receipts from reported → source_confirmed → reproduced → verified_candidate → verified_integration → verified_main.",
+      "position": { "x": 0, "y": 1190 }
+    },
+    {
+      "id": "arch:optimizer",
+      "kind": "subsystem",
+      "title": "Merge-set optimizer",
+      "role": "selection",
+      "summary": "Greedy coverage first. CP-SAT only after requires/conflicts are trustworthy. Maximize verified issue weight, not PR count.",
+      "position": { "x": 560, "y": 1190 }
+    },
+    {
+      "id": "arch:local-ui",
+      "kind": "subsystem",
+      "title": "Local API/UI",
+      "role": "interface",
+      "summary": "This dashboard. Click a node for the issue, PR, campaign, file, or invariant it stands for. GitHub remains read-only.",
+      "position": { "x": 140, "y": 1360 }
+    },
+    {
+      "id": "arch:work-packets",
+      "kind": "subsystem",
+      "title": "Agent work packets",
+      "role": "interface",
+      "summary": "Bounded tasks for cloud agents: reproduce, reconcile, challenge. Workers around the graph, never owners of repository truth.",
+      "position": { "x": 560, "y": 1360 }
+    }
+  ],
+  "relations": [
+    { "id": "e-gh-ingest", "src_id": "arch:github-api", "dst_id": "arch:metadata-ingest", "relation_type": "feeds", "confidence": 1, "evidence_level": "source_confirmed", "evidence": "REST ingest of issues and pull requests." },
+    { "id": "e-git-mirror", "src_id": "arch:git-remote", "dst_id": "arch:bare-mirror", "relation_type": "feeds", "confidence": 1, "evidence_level": "source_confirmed", "evidence": "git fetch into the local bare mirror." },
+    { "id": "e-meta-norm", "src_id": "arch:metadata-ingest", "dst_id": "arch:normalization", "relation_type": "writes", "confidence": 1, "evidence_level": "source_confirmed", "evidence": "Issue/PR JSON becomes typed nodes." },
+    { "id": "e-mirror-norm", "src_id": "arch:bare-mirror", "dst_id": "arch:normalization", "relation_type": "writes", "confidence": 1, "evidence_level": "source_confirmed", "evidence": "Commits and paths become typed nodes." },
+    { "id": "e-norm-sqlite", "src_id": "arch:normalization", "dst_id": "arch:sqlite-backlog", "relation_type": "writes", "confidence": 1, "evidence_level": "source_confirmed", "evidence": "SQLite is the durable backlog graph." },
+    { "id": "e-sql-explicit", "src_id": "arch:sqlite-backlog", "dst_id": "arch:explicit-refs", "relation_type": "feeds", "confidence": 1, "evidence_level": "source_confirmed", "evidence": "Stored bodies are parsed for explicit relations." },
+    { "id": "e-sql-sim", "src_id": "arch:sqlite-backlog", "dst_id": "arch:similarity", "relation_type": "feeds", "confidence": 1, "evidence_level": "source_confirmed", "evidence": "FTS5 and token overlap over node text." },
+    { "id": "e-sql-git", "src_id": "arch:sqlite-backlog", "dst_id": "arch:git-analysis", "relation_type": "feeds", "confidence": 1, "evidence_level": "source_confirmed", "evidence": "PR heads join against the mirror." },
+    { "id": "e-sql-file", "src_id": "arch:sqlite-backlog", "dst_id": "file:graph/store.py", "relation_type": "implemented_in", "confidence": 1, "evidence_level": "source_confirmed", "evidence": "GraphStore.export_subgraph powers the campaign canvas." },
+    { "id": "e-inv-sql", "src_id": "invariant:evidence-before-closure", "dst_id": "arch:sqlite-backlog", "relation_type": "protects", "confidence": 1, "evidence_level": "source_confirmed", "evidence": "Relation types are stored, never collapsed into duplicate." },
+    { "id": "e-ex-camp", "src_id": "arch:explicit-refs", "dst_id": "arch:campaigns", "relation_type": "clusters", "confidence": 0.9, "evidence_level": "source_confirmed", "evidence": "Strong edges form campaign connected components." },
+    { "id": "e-sim-camp", "src_id": "arch:similarity", "dst_id": "arch:campaigns", "relation_type": "suggests", "confidence": 0.6, "evidence_level": "reported", "evidence": "possible_duplicate still requires verification." },
+    { "id": "e-git-camp", "src_id": "arch:git-analysis", "dst_id": "arch:campaigns", "relation_type": "clusters", "confidence": 0.85, "evidence_level": "source_confirmed", "evidence": "Patch overlap and incorporated commits." },
+    { "id": "e-camp-atom", "src_id": "arch:campaigns", "dst_id": "arch:fix-atoms", "relation_type": "decomposes", "confidence": 0.8, "evidence_level": "reported", "evidence": "A campaign may yield several selectable atoms." },
+    { "id": "e-camp-pilot", "src_id": "arch:campaigns", "dst_id": "campaign:ci-verdict-integrity", "relation_type": "example", "confidence": 1, "evidence_level": "source_confirmed", "evidence": "Seed family used when the live graph is still empty." },
+    { "id": "e-atom-ev", "src_id": "arch:fix-atoms", "dst_id": "arch:evidence", "relation_type": "requires", "confidence": 1, "evidence_level": "source_confirmed", "evidence": "An atom without a receipt is not merge-ready." },
+    { "id": "e-atom-opt", "src_id": "arch:fix-atoms", "dst_id": "arch:optimizer", "relation_type": "feeds", "confidence": 1, "evidence_level": "source_confirmed", "evidence": "Greedy/CP-SAT select among atoms, not whole PR piles." },
+    { "id": "e-ev-ui", "src_id": "arch:evidence", "dst_id": "arch:local-ui", "relation_type": "shows", "confidence": 1, "evidence_level": "source_confirmed", "evidence": "Detail drawer lists confidence and evidence level." },
+    { "id": "e-opt-ui", "src_id": "arch:optimizer", "dst_id": "arch:local-ui", "relation_type": "shows", "confidence": 1, "evidence_level": "source_confirmed", "evidence": "Board view lists the greedy merge-set candidate." },
+    { "id": "e-ui-pkt", "src_id": "arch:local-ui", "dst_id": "arch:work-packets", "relation_type": "emits", "confidence": 0.7, "evidence_level": "reported", "evidence": "Agents read llms.txt and campaign detail, then return evidence." }
+  ]
+}

@@ -200,6 +200,11 @@ def create_app(database: Database | None = None) -> FastAPI:
         relations = graph.relations_among(member["id"] for member in members)
         return {**rows[0], "members": members, "relations": relations}
 
+    @app.get("/api/graph/architecture")
+    def architecture_graph():
+        path = Path(__file__).parent.parent / "ui" / "graph-src" / "architecture.json"
+        return json.loads(path.read_text(encoding="utf-8"))
+
     @app.get("/api/graph/demo")
     def demo_graph(family: str | None = None):
         return seed_campaign_graph(settings.root, family)

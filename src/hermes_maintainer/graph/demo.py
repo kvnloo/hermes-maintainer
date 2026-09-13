@@ -81,6 +81,55 @@ def seed_campaign_graph(root: Path, family_id: str | None = None) -> dict[str, A
         related = family.get("related_issues") or []
         prs = _pr_entries(family)
         survivor = family.get("recorded_survivor")
+        nodes.append({
+            "id": f"campaign:{family['id']}",
+            "kind": "campaign",
+            "title": title,
+            "summary": family.get("proposal") or family.get("invariant") or "",
+            "role": "campaign",
+            "campaign_id": campaign_id,
+            "state": "open",
+        })
+        if family.get("invariant"):
+            inv_id = f"invariant:{family['id']}"
+            nodes.append({
+                "id": inv_id,
+                "kind": "invariant",
+                "title": f"{title} invariant",
+                "summary": family["invariant"],
+                "role": "invariant",
+                "campaign_id": campaign_id,
+            })
+            if canonical:
+                relations.append({
+                    "src_id": inv_id,
+                    "dst_id": f"issue:{int(canonical)}",
+                    "relation_type": "protects",
+                    "confidence": 1.0,
+                    "evidence_level": family.get("evidence_level") or "reported",
+                    "evidence": family["invariant"],
+                    "source": "seed",
+                })
+        if family["id"] == "ci-verdict-integrity":
+            file_id = "file:.github/workflows/ci.yaml"
+            nodes.append({
+                "id": file_id,
+                "kind": "file",
+                "title": "ci.yaml",
+                "path": ".github/workflows/ci.yaml",
+                "summary": "Required check workflow whose cancelled or unknown verdict must not pass the gate.",
+                "role": "file",
+                "campaign_id": campaign_id,
+            })
+            relations.append({
+                "src_id": f"invariant:{family['id']}",
+                "dst_id": file_id,
+                "relation_type": "protects",
+                "confidence": 1.0,
+                "evidence_level": "source_confirmed",
+                "evidence": "Gate predicate lives in the required workflow.",
+                "source": "seed",
+            })
         if canonical:
             add_issue(int(canonical), f"{title} (canonical)", campaign_id, "canonical_problem")
         for issue_number in related:
