@@ -1,6 +1,6 @@
 # hermes-maintainer
 
-> Local-first maintenance intelligence for `NousResearch/hermes-agent`. Python CLI + FastAPI dashboard over a SQLite/FTS5 backlog graph. GitHub access is **read-only**; this tool does not close issues or merge PRs.
+> Local-first maintenance intelligence for any GitHub repo (`--repo owner/name`; default in this checkout is `NousResearch/hermes-agent`). Python CLI + FastAPI dashboard over a SQLite/FTS5 backlog graph. GitHub ingest is **GET-only**. Origin writes are fail-closed behind `origin-preflight`; this tool does not close issues or merge PRs.
 
 hermes-maintainer turns issues and PRs into a typed campaign graph: survivors, donors, stacked children, and superseded work. The local dashboard uses the Hermes Teal palette (with additional built-in Hermes themes) and an [xyflow](https://xyflow.com) explorer. Default listen address: `http://127.0.0.1:8766`.
 
@@ -24,7 +24,7 @@ Do not collapse `similar`, `duplicate_of`, `same_root_cause`, `partially_address
 
 ## Code
 
-- [CLI](./src/hermes_maintainer/cli.py): `init`, `scan`, `analyze`, `serve`, `daemon`, `doctor`
+- [CLI](./src/hermes_maintainer/cli.py): `init`, `scan --repo owner/name`, `origin-preflight`, `analyze`, `serve`, `daemon`, `doctor`
 - [FastAPI app](./src/hermes_maintainer/api/app.py): `/api/graph`, campaign explorer, `/llms.txt`
 - [Graph store](./src/hermes_maintainer/graph/store.py): typed edges, subgraph export, filters
 - [Campaign builder](./src/hermes_maintainer/analysis/campaigns.py): survivor/donor/provenance roles

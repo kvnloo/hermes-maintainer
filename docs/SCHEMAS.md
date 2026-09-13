@@ -2,13 +2,15 @@
 
 ## Node IDs
 
-Stable local IDs use prefixes:
+Stable local IDs include `owner/name` so two GitHub repositories cannot collide:
 
-- `issue:109495`
-- `pr:109500`
+- `NousResearch/hermes-agent:issue:109495`
+- `hyprwm/Hyprland:pr:1`
 - `commit:<sha>`
 - `campaign:<digest>`
 - `atom:<pr>:<scope>`
+
+Legacy fixtures may still use `issue:N` / `pr:N`. Ingested nodes from `--repo owner/name` always use the namespaced form.
 
 ## Evidence receipt
 

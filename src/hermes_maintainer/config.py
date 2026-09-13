@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import os
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
+
+from hermes_maintainer.github.ids import parse_repo
 
 
 @dataclass(frozen=True)
@@ -74,7 +76,25 @@ def _resolve(root: Path, value: str) -> Path:
     return path if path.is_absolute() else (root / path).resolve()
 
 
-def load_settings(config_path: str | Path | None = None) -> Settings:
+def with_repo(settings: Settings, repo: str) -> Settings:
+    """Retarget scan/toolkit paths at any GitHub owner/name. Does not assume hermes-agent."""
+    name = parse_repo(repo)
+    owner, repo_name = name.split("/", 1)
+    return replace(
+        settings,
+        repo=RepoConfig(
+            name=name,
+            clone_url=f"https://github.com/{name}.git",
+            default_branch=settings.repo.default_branch,
+        ),
+        paths=replace(
+            settings.paths,
+            mirror_dir=settings.paths.data_dir / "repos" / f"{owner}--{repo_name}.git",
+        ),
+    )
+
+
+def load_settings(config_path: str | Path | None = None, *, repo: str | None = None) -> Settings:
     config_path = Path(
         config_path or os.environ.get("HERMES_MAINTAINER_CONFIG", "config/hermes-maintainer.toml")
     ).resolve()
@@ -82,16 +102,16 @@ def load_settings(config_path: str | Path | None = None) -> Settings:
     with config_path.open("rb") as fh:
         raw = tomllib.load(fh)
 
-    repo = RepoConfig(**raw["repo"])
+    repo_cfg = RepoConfig(**raw["repo"])
     p = raw["paths"]
     paths = PathsConfig(
         data_dir=_resolve(root, p["data_dir"]),
         mirror_dir=_resolve(root, p["mirror_dir"]),
         database=_resolve(root, p["database"]),
     )
-    return Settings(
+    settings = Settings(
         root=root,
-        repo=repo,
+        repo=repo_cfg,
         paths=paths,
         scan=ScanConfig(**raw.get("scan", {})),
         similarity=SimilarityConfig(**raw.get("similarity", {})),
@@ -99,3 +119,6 @@ def load_settings(config_path: str | Path | None = None) -> Settings:
         server=ServerConfig(**raw.get("server", {})),
         github_token=os.environ.get("GITHUB_TOKEN") or None,
     )
+    if repo:
+        return with_repo(settings, repo)
+    return settings

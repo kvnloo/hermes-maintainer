@@ -4,8 +4,18 @@ from pathlib import Path
 
 import pytest
 
-from hermes_maintainer.config import ScanConfig, Settings, load_settings, with_repo
-from hermes_maintainer.config import OptimizerConfig, PathsConfig, RepoConfig, ServerConfig, SimilarityConfig
+from hermes_maintainer.config import (
+    OptimizerConfig,
+    PathsConfig,
+    RepoConfig,
+    ScanConfig,
+    ServerConfig,
+    Settings,
+    SimilarityConfig,
+    load_settings,
+    with_repo,
+)
+from hermes_maintainer.db import Database
 from hermes_maintainer.github.ids import make_node_id, node_kind, parse_repo
 from hermes_maintainer.github.ingest import fast_scan
 from hermes_maintainer.github.normalize import explicit_references, issue_node, pr_node
@@ -111,8 +121,6 @@ def test_fast_scan_uses_repo_in_node_ids(tmp_path: Path, monkeypatch: pytest.Mon
     )
     counts = fast_scan(settings)
     assert counts["issues"] == 2
-    from hermes_maintainer.db import Database
-
     db = Database(settings.paths.database)
     ids = {row["id"] for row in db.rows("SELECT id FROM nodes")}
     assert ids == {"acme/widgets:issue:1", "acme/widgets:issue:2"}

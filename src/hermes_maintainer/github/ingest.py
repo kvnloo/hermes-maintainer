@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 from hermes_maintainer.config import Settings
 from hermes_maintainer.db import Database
 from hermes_maintainer.github.client import GitHubClient
+from hermes_maintainer.github.ids import make_node_id, node_kind
 from hermes_maintainer.github.normalize import explicit_references, issue_node, pr_node
 
 
@@ -24,16 +25,16 @@ def _finish_run(db: Database, run_id: int, status: str, notes: str = "") -> None
         )
 
 
-def _materialize_explicit_relations(db: Database, node_id: str, body: str) -> None:
-    kind = node_id.split(":", 1)[0]
-    for relation, number, confidence, evidence in explicit_references(body):
+def _materialize_explicit_relations(db: Database, node_id: str, body: str, repo: str) -> None:
+    kind = node_kind(node_id) or ""
+    for relation, number, confidence, evidence, target_repo in explicit_references(body, default_repo=repo):
         target_kind = "pr" if relation == "references_pr" else "issue"
         if relation == "supersedes" and kind == "pr":
             target_kind = "pr"
         if relation in {"references", "related"}:
             # Ambiguous #N references are resolved issue-first and repaired later if needed.
             target_kind = "issue"
-        target_id = f"{target_kind}:{number}"
+        target_id = make_node_id(target_repo or repo, target_kind, number)
         if db.scalar("SELECT 1 FROM nodes WHERE id=?", (target_id,)):
             db.add_relation(
                 node_id,
@@ -66,7 +67,7 @@ def fast_scan(settings: Settings) -> dict[str, int]:
 
         # Second pass so references can resolve to nodes ingested later in the scan.
         for row in db.rows("SELECT id, body FROM nodes WHERE last_seen_run=? AND kind IN ('issue','pr')", (run_id,)):
-            _materialize_explicit_relations(db, row["id"], row.get("body") or "")
+            _materialize_explicit_relations(db, row["id"], row.get("body") or "", settings.repo.name)
         _finish_run(db, run_id, "ok", json.dumps(counts))
         return counts
     except Exception as exc:
@@ -85,11 +86,11 @@ def deep_enrich_prs(settings: Settings, limit: int | None = None) -> dict[str, i
     rows = db.rows(
         """
         SELECT number FROM nodes
-        WHERE kind='pr' AND state='open'
+        WHERE kind='pr' AND state='open' AND repo=?
         ORDER BY COALESCE(updated_at,'') DESC
         LIMIT ?
         """,
-        (limit,),
+        (settings.repo.name, limit),
     )
     counts = {"prs": 0, "files": 0, "commits": 0}
     try:
@@ -97,7 +98,7 @@ def deep_enrich_prs(settings: Settings, limit: int | None = None) -> dict[str, i
             number = int(row["number"])
             detail = client.get_pull(settings.repo.name, number)
             db.upsert_node(pr_node(settings.repo.name, detail, run_id))
-            pr_id = f"pr:{number}"
+            pr_id = make_node_id(settings.repo.name, "pr", number)
             files = client.get_pull_files(settings.repo.name, number)
             with db.connect() as conn:
                 conn.execute("DELETE FROM pr_files WHERE pr_id=?", (pr_id,))
