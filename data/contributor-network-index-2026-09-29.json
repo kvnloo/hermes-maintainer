@@ -1,0 +1,171 @@
+{
+  "as_of": "2026-09-29",
+  "repo": "NousResearch/hermes-agent",
+  "operator": "kvnloo",
+  "ranking_note": "Approximate collaboration ranking; not exact lifetime contributor statistics.",
+  "ux_tui_priority": [
+    {
+      "handle": "OutThisLife",
+      "name": "Brooklyn",
+      "domains": [
+        "tui",
+        "cli",
+        "desktop",
+        "ux"
+      ],
+      "relationship": "direct",
+      "priority": 1
+    },
+    {
+      "handle": "harshmoney123",
+      "domains": [
+        "performance",
+        "architecture",
+        "ux-review"
+      ],
+      "relationship": "direct",
+      "priority": 2
+    },
+    {
+      "handle": "teknium1",
+      "domains": [
+        "core",
+        "architecture",
+        "product",
+        "triage"
+      ],
+      "relationship": "direct",
+      "priority": 3
+    },
+    {
+      "handle": "austinpickett",
+      "domains": [
+        "tui",
+        "cli",
+        "sessions",
+        "input",
+        "config"
+      ],
+      "relationship": "none-found",
+      "priority": 4
+    },
+    {
+      "handle": "kshitijk4poor",
+      "domains": [
+        "core-implementation",
+        "refactor",
+        "salvage"
+      ],
+      "relationship": "direct",
+      "priority": 5
+    },
+    {
+      "handle": "kyssta-exe",
+      "domains": [
+        "model-picker",
+        "tui",
+        "review"
+      ],
+      "relationship": "direct",
+      "priority": 6
+    },
+    {
+      "handle": "bittermelonz",
+      "domains": [
+        "desktop",
+        "tui",
+        "ux"
+      ],
+      "relationship": "none-found",
+      "priority": 7
+    },
+    {
+      "handle": "arkheioncorp",
+      "domains": [
+        "review",
+        "composer",
+        "layout"
+      ],
+      "relationship": "direct",
+      "priority": 8
+    },
+    {
+      "handle": "mikolajczyk-a",
+      "domains": [
+        "cli",
+        "tui",
+        "desktop"
+      ],
+      "relationship": "none-found",
+      "priority": 9
+    },
+    {
+      "handle": "meep-the-viking",
+      "domains": [
+        "terminal",
+        "repl",
+        "ux"
+      ],
+      "relationship": "none-found",
+      "priority": 10
+    },
+    {
+      "handle": "hosseinaghajaniabbasi",
+      "domains": [
+        "tui",
+        "theme",
+        "progress",
+        "motion"
+      ],
+      "relationship": "none-found",
+      "priority": 11
+    },
+    {
+      "handle": "Johnpapsal",
+      "domains": [
+        "tui",
+        "telemetry",
+        "tests"
+      ],
+      "relationship": "none-found",
+      "priority": 12
+    }
+  ],
+  "active_queue": [
+    "127152",
+    "127143",
+    "127170"
+  ],
+  "rotate_next": [
+    "127334",
+    "111470"
+  ],
+  "research_only": [
+    "127449",
+    "127733",
+    "127805",
+    "113241"
+  ],
+  "maintainer_constraints": {
+    "max_open_prs_approx": 3,
+    "overlay_113241": "design agreement before code",
+    "preferred_method": [
+      "name concrete cost",
+      "measure current-main mechanism",
+      "one bounded slice",
+      "test invariant",
+      "stop when mechanism fixed"
+    ]
+  },
+  "evidence": {
+    "harsh_rfc": "https://github.com/NousResearch/hermes-agent/issues/99773",
+    "harsh_scrollbar": "https://github.com/NousResearch/hermes-agent/pull/127152",
+    "brook_model_ux": "https://github.com/NousResearch/hermes-agent/issues/97505",
+    "brook_stale_inventory": "https://github.com/NousResearch/hermes-agent/issues/112410",
+    "tek_model_validation": "https://github.com/NousResearch/hermes-agent/issues/116620",
+    "tek_test_infra": "https://github.com/NousResearch/hermes-agent/issues/116991",
+    "salvage_kernel": "https://github.com/NousResearch/hermes-agent/pull/120677",
+    "composer_approve": "https://github.com/NousResearch/hermes-agent/pull/127334",
+    "model_review": "https://github.com/NousResearch/hermes-agent/pull/111470"
+  }
+}
