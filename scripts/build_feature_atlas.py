@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Build public, source-linked Hermes feature PRDs from versioned RFC manifests.
 
 This is a static renderer, not an issue-status fetcher. Source facts are pinned
