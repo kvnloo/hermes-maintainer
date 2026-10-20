@@ -1,0 +1,602 @@
+{
+  "schema": "hermes-maintainer.prd-atlas.v1",
+  "snapshot": "2026-10-20",
+  "items": [
+    {
+      "slug": "hermes-lab",
+      "title": "Hermes Lab",
+      "category": "Systems",
+      "stage": "Experiment program",
+      "tagline": "A measured integration laboratory for meaningful improvements, not a monolithic fork.",
+      "problem": "Uncoordinated integrations produce attractive demos whose causal value, provenance and promotion boundary are unclear. A consistent downstream experiment program makes alternatives comparable.",
+      "outcome": "Compare bounded intelligence, structured observation, harness mechanisms and cognitive-state virtualization on matched Hermes tasks before choosing independently promotable slices.",
+      "journeys": [
+        "A contributor chooses a hypothesis with a fixed baseline, candidate, task set and budget.",
+        "An operator compares the same workflow across baseline and one changed mechanism, seeing verified success, latency and cost separately.",
+        "A maintainer receives one small upstream-ready change with RED→GREEN evidence rather than a merged experimental stack."
+      ],
+      "ownership": [
+        "Hermes remains the execution host and approval authority.",
+        "z0intelligence owns decision/state research; SoL-Pi owns observation projections; RLM owns state compilation; z0evals owns frozen comparison results.",
+        "Each experiment runs in its own branch and exports sanitized receipts; no parallel runtimes become authoritative."
+      ],
+      "phases": [
+        "Reconcile the RFC-0 tracks and S1–S5 matrix; register baseline and candidate revisions.",
+        "Run shadow/frozen comparisons separately before any active single-factor test.",
+        "Select independently useful outcomes for narrow upstream review; retain failed experiments as falsification evidence."
+      ],
+      "acceptance": [
+        "Every experiment has an exact identity join, version pin and independently verified outcome or explicit unknown.",
+        "For any active path, failure injection proves safe fallback and no duplicated physical action.",
+        "Report paired success, token and p50/p95 latency deltas rather than a single aggregate score.",
+        "No result is described as merged upstream without a linked upstream merge."
+      ],
+      "risks": [
+        "Research scope creep into production behavior without a gate.",
+        "Metrics that report token reductions while hiding failures or setup cost."
+      ],
+      "metrics": [
+        "Verified outcome per fixed task family",
+        "Latency and tokens per turn with cold/warm splits",
+        "Number of independently promotable small fixes"
+      ],
+      "sources": [
+        {
+          "label": "RFC-0 · Hermes Lab",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/308"
+        },
+        {
+          "label": "Integration matrix",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/318"
+        },
+        {
+          "label": "Common receipts",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/322"
+        },
+        {
+          "label": "Factorial evaluation",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/323"
+        },
+        {
+          "url": "https://github.com/kvnloo/z0evals",
+          "label": "z0evals"
+        }
+      ],
+      "credit": "Research and integration derive from Hermes contributors, z0intelligence, SoL-Pi, OMP/RLM and their original maintainers. Each slice retains its own donor history."
+    },
+    {
+      "slug": "bounded-decision-intelligence",
+      "title": "NanoJev & Bounded Intelligence",
+      "category": "Intelligence",
+      "stage": "Shadow first",
+      "tagline": "Spend frontier-model cognition only where the decision genuinely needs it.",
+      "problem": "Routine reversible choices can consume the same expensive reasoning resources as difficult work. Replacing them blindly risks illegality, degraded decisions and opaque failures.",
+      "outcome": "Use small, typed decision specialists for known finite-choice tasks while retaining Hermes legality gates and independent outcome verification.",
+      "journeys": [
+        "Hermes exposes a finite legal candidate set for a model/tool decision.",
+        "A local backend returns a distribution, confidence, latency and its version; the baseline still executes in shadow mode.",
+        "After enough paired outcomes, an operator enables one bounded lane with instant fallback to the known-safe path."
+      ],
+      "ownership": [
+        "Hermes owns legal actions, models, permissions and actual execution.",
+        "z0intelligence/DecisionBackend owns candidate scoring and receipts; Jev can be a reference observer, not ground truth.",
+        "Routing never approves a privileged action or changes security policy."
+      ],
+      "phases": [
+        "Survey reversible decision seams and baseline legality.",
+        "Collect at least 20 real paired shadow decisions across the specified backend matrix.",
+        "Evaluate equal-or-better verified outcome before selectively enabling one cheap fast path."
+      ],
+      "acceptance": [
+        "Preserve complete candidate set, supported probabilities, selected baseline decision and trace identity.",
+        "Backend outage or invalid suggestion leaves Hermes behavior unchanged.",
+        "Compare cold/warm latency, frontier tokens, dollar cost and outcome; report disagreement instead of hiding it.",
+        "No active promotion on agreement rate alone."
+      ],
+      "risks": [
+        "Learned judge used as an approval authority.",
+        "Unmeasured local-model residency or warmup erasing nominal savings."
+      ],
+      "metrics": [
+        "Avoided frontier tokens at non-decreased task success",
+        "Shadow disagreement rate by decision family",
+        "Warm/cold decision latency and model footprint"
+      ],
+      "sources": [
+        {
+          "label": "RFC-1 · NanoJev",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/309"
+        },
+        {
+          "label": "Hermes z0 shadow adapter",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/319"
+        },
+        {
+          "label": "AgentRun runJudge interop",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/491"
+        },
+        {
+          "url": "https://github.com/kvnloo/z0intelligence",
+          "label": "z0intelligence"
+        }
+      ],
+      "credit": "Jev and community Hermes Jev plugins remain independent donor projects; preserve plugin author attribution and typed-check semantics."
+    },
+    {
+      "slug": "observationpack-computer-use",
+      "title": "SoL-Pi ObservationPack",
+      "category": "Intelligence",
+      "stage": "Shadow evaluation",
+      "tagline": "Structured, identity-preserving perception for reliable computer use.",
+      "problem": "Raw screenshots and long accessibility dumps can obscure element identity, repeat redundant context and make actions stale before execution.",
+      "outcome": "Compare structured ObservationPack projections with the original computer-use observations without changing the controlling executor until evidence supports it.",
+      "journeys": [
+        "A desktop observation is captured and retained in original form.",
+        "A pure projection emits structured elements, provenance, identity and elapsed projection time.",
+        "On the same frozen task, observers compare action agreement, stale-target rejection and verified postconditions."
+      ],
+      "ownership": [
+        "Hermes controls the computer-use action loop and approvals.",
+        "SoL-Pi owns the ObservationPack projection and shared configuration contract.",
+        "The baseline observation stays available; a projection failure must not silently change an authorized target."
+      ],
+      "phases": [
+        "Survey observation sources and pin the existing plugin contract.",
+        "Run frozen desktop, modal, scroll, near-duplicate and partial-tree fixtures.",
+        "Only after decision-equivalence tests, allow a bounded active path behind capability gates."
+      ],
+      "acceptance": [
+        "Retain reference element IDs and before/after provenance across projection.",
+        "A stale view after an action cannot be reused to justify a mutation.",
+        "Report steps, outcome, context bytes and projection overhead on paired tasks.",
+        "No simultaneous Action Fusion/ObservationPack changes in the first experiment."
+      ],
+      "risks": [
+        "Misidentifying visually similar elements.",
+        "Mistaking a shorter observation for better task performance."
+      ],
+      "metrics": [
+        "Verified task completion delta",
+        "Steps and tokens to completion",
+        "Projection overhead and identity-loss rate"
+      ],
+      "sources": [
+        {
+          "label": "RFC-2 · SoL-Pi",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/310"
+        },
+        {
+          "label": "Shadow ObservationPack",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/321"
+        },
+        {
+          "label": "Capability-gated CU projection",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/409"
+        },
+        {
+          "url": "https://github.com/kvnloo/sol-pi-hermes",
+          "label": "Hermes plugin donor"
+        },
+        {
+          "url": "https://github.com/NVIDIA/sol-pi",
+          "label": "SoL-Pi reference"
+        }
+      ],
+      "credit": "SoL-Pi's source authors and NVIDIA contributors retain provenance; downstream projections are not represented as native Hermes ownership."
+    },
+    {
+      "slug": "harness-cross-pollination",
+      "title": "Hermes × OMP Harness",
+      "category": "Systems",
+      "stage": "Evaluation track",
+      "tagline": "Transfer proven harness mechanisms, not entire application architectures.",
+      "problem": "Two capable agent harnesses have independently evolved useful edit, batching and rendering semantics. Porting wholesale code risks drift and conflicting runtime ownership.",
+      "outcome": "Evaluate small, measurable cross-harness improvements such as hash-anchored edits, safe tool loops and isolated workers.",
+      "journeys": [
+        "An engineer identifies one OMP behavior and an existing Hermes analog.",
+        "The candidate is implemented in an isolated lane with equivalence and negative tests.",
+        "A reviewer sees matched speed/quality numbers and a minimal source-documented patch."
+      ],
+      "ownership": [
+        "Hermes owns its state, tools and permission checks.",
+        "OMP is a reference for UX/harness invariants, not a second execution engine.",
+        "All borrowed code must retain original license, authors and test semantics."
+      ],
+      "phases": [
+        "Build a scorecard of portable invariants; reject duplicate capabilities.",
+        "Select one small port with a deterministic behavioral baseline.",
+        "Run paired task success, latency and token measurements; propose a narrow PR only for a positive result."
+      ],
+      "acceptance": [
+        "Evidence identifies the exact borrowed behavior and human source authors.",
+        "Prove ordered side effects are not deduplicated or reordered incorrectly.",
+        "Tests include failure/retry behavior and avoid introducing shadow stores.",
+        "A change with no measurable benefit stays downstream or is dropped."
+      ],
+      "risks": [
+        "Accidental copying of context or permission internals.",
+        "Code duplication without upstream acceptance."
+      ],
+      "metrics": [
+        "p50/p95 step latency",
+        "Verified task completion and regressions",
+        "Code size and operational complexity added"
+      ],
+      "sources": [
+        {
+          "label": "RFC-3 · Harness cross-pollination",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/311"
+        },
+        {
+          "label": "Ordered computer-use deduplication",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/410"
+        },
+        {
+          "label": "Tern parity contracts",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/510"
+        },
+        {
+          "url": "https://github.com/can1357/oh-my-pi",
+          "label": "OMP by Can Bölük and contributors"
+        }
+      ],
+      "credit": "Credit Can Bölük and OMP contributors for source patterns; preserve NousResearch author provenance for Hermes-side work."
+    },
+    {
+      "slug": "cognitive-state-virtualization",
+      "title": "RLM · Cognitive State",
+      "category": "Memory & Context",
+      "stage": "Shadow-only baseline",
+      "tagline": "Keep the transcript as audit truth while compiling the cognition that actually matters.",
+      "problem": "Replaying an ever-growing transcript burdens models, caches and budgets. Deleting old messages merely because they are old can destroy causal evidence.",
+      "outcome": "Compile evidence-backed State Packets for each information need while preserving a canonical audit transcript and exact source revisions.",
+      "journeys": [
+        "Hermes stores the full transcript for resume, review and recovery.",
+        "A shadow compiler builds the intended model-visible state from evidence, contradictions and unresolved gaps.",
+        "After falsification, one bounded active mode replaces only selected context, with native-context fallback."
+      ],
+      "ownership": [
+        "Hermes retains transcript/session authority and approval lifecycle.",
+        "RLM handles state compilation; z0intelligence owns State Packet identity and evidence linking.",
+        "z0evals hosts frozen recall/exact-identifier cohorts and independent verification."
+      ],
+      "phases": [
+        "Emit shadow packets but send normal context; quantify source access, size and compile time.",
+        "Test packet injection with contradiction, supersession, cache invalidation and replay guards.",
+        "Run paired active/context-baseline trials only after safe fallback and no-omission gates."
+      ],
+      "acceptance": [
+        "Never destroy or mutate the audit transcript as a side effect of compression.",
+        "Exact identifiers and source revisions survive in evidence refs; missing sources force an explicit gap.",
+        "A source revision invalidates stale packets; duplicate replay never double-injects.",
+        "Report root-input and total tokens alongside independently verified success."
+      ],
+      "risks": [
+        "Compaction gives fluent but unsupported conclusions.",
+        "Double injections or cache prefix disruption increase real cost."
+      ],
+      "metrics": [
+        "Full-run tokens and source reads",
+        "Exact fact/identifier recall",
+        "Evidence omissions, contradictions and abstentions"
+      ],
+      "sources": [
+        {
+          "label": "RFC-4 · RLM cognition",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/312"
+        },
+        {
+          "label": "State Packet shadow/injection",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/320"
+        },
+        {
+          "label": "Identifier-anchor retention",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/418"
+        },
+        {
+          "label": "Context recovery",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/499"
+        },
+        {
+          "url": "https://github.com/kvnloo/z0intelligence",
+          "label": "State Packet owner"
+        }
+      ],
+      "credit": "OMP/RLM and z0intelligence maintainers own their donor mechanisms; preserve evidence and comparison provenance."
+    },
+    {
+      "slug": "evaluation-receipts",
+      "title": "Outcome-Verified Evaluation",
+      "category": "Reliability",
+      "stage": "Integration experiments",
+      "tagline": "One reproducible receipt from hypothesis to independently verified outcome.",
+      "problem": "A passing unit suite or a low token bill says little about whether an agent completed a task safely. Cross-project experiments need stable joins and failure-injection receipts.",
+      "outcome": "Build a common evaluation envelope across Hermes, z0int, RLM and SoL-Pi, then use factorial controls to attribute improvement.",
+      "journeys": [
+        "An experiment launches with frozen fixture and exact project/model revisions.",
+        "The evaluator joins trace/session/turn IDs to measured actions and the independent verifier result.",
+        "A maintainer sees baseline vs candidate, uncertainty, failure cases, unknowns and source-specific follow-up."
+      ],
+      "ownership": [
+        "z0evals owns evaluation cohorts and frozen external result bundles.",
+        "Hermes executes experiments but the verifying agent must be independent of the candidate where feasible.",
+        "A thin envelope normalizes only fields without an existing authoritative owner."
+      ],
+      "phases": [
+        "Define failure-mode receipts: backend outage, stale observation, missing evidence, OOM, duplicate replay.",
+        "Run baseline, single-factor Z/R/S arms and only then combinations.",
+        "Publish sanitized paired results; retain private trace inputs locally."
+      ],
+      "acceptance": [
+        "Unknown verification remains unknown, never counted as success.",
+        "Replays cannot mint duplicate external side effects.",
+        "Every report names exact code/config/test revisions and a matching baseline.",
+        "No global-stack winner from unmatched aggregates."
+      ],
+      "risks": [
+        "Verifier leakage into the system being evaluated.",
+        "Composed mechanisms obscuring attribution."
+      ],
+      "metrics": [
+        "Paired task success and uncertainty",
+        "Failure-injection pass rate",
+        "Measured tokens/latency per arm"
+      ],
+      "sources": [
+        {
+          "label": "Integration matrix",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/318"
+        },
+        {
+          "label": "Receipt + failure-injection runner",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/322"
+        },
+        {
+          "label": "Factorial eval plan",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/323"
+        },
+        {
+          "label": "Promotion gate receipts",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/414"
+        },
+        {
+          "url": "https://github.com/kvnloo/z0evals",
+          "label": "z0evals"
+        }
+      ],
+      "credit": "Hermes Lab measurement work cites original owner repos and upstream issue reporters in every exported receipt."
+    },
+    {
+      "slug": "unified-memory",
+      "title": "Unified Memory & Recall",
+      "category": "Memory & Context",
+      "stage": "Research carrier",
+      "tagline": "Durable, grounded recall across sessions without replacing the source of truth.",
+      "problem": "Transient chat context loses project state, exact identifiers and contradictory evidence, while uncontrolled recall can disclose unrelated material or resurrect stale claims.",
+      "outcome": "A permission-aware recall layer that retrieves versioned evidence and supports compaction without silently overriding Hermes's existing memory provider.",
+      "journeys": [
+        "A resumed session can retrieve an exact decision and the source it came from.",
+        "An agent writes a proposed memory after a confirmed outcome, with expiry, scope and provenance.",
+        "A user can audit or invalidate a stale fact; recall must distinguish current evidence from history."
+      ],
+      "ownership": [
+        "Hermes remains the owner of session/memory authorization and persistence.",
+        "The unified store/prototype is a downstream research carrier; external memory prefetch metrics are opt-in.",
+        "Memory retrieval must respect source scope and the existing provider configuration."
+      ],
+      "phases": [
+        "Reconcile the existing `study/hermes-unified-memory-56` prototype against current Hermes memory interfaces.",
+        "Add deterministic exact-recall, stale-source, consent and contradiction tests.",
+        "Benchmark observed recall quality, retrieval latency and cache effect before a narrow integration."
+      ],
+      "acceptance": [
+        "No cross-session/profile information leak or secret in logs/metrics.",
+        "An older summary cannot win over a newer verified source without explicit conflict.",
+        "Measure recall on exact IDs and provenance, not just semantic similarity.",
+        "Provider init failures do not silently disable the configured memory backend."
+      ],
+      "risks": [
+        "Single giant memory store with unverifiable provenance.",
+        "Over-prefetching harming latency and privacy."
+      ],
+      "metrics": [
+        "Exact identifier recall at source revision",
+        "Recall precision and permission violations",
+        "Prefetch latency and prompt-cache effect"
+      ],
+      "sources": [
+        {
+          "label": "Memory prefetch outcome/latency",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/417"
+        },
+        {
+          "label": "Compaction anchors",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/418"
+        },
+        {
+          "label": "Memory ingress trace",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/494"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/tree/study/hermes-unified-memory-56",
+          "label": "Unified-memory prototype"
+        }
+      ],
+      "credit": "Hermes memory-provider contributors and independent storage/search projects retain original provenance; no source data is embedded into the public spec."
+    },
+    {
+      "slug": "semantic-computer-use",
+      "title": "Semantic Computer Use",
+      "category": "Intelligence",
+      "stage": "Capability-gated experiment",
+      "tagline": "Observe once, choose safely, execute bounded actions, verify what changed.",
+      "problem": "GUI automation that guesses from pixels alone can be slow, brittle and unsafe when UI state changes between observation and action.",
+      "outcome": "A semantic/visual control plane for Hermes computer use with typed targets, state revisions, safe batching and postcondition checks.",
+      "journeys": [
+        "The agent observes a UI element using semantic hints with screenshot fallback.",
+        "It proposes a short ordered action sequence against the observed revision.",
+        "After execution, it verifies the intended result and stops/escalates on stale or uncertain effects."
+      ],
+      "ownership": [
+        "Only Hermes's established computer-use tool driver executes actions and enforces approvals.",
+        "trycua/cua and structured observation donors supply optional semantic control and measurements.",
+        "Local decision scoring is advisory and must not authorize an action."
+      ],
+      "phases": [
+        "Instrument observe→decide→act→verify timings on Linux with a frozen fixture cohort.",
+        "Add capability detection and stale-observation guards; retain order-sensitive keyboard actions.",
+        "Run real-desktop matched tasks before proposing any Windows/remote expansion."
+      ],
+      "acceptance": [
+        "A stale/changed target forces reobservation before consequential action.",
+        "Order-significant duplicate keystrokes are never removed.",
+        "Unknown tool completion cannot be replayed blindly.",
+        "Compare verified task success and end-to-end latency, not just backend throughput."
+      ],
+      "risks": [
+        "Replay of a partially applied GUI mutation.",
+        "A semantic target referring to the wrong window or host."
+      ],
+      "metrics": [
+        "Task completion and side-effect safety",
+        "Actions and model calls per task",
+        "Observe/decide/act/verify p50/p95 latency"
+      ],
+      "sources": [
+        {
+          "label": "Capture-mode projection",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/409"
+        },
+        {
+          "label": "Ordered action deduplication",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/410"
+        },
+        {
+          "label": "ObservationPack shadow",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/321"
+        },
+        {
+          "url": "https://github.com/trycua/cua/pull/3963",
+          "label": "Bounded execution RFC"
+        }
+      ],
+      "credit": "trycua/cua and original GUI-driver authors remain credited; preserve Hermès executor ownership and consent boundaries."
+    },
+    {
+      "slug": "typed-workflow-orchestration",
+      "title": "Typed Workflow Orchestration",
+      "category": "Agents & Automation",
+      "stage": "Plugin experiment",
+      "tagline": "Reusable multi-step work with explicit authority, contracts and bounded delegation.",
+      "problem": "Agent workflows become fragile when tools silently gain new authority, messages lose identity across steps or a second scheduler competes with Hermes recovery.",
+      "outcome": "Represent multi-step intent as typed, auditable execution graphs while keeping Hermes as the only executor/approval owner.",
+      "journeys": [
+        "An operator previews a workflow graph with parameters, expected effects and scope.",
+        "Hermes executes eligible steps with checkpoints, budgets and human approvals.",
+        "A failed/retried run resumes safely from receipts rather than repeating uncertain side effects."
+      ],
+      "ownership": [
+        "AODL/HOTL validates graph contracts and legality; it is not a scheduler.",
+        "Hermes owns tools, sessions, secrets, approvals and recovery.",
+        "AgentRun/compatible plugins are optional workflow surfaces after duplicate-checking existing community engines."
+      ],
+      "phases": [
+        "Compare AgentRun DSL against Hermes's current workflow capabilities and community plugins.",
+        "Expose a typed preview without executing and verify DAG schema, dependencies and side-effect classes.",
+        "Run one bounded workflow with deterministic replay, revision and authorization receipts."
+      ],
+      "acceptance": [
+        "Cycles, invalid tool contracts and unauthorized side effects fail closed.",
+        "A partial failure can be resumed without duplicating irreversible actions.",
+        "No new plugin bypasses Hermes's permission or session ownership.",
+        "Execution receipts preserve source graph and exact revision."
+      ],
+      "risks": [
+        "Duplicating durable scheduler state.",
+        "Promoting speculative plugin capabilities as core requirements."
+      ],
+      "metrics": [
+        "Safe resume success rate",
+        "Duplicate-side-effect incidents",
+        "Latency/trace cost per verified workflow"
+      ],
+      "sources": [
+        {
+          "label": "AgentRun plugin experiment",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/490"
+        },
+        {
+          "label": "Typed runJudge interoperability",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/491"
+        },
+        {
+          "url": "https://github.com/kvnloo/aodl",
+          "label": "AODL typed IR"
+        },
+        {
+          "url": "https://github.com/kvnloo/z0intelligence/issues/163",
+          "label": "Cross-host study"
+        }
+      ],
+      "credit": "AgentRun (Parcha) authors, AODL authors, Hermes and existing community workflow-plugin maintainers retain credit."
+    },
+    {
+      "slug": "bend-proof-verification",
+      "title": "Bend Proof Verification",
+      "category": "Reliability",
+      "stage": "Downstream prototype",
+      "tagline": "A small plugin that turns formal verification into structured, reproducible evidence.",
+      "problem": "An agent cannot safely equate a command's successful exit with proof that the intended source semantics were certified. Translations, imported dependencies and cache changes threaten reproducibility.",
+      "outcome": "An opt-in `bend_verify` tool producing a fail-closed, source-bound and replayable proof verdict.",
+      "journeys": [
+        "Hermes sends a bounded project/proof path to a standalone verifier tool.",
+        "The tool runs the installed Bend binary with shell invocation disabled and captures input/versions.",
+        "The response clearly separates supported verification, inconclusive results and source/translation mismatch."
+      ],
+      "ownership": [
+        "Hermes orchestrates; Bend/BendTT is the verification authority.",
+        "Plugin owns path validation, local proof snapshots, offline settings and structured receipts.",
+        "No proof result bypasses a human approval or replaces independent source behavior tests."
+      ],
+      "phases": [
+        "Maintain minimal proof adapter with path escape and bypass resistance.",
+        "Qualify each Bend release with source↔certified semantics oracle, including negative proof cases.",
+        "Add immutable import-closure identities and offline replay before accepting remote dependencies."
+      ],
+      "acceptance": [
+        "Unsupported version, path escape, bad import and ambiguity fail closed.",
+        "Verified emitted book agrees with observed source semantics on every pinned oracle.",
+        "An offline replay returns the same verdict for identical captured dependencies.",
+        "Reported proofs preserve original researchers' bug and reproduction credit."
+      ],
+      "risks": [
+        "Semantic drift despite green proof tool output.",
+        "Network imports resolved differently during replay."
+      ],
+      "metrics": [
+        "Mismatch and false-positive detection",
+        "Deterministic offline replay rate",
+        "Verification latency and test coverage"
+      ],
+      "sources": [
+        {
+          "label": "Bend adapter RFC",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/324"
+        },
+        {
+          "label": "Release semantic drift",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/389"
+        },
+        {
+          "label": "Dependency receipts",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/390"
+        },
+        {
+          "url": "https://github.com/bendlang/bend/issues/1212",
+          "label": "Original semantic drift report"
+        }
+      ],
+      "credit": "Bend maintainers and @Vacrin's original semantic-drift diagnosis and @quimmedes's independent kernel reproduction are essential provenance."
+    }
+  ]
+}
