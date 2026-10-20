@@ -363,7 +363,7 @@
       "stage": "Research only",
       "tagline": "Buy additional thinking and observation only when expected decision value justifies it.",
       "problem": "Should \"think\", \"observe\", \"search\", \"verify\", \"simulate\", \"ask\", \"wait\" and \"stop\" live in the same economic action space as external actions? This issue studies: Event-Triggered Cognition — cognition fires when decision-relevant error/uncertainty crosses a threshold. Value-of-Computation Metareasoning — further reasoning is purchased only when expected decision improvement exceeds cost. Active Observability — observations are selected because they make hidden state identifiable, not merely because retrieval seems relevant. Interaction Scaling — acquire information from th",
-      "outcome": "Test against always-think and timed policies under hidden drift.",
+      "outcome": "Find decision-relevant computation and sensing triggers that improve verified outcomes while respecting model, observation and latency budgets, rather than optimizing only call count.",
       "journeys": [
         "A researcher pins an old-world comparator and a frozen test environment, with no live Hermes authority.",
         "What event should wake cognition?",
