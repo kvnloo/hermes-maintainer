@@ -23,9 +23,8 @@ class PageParser(HTMLParser):
         if tag == "title":
             self.titles += 1
         for field in ("href", "src", "data"):
-            if tag == "object" and field == "data" or field in ("href", "src"):
-                if data.get(field):
-                    self.urls.append(data[field] or "")
+            if (tag == "object" and field == "data" or field in ("href", "src")) and data.get(field):
+                self.urls.append(data[field] or "")
 
 
 def parse_page(path: Path) -> PageParser:
