@@ -6,7 +6,8 @@ name: pages
 
 on:
   push:
-    branches: [main]
+    # Publish feature PRDs from the reviewed preview lane without writing main.
+    branches: [main, preview]
   workflow_dispatch:
 
 permissions:
