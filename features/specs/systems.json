@@ -178,7 +178,7 @@
           "label": "Hermes plugin donor"
         },
         {
-          "url": "https://github.com/NVIDIA/sol-pi",
+          "url": "https://github.com/NVlabs/SoL-Pi",
           "label": "SoL-Pi reference"
         }
       ],
