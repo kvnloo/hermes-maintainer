@@ -1,0 +1,596 @@
+{
+  "schema": "hermes-maintainer.prd-atlas.v1",
+  "snapshot": "2026-10-20",
+  "items": [
+    {
+      "slug": "beyond-agent-research",
+      "title": "Beyond the Agent",
+      "category": "Frontier Research",
+      "stage": "Research only",
+      "tagline": "Make persistent intelligence falsifiable instead of treating every new paradigm as a feature.",
+      "problem": "The frontier-reset research changes the question from: How do we make an agent reason, remember, route, and act better? to: Why should cognition be organized as repeated agent episodes at all? Hermes already has substantial downstream work on memory, RLM/State Packets, z0int bounded decisions, SoL-Pi observation projection, AODL orchestration/authority, receipts/evals, self-evolution, multi-agent topology, digital twins, computer use, and model/tool routing. This RFC therefore excludes incremental extensions of those families. The new research hypothesis is: Hermes may even",
+      "outcome": "Compare new theories against current Hermes mechanisms and each other.",
+      "journeys": [
+        "A researcher pins an old-world comparator and a frozen test environment, with no live Hermes authority.",
+        "Run a baseline/candidate comparison on one concrete counterexample.",
+        "Try to find a hidden-state or adversarial failure before considering reuse."
+      ],
+      "ownership": [
+        "Research-only: these RFCs do not authorize product code or live agent actions.",
+        "Preserve Hermes's canonical executor/permission state; experimental representations remain isolated.",
+        "Use RFC #340's strongest alternative baseline and RFC #341's E0/E1/E2 canary evidence format."
+      ],
+      "phases": [
+        "E0: smallest synthetic test that distinguishes this primitive from strong existing systems.",
+        "E1: reproduce on sanitized, frozen Hermes traces; report source and experiment revisions.",
+        "E2: adversarial kill test; label the result supports, falsifies or ambiguous."
+      ],
+      "acceptance": [
+        "Explicitly state a minimal falsifiable claim before implementation.",
+        "Compare raw outcomes and work against the nearest-existing Hermes mechanism; avoid one composite novelty score.",
+        "Provide named counterexamples, source revisions and baseline before implying any advantage.",
+        "No production integration or expansion of permissions based on this research-only RFC."
+      ],
+      "risks": [
+        "Research novelty mistaken for measured benefit.",
+        "Overfitting tiny fixtures or combining conflicting theories before a discriminating result."
+      ],
+      "metrics": [
+        "Discriminating evidence and counterexamples",
+        "Raw task/recomputation/state cost, not a composite score",
+        "Falsification versus baseline controls"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/330",
+          "label": "Original umbrella RFC #330"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/330",
+          "label": "Beyond-Agent research parent #330"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/340",
+          "label": "Falsification matrix #340"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/341",
+          "label": "Research canary contract #341"
+        }
+      ],
+      "credit": "The originating RFC cites relevant human research and prior algorithms; retain those citations and names in any derivative report.",
+      "subtype": "Hypothesis program"
+    },
+    {
+      "slug": "differential-mind",
+      "title": "Differential Mind",
+      "category": "Frontier Research",
+      "stage": "Research only",
+      "tagline": "Update only reasoning consequences affected by a relevant world delta.",
+      "problem": "Hermes should investigate whether cognition can become a maintained incremental computation rather than a sequence of fresh reasoning episodes. The key distinction is stronger than caching: when inputs change, only affected cognitive consequences should update. Long-run hypothesis: cognitive work scales with the causally relevant world delta, not accumulated history.",
+      "outcome": "A strict comparison of differential update versus caching and full recompute. Proposed discriminator: In recurring environments with sparse changes, maintained cognitive dependencies preserve verified outcomes while recomputing asymptotically less semantic work than episode-based Hermes.",
+      "journeys": [
+        "A researcher pins an old-world comparator and a frozen test environment, with no live Hermes authority.",
+        "What are the stable nodes/dependencies of a persistent cognitive computation?",
+        "Which reasoning operations admit lawful deltas?"
+      ],
+      "ownership": [
+        "Research-only: these RFCs do not authorize product code or live agent actions.",
+        "Preserve Hermes's canonical executor/permission state; experimental representations remain isolated.",
+        "Use RFC #340's strongest alternative baseline and RFC #341's E0/E1/E2 canary evidence format."
+      ],
+      "phases": [
+        "E0: smallest synthetic test that distinguishes this primitive from strong existing systems.",
+        "E1: reproduce on sanitized, frozen Hermes traces; report source and experiment revisions.",
+        "E2: adversarial kill test; label the result supports, falsifies or ambiguous."
+      ],
+      "acceptance": [
+        "Try to falsify: In recurring environments with sparse changes, maintained cognitive dependencies preserve verified outcomes while recomputing asymptotically less semantic work than episode-based Hermes.",
+        "Compare raw outcomes and work against the nearest-existing Hermes mechanism; avoid one composite novelty score.",
+        "Provide named counterexamples, source revisions and baseline before implying any advantage.",
+        "No production integration or expansion of permissions based on this research-only RFC."
+      ],
+      "risks": [
+        "Kill/downgrade if dependencies are not stable, most deltas invalidate the graph, maintenance dominates savings, or the idea reduces in practice to semantic caching.",
+        "Overfitting tiny fixtures or combining conflicting theories before a discriminating result."
+      ],
+      "metrics": [
+        "Discriminating evidence and counterexamples",
+        "Raw task/recomputation/state cost, not a composite score",
+        "Falsification versus baseline controls"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/331",
+          "label": "Original research RFC #331"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/330",
+          "label": "Beyond-Agent research parent #330"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/340",
+          "label": "Falsification matrix #340"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/341",
+          "label": "Research canary contract #341"
+        }
+      ],
+      "credit": "The originating RFC cites relevant human research and prior algorithms; retain those citations and names in any derivative report.",
+      "subtype": "Incremental computation"
+    },
+    {
+      "slug": "quotient-mind",
+      "title": "Quotient Mind",
+      "category": "Frontier Research",
+      "stage": "Research only",
+      "tagline": "Merge histories only when no relevant future action can distinguish them.",
+      "problem": "Hermes should investigate whether true cognitive state should be defined by behavioral distinguishability rather than textual completeness. Two histories are the same state when no relevant future experiment/action can distinguish them in a way that changes attainable outcomes or policy. This is not \"compress the transcript better.\" It quotients history space itself.",
+      "outcome": "Test behaviorally sufficient state against exact recall and safety counterexamples. Proposed discriminator: Across recurring environments, decision-distinct states grow substantially slower than raw histories while preserving verified outcomes.",
+      "journeys": [
+        "A researcher pins an old-world comparator and a frozen test environment, with no live Hermes authority.",
+        "Does software/personal-assistant life admit a compact behavioral quotient?",
+        "Relative to which futures is equivalence defined?"
+      ],
+      "ownership": [
+        "Research-only: these RFCs do not authorize product code or live agent actions.",
+        "Preserve Hermes's canonical executor/permission state; experimental representations remain isolated.",
+        "Use RFC #340's strongest alternative baseline and RFC #341's E0/E1/E2 canary evidence format."
+      ],
+      "phases": [
+        "E0: smallest synthetic test that distinguishes this primitive from strong existing systems.",
+        "E1: reproduce on sanitized, frozen Hermes traces; report source and experiment revisions.",
+        "E2: adversarial kill test; label the result supports, falsifies or ambiguous."
+      ],
+      "acceptance": [
+        "Try to falsify: Across recurring environments, decision-distinct states grow substantially slower than raw histories while preserving verified outcomes.",
+        "Compare raw outcomes and work against the nearest-existing Hermes mechanism; avoid one composite novelty score.",
+        "Provide named counterexamples, source revisions and baseline before implying any advantage.",
+        "No production integration or expansion of permissions based on this research-only RFC."
+      ],
+      "risks": [
+        "Kill/downgrade if equivalence is too task-specific, novel goals constantly invalidate quotienting, proof costs exceed state-carrying costs, or the idea collapses to summarization.",
+        "Overfitting tiny fixtures or combining conflicting theories before a discriminating result."
+      ],
+      "metrics": [
+        "Discriminating evidence and counterexamples",
+        "Raw task/recomputation/state cost, not a composite score",
+        "Falsification versus baseline controls"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/332",
+          "label": "Original research RFC #332"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/330",
+          "label": "Beyond-Agent research parent #330"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/340",
+          "label": "Falsification matrix #340"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/341",
+          "label": "Research canary contract #341"
+        }
+      ],
+      "credit": "The originating RFC cites relevant human research and prior algorithms; retain those citations and names in any derivative report.",
+      "subtype": "Behavioral state"
+    },
+    {
+      "slug": "assumption-lattice-mind",
+      "title": "Assumption-Lattice Mind",
+      "category": "Frontier Research",
+      "stage": "Research only",
+      "tagline": "Retain incompatible possible worlds instead of silently choosing one story.",
+      "problem": "Hermes should investigate epistemic non-commitment as a core architecture. Instead of forcing contradictory or uncertain evidence into one fluent state, maintain explicit assumptions, consequences derived under assumption sets, incompatible possible worlds, nogoods/contradictions, actions valid across worlds, and discriminating observations only when the difference matters.",
+      "outcome": "Find safe world-invariant actions and low-cost discriminating observations. Proposed discriminator: For contradictory, stale and partially observed work, preserving alternative worlds reduces false commitment and repeated re-reasoning without prohibitive combinatorial growth.",
+      "journeys": [
+        "A researcher pins an old-world comparator and a frozen test environment, with no live Hermes authority.",
+        "How often can Hermes act correctly without resolving which world is true?",
+        "When should uncertainty be probability versus discrete incompatible worlds?"
+      ],
+      "ownership": [
+        "Research-only: these RFCs do not authorize product code or live agent actions.",
+        "Preserve Hermes's canonical executor/permission state; experimental representations remain isolated.",
+        "Use RFC #340's strongest alternative baseline and RFC #341's E0/E1/E2 canary evidence format."
+      ],
+      "phases": [
+        "E0: smallest synthetic test that distinguishes this primitive from strong existing systems.",
+        "E1: reproduce on sanitized, frozen Hermes traces; report source and experiment revisions.",
+        "E2: adversarial kill test; label the result supports, falsifies or ambiguous."
+      ],
+      "acceptance": [
+        "Try to falsify: For contradictory, stale and partially observed work, preserving alternative worlds reduces false commitment and repeated re-reasoning without prohibitive combinatorial growth.",
+        "Compare raw outcomes and work against the nearest-existing Hermes mechanism; avoid one composite novelty score.",
+        "Provide named counterexamples, source revisions and baseline before implying any advantage.",
+        "No production integration or expansion of permissions based on this research-only RFC."
+      ],
+      "risks": [
+        "Kill/downgrade if world count explodes, probability captures the same value more cheaply, most useful actions require early commitment, or this merely recreates a verbose evidence graph.",
+        "Overfitting tiny fixtures or combining conflicting theories before a discriminating result."
+      ],
+      "metrics": [
+        "Discriminating evidence and counterexamples",
+        "Raw task/recomputation/state cost, not a composite score",
+        "Falsification versus baseline controls"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/333",
+          "label": "Original research RFC #333"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/330",
+          "label": "Beyond-Agent research parent #330"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/340",
+          "label": "Falsification matrix #340"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/341",
+          "label": "Research canary contract #341"
+        }
+      ],
+      "credit": "The originating RFC cites relevant human research and prior algorithms; retain those citations and names in any derivative report.",
+      "subtype": "Contradiction handling"
+    },
+    {
+      "slug": "sheaf-mind",
+      "title": "Sheaf Mind",
+      "category": "Frontier Research",
+      "stage": "Research only",
+      "tagline": "Preserve domain-native local representations without privileging one global schema.",
+      "problem": "Hermes should investigate an architecture with no universal cognitive state or ontology. Code, UI, user preferences, security, tools, visual perception, calendars and repositories may each retain their natural representations. Coordination occurs through overlap/translation maps. Global coherence exists only when compatible local views can be glued; incompatibility becomes an explicit obstruction.",
+      "outcome": "Verify overlap compatibility and explain irreconcilable local views. Proposed discriminator: For sufficiently heterogeneous tasks, local-native representations plus explicit overlap consistency preserve more useful structure with less translation than a universal global state.",
+      "journeys": [
+        "A researcher pins an old-world comparator and a frozen test environment, with no live Hermes authority.",
+        "Which Hermes domains genuinely need a common representation?",
+        "What information belongs only on overlaps?"
+      ],
+      "ownership": [
+        "Research-only: these RFCs do not authorize product code or live agent actions.",
+        "Preserve Hermes's canonical executor/permission state; experimental representations remain isolated.",
+        "Use RFC #340's strongest alternative baseline and RFC #341's E0/E1/E2 canary evidence format."
+      ],
+      "phases": [
+        "E0: smallest synthetic test that distinguishes this primitive from strong existing systems.",
+        "E1: reproduce on sanitized, frozen Hermes traces; report source and experiment revisions.",
+        "E2: adversarial kill test; label the result supports, falsifies or ambiguous."
+      ],
+      "acceptance": [
+        "Try to falsify: For sufficiently heterogeneous tasks, local-native representations plus explicit overlap consistency preserve more useful structure with less translation than a universal global state.",
+        "Compare raw outcomes and work against the nearest-existing Hermes mechanism; avoid one composite novelty score.",
+        "Provide named counterexamples, source revisions and baseline before implying any advantage.",
+        "No production integration or expansion of permissions based on this research-only RFC."
+      ],
+      "risks": [
+        "Kill/downgrade if overlap maps require the same global ontology, incompatibilities cannot produce action, sheaf language adds no operational distinction from typed interfaces, or translation overhead dominates.",
+        "Overfitting tiny fixtures or combining conflicting theories before a discriminating result."
+      ],
+      "metrics": [
+        "Discriminating evidence and counterexamples",
+        "Raw task/recomputation/state cost, not a composite score",
+        "Falsification versus baseline controls"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/334",
+          "label": "Original research RFC #334"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/330",
+          "label": "Beyond-Agent research parent #330"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/340",
+          "label": "Falsification matrix #340"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/341",
+          "label": "Research canary contract #341"
+        }
+      ],
+      "credit": "The originating RFC cites relevant human research and prior algorithms; retain those citations and names in any derivative report.",
+      "subtype": "Local-to-global representation"
+    },
+    {
+      "slug": "viability-mind",
+      "title": "Viability Mind",
+      "category": "Frontier Research",
+      "stage": "Research only",
+      "tagline": "Treat future human options, reversibility and controllability as first-class objectives.",
+      "problem": "Hermes should investigate whether the persistent objective of a personal intelligence should be preservation and expansion of viable future agency rather than completion of the current inferred task. A viability-oriented intelligence asks which actions make progress while preserving recoverability, reversibility, observability, human choice, authority and useful future options.",
+      "outcome": "Compare task-only rewards with independent viability measures. Proposed discriminator: For ambiguous, long-horizon or irreversible work, policies that explicitly preserve viable future options reduce unrecoverable failures without unacceptable task paralysis.",
+      "journeys": [
+        "A researcher pins an old-world comparator and a frozen test environment, with no live Hermes authority.",
+        "What constitutes future agency in digital/personal work?",
+        "Can reversibility, authority, information access, human choice and recovery live in one formal object?"
+      ],
+      "ownership": [
+        "Research-only: these RFCs do not authorize product code or live agent actions.",
+        "Preserve Hermes's canonical executor/permission state; experimental representations remain isolated.",
+        "Use RFC #340's strongest alternative baseline and RFC #341's E0/E1/E2 canary evidence format."
+      ],
+      "phases": [
+        "E0: smallest synthetic test that distinguishes this primitive from strong existing systems.",
+        "E1: reproduce on sanitized, frozen Hermes traces; report source and experiment revisions.",
+        "E2: adversarial kill test; label the result supports, falsifies or ambiguous."
+      ],
+      "acceptance": [
+        "Try to falsify: For ambiguous, long-horizon or irreversible work, policies that explicitly preserve viable future options reduce unrecoverable failures without unacceptable task paralysis.",
+        "Compare raw outcomes and work against the nearest-existing Hermes mechanism; avoid one composite novelty score.",
+        "Provide named counterexamples, source revisions and baseline before implying any advantage.",
+        "No production integration or expansion of permissions based on this research-only RFC."
+      ],
+      "risks": [
+        "Kill/downgrade if the viable set only restates the whole task, empowerment rewards useless option hoarding, current safety constraints capture nearly all benefit, or physiology variables lack objective meaning.",
+        "Overfitting tiny fixtures or combining conflicting theories before a discriminating result."
+      ],
+      "metrics": [
+        "Discriminating evidence and counterexamples",
+        "Raw task/recomputation/state cost, not a composite score",
+        "Falsification versus baseline controls"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/335",
+          "label": "Original research RFC #335"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/330",
+          "label": "Beyond-Agent research parent #330"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/340",
+          "label": "Falsification matrix #340"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/341",
+          "label": "Research canary contract #341"
+        }
+      ],
+      "credit": "The originating RFC cites relevant human research and prior algorithms; retain those citations and names in any derivative report.",
+      "subtype": "Human agency"
+    },
+    {
+      "slug": "event-triggered-cognition",
+      "title": "Event-Triggered Cognition",
+      "category": "Frontier Research",
+      "stage": "Research only",
+      "tagline": "Buy additional thinking and observation only when expected decision value justifies it.",
+      "problem": "Should \"think\", \"observe\", \"search\", \"verify\", \"simulate\", \"ask\", \"wait\" and \"stop\" live in the same economic action space as external actions? This issue studies: Event-Triggered Cognition — cognition fires when decision-relevant error/uncertainty crosses a threshold. Value-of-Computation Metareasoning — further reasoning is purchased only when expected decision improvement exceeds cost. Active Observability — observations are selected because they make hidden state identifiable, not merely because retrieval seems relevant. Interaction Scaling — acquire information from th",
+      "outcome": "Test against always-think and timed policies under hidden drift.",
+      "journeys": [
+        "A researcher pins an old-world comparator and a frozen test environment, with no live Hermes authority.",
+        "What event should wake cognition?",
+        "How is slow/adversarial drift detected while cognition is \"asleep\"?"
+      ],
+      "ownership": [
+        "Research-only: these RFCs do not authorize product code or live agent actions.",
+        "Preserve Hermes's canonical executor/permission state; experimental representations remain isolated.",
+        "Use RFC #340's strongest alternative baseline and RFC #341's E0/E1/E2 canary evidence format."
+      ],
+      "phases": [
+        "E0: smallest synthetic test that distinguishes this primitive from strong existing systems.",
+        "E1: reproduce on sanitized, frozen Hermes traces; report source and experiment revisions.",
+        "E2: adversarial kill test; label the result supports, falsifies or ambiguous."
+      ],
+      "acceptance": [
+        "Explicitly state a minimal falsifiable claim before implementation.",
+        "Compare raw outcomes and work against the nearest-existing Hermes mechanism; avoid one composite novelty score.",
+        "Provide named counterexamples, source revisions and baseline before implying any advantage.",
+        "No production integration or expansion of permissions based on this research-only RFC."
+      ],
+      "risks": [
+        "Reject the strong thesis if trigger/VoC estimation dominates savings, missed drift destroys reliability, or the result is indistinguishable from ordinary model/tool routing.",
+        "Overfitting tiny fixtures or combining conflicting theories before a discriminating result."
+      ],
+      "metrics": [
+        "Discriminating evidence and counterexamples",
+        "Raw task/recomputation/state cost, not a composite score",
+        "Falsification versus baseline controls"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/336",
+          "label": "Original research RFC #336"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/330",
+          "label": "Beyond-Agent research parent #330"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/340",
+          "label": "Falsification matrix #340"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/341",
+          "label": "Research canary contract #341"
+        }
+      ],
+      "credit": "The originating RFC cites relevant human research and prior algorithms; retain those citations and names in any derivative report.",
+      "subtype": "Computational metareasoning"
+    },
+    {
+      "slug": "causal-scale-research",
+      "title": "Causal Scale & Predictive State",
+      "category": "Frontier Research",
+      "stage": "Research only",
+      "tagline": "Choose file, task or project abstraction where decision-relevant cause lives.",
+      "problem": "At what causal scale should Hermes represent a problem? Current systems usually choose scale architecturally: token, message, file, tool call, task, project, agent. This issue asks whether scale itself should be a learned/dynamic property chosen according to where causal information lives.",
+      "outcome": "Detect when coarse state is insufficient and refine without lost provenance.",
+      "journeys": [
+        "A researcher pins an old-world comparator and a frozen test environment, with no live Hermes authority.",
+        "Can causal contribution identify when file-level reasoning beats line-level reasoning, or project-level reasoning beats file-level reasoning?",
+        "How is scale changed without losing provenance?"
+      ],
+      "ownership": [
+        "Research-only: these RFCs do not authorize product code or live agent actions.",
+        "Preserve Hermes's canonical executor/permission state; experimental representations remain isolated.",
+        "Use RFC #340's strongest alternative baseline and RFC #341's E0/E1/E2 canary evidence format."
+      ],
+      "phases": [
+        "E0: smallest synthetic test that distinguishes this primitive from strong existing systems.",
+        "E1: reproduce on sanitized, frozen Hermes traces; report source and experiment revisions.",
+        "E2: adversarial kill test; label the result supports, falsifies or ambiguous."
+      ],
+      "acceptance": [
+        "Explicitly state a minimal falsifiable claim before implementation.",
+        "Compare raw outcomes and work against the nearest-existing Hermes mechanism; avoid one composite novelty score.",
+        "Provide named counterexamples, source revisions and baseline before implying any advantage.",
+        "No production integration or expansion of permissions based on this research-only RFC."
+      ],
+      "risks": [
+        "Kill/downgrade if causal-scale estimation costs more than saved cognition, if scale is too task-dependent to reuse, or if this reduces to ordinary hierarchical summarization.",
+        "Overfitting tiny fixtures or combining conflicting theories before a discriminating result."
+      ],
+      "metrics": [
+        "Discriminating evidence and counterexamples",
+        "Raw task/recomputation/state cost, not a composite score",
+        "Falsification versus baseline controls"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/337",
+          "label": "Original research RFC #337"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/330",
+          "label": "Beyond-Agent research parent #330"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/340",
+          "label": "Falsification matrix #340"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/341",
+          "label": "Research canary contract #341"
+        }
+      ],
+      "credit": "The originating RFC cites relevant human research and prior algorithms; retain those citations and names in any derivative report.",
+      "subtype": "Adaptive abstraction"
+    },
+    {
+      "slug": "equivalence-deliberation",
+      "title": "Equivalence-Saturated Deliberation",
+      "category": "Frontier Research",
+      "stage": "Research only",
+      "tagline": "Retain proven equivalent action plans to avoid redundant replanning.",
+      "problem": "Can Hermes avoid repeated planning by representing equivalence among actions/plans rather than repeatedly selecting and revising one trajectory?",
+      "outcome": "Distinguish safe action algebra from unsafe side-effect reordering. Proposed discriminator: In repetitive tool environments, explicit action/plan equivalence classes reduce fresh deliberation and adaptation cost under changing constraints while preserving verified effects.",
+      "journeys": [
+        "A researcher pins an old-world comparator and a frozen test environment, with no live Hermes authority.",
+        "What action equivalences are safe in open-world software systems?",
+        "Which relations can be learned versus must be proven?"
+      ],
+      "ownership": [
+        "Research-only: these RFCs do not authorize product code or live agent actions.",
+        "Preserve Hermes's canonical executor/permission state; experimental representations remain isolated.",
+        "Use RFC #340's strongest alternative baseline and RFC #341's E0/E1/E2 canary evidence format."
+      ],
+      "phases": [
+        "E0: smallest synthetic test that distinguishes this primitive from strong existing systems.",
+        "E1: reproduce on sanitized, frozen Hermes traces; report source and experiment revisions.",
+        "E2: adversarial kill test; label the result supports, falsifies or ambiguous."
+      ],
+      "acceptance": [
+        "Try to falsify: In repetitive tool environments, explicit action/plan equivalence classes reduce fresh deliberation and adaptation cost under changing constraints while preserving verified effects.",
+        "Compare raw outcomes and work against the nearest-existing Hermes mechanism; avoid one composite novelty score.",
+        "Provide named counterexamples, source revisions and baseline before implying any advantage.",
+        "No production integration or expansion of permissions based on this research-only RFC."
+      ],
+      "risks": [
+        "Kill/downgrade if hidden side effects make equivalence too brittle, proof costs dominate, or the system degenerates into template/routine matching.",
+        "Overfitting tiny fixtures or combining conflicting theories before a discriminating result."
+      ],
+      "metrics": [
+        "Discriminating evidence and counterexamples",
+        "Raw task/recomputation/state cost, not a composite score",
+        "Falsification versus baseline controls"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/338",
+          "label": "Original research RFC #338"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/330",
+          "label": "Beyond-Agent research parent #330"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/340",
+          "label": "Falsification matrix #340"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/341",
+          "label": "Research canary contract #341"
+        }
+      ],
+      "credit": "The originating RFC cites relevant human research and prior algorithms; retain those citations and names in any derivative report.",
+      "subtype": "Action algebra"
+    },
+    {
+      "slug": "plasticity-rule-state",
+      "title": "Plasticity-Rule State",
+      "category": "Frontier Research",
+      "stage": "Research only",
+      "tagline": "Learn how learning rules should update without letting safety rules adapt.",
+      "problem": "Should the persistent adaptive object be not only memories, policies or model parameters, but the learning/update rule itself?",
+      "outcome": "Demonstrate bounded meta-adaptation beyond fixed optimizer and offline evolution.",
+      "journeys": [
+        "A researcher pins an old-world comparator and a frozen test environment, with no live Hermes authority.",
+        "What exactly is a \"learning rule\" for a heterogeneous system like Hermes?",
+        "Can update rules be scoped by user/domain/capability?"
+      ],
+      "ownership": [
+        "Research-only: these RFCs do not authorize product code or live agent actions.",
+        "Preserve Hermes's canonical executor/permission state; experimental representations remain isolated.",
+        "Use RFC #340's strongest alternative baseline and RFC #341's E0/E1/E2 canary evidence format."
+      ],
+      "phases": [
+        "E0: smallest synthetic test that distinguishes this primitive from strong existing systems.",
+        "E1: reproduce on sanitized, frozen Hermes traces; report source and experiment revisions.",
+        "E2: adversarial kill test; label the result supports, falsifies or ambiguous."
+      ],
+      "acceptance": [
+        "Explicitly state a minimal falsifiable claim before implementation.",
+        "Compare raw outcomes and work against the nearest-existing Hermes mechanism; avoid one composite novelty score.",
+        "Provide named counterexamples, source revisions and baseline before implying any advantage.",
+        "No production integration or expansion of permissions based on this research-only RFC."
+      ],
+      "risks": [
+        "Kill/downgrade if safe meta-credit assignment is intractable, learned rules cannot outperform fixed well-tuned adaptation, or the concept collapses to hyperparameter tuning.",
+        "Overfitting tiny fixtures or combining conflicting theories before a discriminating result."
+      ],
+      "metrics": [
+        "Discriminating evidence and counterexamples",
+        "Raw task/recomputation/state cost, not a composite score",
+        "Falsification versus baseline controls"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/339",
+          "label": "Original research RFC #339"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/330",
+          "label": "Beyond-Agent research parent #330"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/340",
+          "label": "Falsification matrix #340"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/341",
+          "label": "Research canary contract #341"
+        }
+      ],
+      "credit": "The originating RFC cites relevant human research and prior algorithms; retain those citations and names in any derivative report.",
+      "subtype": "Learning dynamics"
+    }
+  ]
+}
