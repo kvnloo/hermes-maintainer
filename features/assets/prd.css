@@ -1,6 +1,7 @@
 /* Hermes Maintainer · Feature PRD library */
 :root{color-scheme:light;--bg:#f8f9fc;--paper:#fff;--ink:#161c2a;--soft:#687487;--muted:#98a2b2;--stroke:#e7ebf2;--blue:#296ee9;--blue-bg:#eff5ff;--green:#18714d;--green-bg:#e8f6ee;--gold:#a26f30;--gold-bg:#fff3e4;--violet:#7450a6;--shadow:0 16px 60px rgba(26,40,68,.045);--r:19px}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{scroll-behavior:smooth;scroll-padding-top:100px}
 body{margin:0;background:radial-gradient(ellipse at 50% -16%,#f3f7ff 2%,transparent 48%),var(--bg);color:var(--ink);font:15px/1.65 Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
 a{color:var(--blue);text-decoration:none}
