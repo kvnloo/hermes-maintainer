@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f8f9fc">
+  <meta name="description" content="Living product specifications for Hermes Agent work: designs, architecture, delivery gates and review evidence.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Feature PRDs · hermes-maintainer">
+  <meta property="og:description" content="From idea to verified change. One feature specification at a time.">
+  <title>Feature library · hermes-maintainer</title>
+  <link rel="stylesheet" href="./assets/prd.css">
+  <link rel="canonical" href="https://kvnloo.github.io/hermes-maintainer/features/">
+</head>
+<body>
+  <header class="topbar">
+    <div class="bar-inner">
+      <a href="../" class="brand"><span class="mark" aria-hidden="true">H</span> hermes-maintainer <span style="color:#a7afbb;font-weight:500;margin-left:3px">/ product</span></a>
+      <nav class="bar-links" aria-label="Global">
+        <a href="../">Maintainer dashboard</a>
+        <a href="./" aria-current="page">Feature library</a>
+        <a class="top-cta" href="https://github.com/kvnloo/hermes-maintainer">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="crumb"><a href="../">Overview</a><span aria-hidden="true">/</span> Feature library</div>
+    <section class="hero" aria-labelledby="main-title">
+      <div class="hero-line"><span class="kicker"><span class="dot"></span> PRODUCT ENGINEERING</span><span class="small">Living specifications</span></div>
+      <h1 id="main-title">Ideas worth<br>making real<span style="color:#91acf8">.</span></h1>
+      <p class="lede">A home for each feature we're building around Hermes. Problem, experience, implementation and evidence in one shareable place, before it becomes an upstream PR.</p>
+      <div class="hero-actions"><a href="#features" class="btn primary">Explore features <span aria-hidden="true">↘</span></a><a href="https://github.com/kvnloo/hermes-maintainer/tree/preview/features" class="btn">View source on GitHub ↗</a></div>
+    </section>
+    <section class="meta-grid" aria-label="Library principles">
+      <div class="meta-item"><span>Organization</span><b>One PRD per feature</b></div>
+      <div class="meta-item"><span>Source of truth</span><b>Versioned in Git</b></div>
+      <div class="meta-item"><span>Change control</span><b>PR review</b></div>
+      <div class="meta-item"><span>Progress claims</span><b>Evidence-based</b></div>
+    </section>
+    <section class="section" id="features" aria-labelledby="features-heading">
+      <div class="section-head">
+        <div><span class="eyebrow">FEATURE INDEX</span><h2 id="features-heading" style="margin-top:10px">Explore the work</h2><p>Each feature gets its own URL, acceptance criteria and source links.</p></div>
+        <span class="pill">1 published spec</span>
+      </div>
+      <div class="searchbar" role="search"><span aria-hidden="true" style="font-size:19px;color:#7790b6">⌕</span><input type="search" id="feature-search" placeholder="Filter features…" aria-label="Filter features by name or description"><kbd style="background:#f3f6fa;border-radius:7px;padding:3px 7px;font-size:11px;color:#a0a9b6">/</kbd></div>
+      <div style="height:15px" aria-hidden="true"></div>
+      <article class="paper feature-row" id="tern-feature" data-search="hermes tern tsp ui ux plugin terminal native frontend opm">
+        <div class="feature-mark" aria-hidden="true">H×T</div>
+        <div><div class="tagline"><span class="pill amber">Architecture decision pending</span><span class="micro">Feature 001 · Oct 20, 2026</span></div><h3><a href="./hermes-tern/">Hermes × Tern</a></h3><p>Make Hermes feel native inside Tern without compromising its runtime, approval flows or fallback terminal.</p></div>
+        <a href="./hermes-tern/" class="btn feature-cta">Open PRD <span aria-hidden="true">↗</span></a>
+      </article>
+      <p class="empty" id="search-empty" role="status">No features match. Try “Tern” or “frontend”.</p>
+    </section>
+    <section class="section" aria-labelledby="system-heading" style="padding-top:8px">
+      <div class="section-head"><div><span class="eyebrow">THE METHOD</span><h2 id="system-heading" style="margin-top:10px">Not another backlog</h2><p>Specs complement canonical issue and promotion queues. They don't replace them.</p></div></div>
+      <div class="columns-3">
+        <div class="card"><div class="num">01 / INTENT</div><h3>Why build it?</h3><p>State the user problem, constraints and the smallest experience that solves it.</p></div>
+        <div class="card"><div class="num">02 / DESIGN</div><h3>How should it behave?</h3><p>Document interactions, architecture, decisions, alternatives and linked source.</p></div>
+        <div class="card"><div class="num">03 / VERIFICATION</div><h3>What proves it works?</h3><p>Keep acceptance tests, exact evidence and rollout gates visible beside the proposal.</p></div>
+      </div>
+      <div class="note" style="margin-top:17px"><strong>Adding another feature?</strong> Follow the <a href="https://github.com/kvnloo/hermes-maintainer/blob/preview/features/README.md">PRD authoring contract</a>. Each feature owns its own folder; the library remains a navigation surface.</div>
+    </section>
+    <footer class="footer"><span>hermes-maintainer · Product specifications · <a href="https://github.com/NousResearch/hermes-agent">Hermes Agent</a></span><span>Evidence beats percent-complete.</span></footer>
+  </main>
+  <script>
+  (() => {
+    const input = document.getElementById('feature-search');
+    const rows = Array.from(document.querySelectorAll('[data-search]'));
+    const empty = document.getElementById('search-empty');
+    const filter = () => {
+      const q = input.value.trim().toLowerCase();
+      let count = 0;
+      rows.forEach(el => {
+        const match = (el.textContent.toLowerCase() + ' ' + el.dataset.search).includes(q);
+        el.hidden = !match;
+        if (match) count += 1;
+      });
+      empty.style.display = count ? 'none' : 'block';
+    };
+    input.addEventListener('input', filter);
+    document.addEventListener('keydown', e => {
+      if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey || /input|textarea/i.test(document.activeElement.tagName)) return;
+      e.preventDefault();
+      input.focus();
+    });
+  })();
+  </script>
+</body>
+</html>
