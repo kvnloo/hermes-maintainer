@@ -44,7 +44,8 @@ jobs:
   deploy:
     if: github.repository == 'kvnloo/hermes-maintainer'
     environment:
-      name: github-pages
+      # Preview is allowed to publish feature PRDs without granting write to main.
+      name: hermes-maintainer-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
