@@ -135,6 +135,11 @@ def copy_feature_specs(site: Path) -> None:
     src = ROOT / "features"
     if src.is_dir():
         shutil.copytree(src, site / "features")
+        # Separate generator keeps RFC content declarative, with safe paths and HTML.
+        sys.path.insert(0, str(ROOT / "scripts"))
+        from build_feature_atlas import build_atlas
+
+        build_atlas(site / "features", src)
 
 
 def build(out: Path) -> Path:

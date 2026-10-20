@@ -1,0 +1,660 @@
+{
+  "schema": "hermes-maintainer.prd-atlas.v1",
+  "snapshot": "2026-10-20",
+  "items": [
+    {
+      "slug": "trusted-agent-contacts",
+      "title": "Trusted Agent Contacts",
+      "category": "Agents & Automation",
+      "stage": "Standalone-plugin RFC",
+      "tagline": "Ask another agent a bounded question without sharing your whole session.",
+      "problem": "Cross-person agent collaboration often assumes unsafe shared sessions or persistent broad access. A useful contact interaction needs explicit, scoped authorization on both sides.",
+      "outcome": "Independent agent-to-agent conversations with durable pairing, revocation, bounded disclosure and auditable delivery.",
+      "journeys": [
+        "An operator pairs with a peer agent by approving its identity and allowed use.",
+        "Hermes asks the peer a bounded question with no ambient history or credential transfer.",
+        "The peer may clarify or decline; each owner may revoke access, inspect receipts and retry safely."
+      ],
+      "ownership": [
+        "Each owner's agent independently enforces disclosure and action authority.",
+        "A standalone Hermes plugin owns pairing, contact records and delivery; no OpenDots runtime dependency.",
+        "Every cross-owner request has explicit recipient, purpose, scope and expiry."
+      ],
+      "phases": [
+        "Define a minimal contacts.v0 envelope, trust/bootstrap and consent workflow.",
+        "Implement read-only question-answer path with timeouts, retry and revocation fixtures.",
+        "Test ambiguous identities, compromised peer, duplicate delivery and cross-owner denial before expanding actions."
+      ],
+      "acceptance": [
+        "A contact never receives unrelated transcript, raw secrets or unapproved tools.",
+        "Both owners can independently refuse, suspend or revoke future exchange.",
+        "Replay and duplicate events cannot cause repeated side effects.",
+        "A peer cannot approve work on behalf of another owner."
+      ],
+      "risks": [
+        "Implicit consent or silent scope expansion.",
+        "Confusing identity discovery with trust establishment."
+      ],
+      "metrics": [
+        "Successful scoped handoffs",
+        "Unauthorized disclosure incidents",
+        "Time to revoke and retry correctness"
+      ],
+      "sources": [
+        {
+          "label": "Trusted Agent Contacts RFC",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/426"
+        },
+        {
+          "url": "https://github.com/kvnloo/OpenDots/issues/13",
+          "label": "Independent OpenDots contacts"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/issues/330",
+          "label": "Long-run agency goal"
+        }
+      ],
+      "credit": "The standalone Hermes plugin and parallel OpenDots design preserve separate maintainers and independent architecture."
+    },
+    {
+      "slug": "live-voice-handsfree",
+      "title": "Real-Time Voice & Handsfree",
+      "category": "Interfaces",
+      "stage": "Host qualification",
+      "tagline": "A continuous, interruptible conversation with one agent and clear authority.",
+      "problem": "Dictation, duplex voice and manual push-to-talk are different interactions. Mixing them can lose text, hide a running action or produce misleading speaking/listening states.",
+      "outcome": "Low-latency live voice with barge-in, opt-in activation, typed turn ownership and visibly recoverable fallback to text.",
+      "journeys": [
+        "The user explicitly activates dictation or full live mode, never an ambiguous default.",
+        "The assistant acknowledges speech, shows when it is listening/thinking/speaking and allows interruption.",
+        "A dropped connection returns to the text composer with its draft, approvals and session state intact."
+      ],
+      "ownership": [
+        "Hermes handles dialogue, model/tool execution, approvals and session state.",
+        "Voice transport/STT/TTS and Tern presentation report factual lifecycle events without separate decision authority.",
+        "Microphone capture, retention and any network providers are disclosed and consent-gated."
+      ],
+      "phases": [
+        "Separate manual dictation from full duplex and push-to-talk contracts.",
+        "Instrument speech-start→first-text/audio and interrupt-to-stop timings under fixed devices.",
+        "Verify race handling, interrupted tools, resume, fallback and consent before enabling wide availability."
+      ],
+      "acceptance": [
+        "Neither dictation nor voice silently sends a prompt during a modal approval.",
+        "Barge-in stops current audio safely without falsely cancelling unrelated Hermes tools.",
+        "Voice state across session switches cannot target the wrong session.",
+        "Opt-out leaves normal text UX unchanged."
+      ],
+      "risks": [
+        "Unexpected microphone activation or retained audio.",
+        "Leaked output after barge-in or session handoff."
+      ],
+      "metrics": [
+        "Speech-to-response latency p50/p95",
+        "Interruption reaction time",
+        "Wrong-session or duplicate audio events"
+      ],
+      "sources": [
+        {
+          "label": "Native dictation",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/553"
+        },
+        {
+          "label": "Opt-in live voice",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/581"
+        },
+        {
+          "label": "Push to talk",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/591"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/tree/feat/realtime-voice-session-runtime-hardening",
+          "label": "Voice runtime experiments"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-codex-live",
+          "label": "Bidirectional voice transport"
+        }
+      ],
+      "credit": "Speech model/transport creators and Hermes/Tern donors receive source attribution when their implementations are reused."
+    },
+    {
+      "slug": "native-visual-dashboards",
+      "title": "Native Operational Dashboards",
+      "category": "Interfaces",
+      "stage": "Design & evidence",
+      "tagline": "Turn complex agent work and system signals into visible, inspectable native information.",
+      "problem": "Transcript-only views hide execution topology, rich artifacts and operational context. Visualizing everything can also create noise, obscure errors or distract during a task.",
+      "outcome": "An opt-in family of semantic dashboards for dependency graphs, live work, machine health and agent-made artifacts.",
+      "journeys": [
+        "A user opens a graph or health dashboard from an explicit command.",
+        "The dashboard distinguishes real tool/subagent state from inferred project relationships.",
+        "Tern restores focus and unchanged draft when the panel closes, even during a busy agent turn."
+      ],
+      "ownership": [
+        "Hermes owns executable work, approvals and task progress; a dashboard is read-only projection unless separately authorized.",
+        "External graph/tool provenance and metrics retain original creators and source revisions.",
+        "Native TSP views must respect host lifecycle, reduced motion and bounded render work."
+      ],
+      "phases": [
+        "Validate reference videos/sources and UI interaction claims, separate from implementation.",
+        "Prototype one read-only panel with data provenance, hover/explain and copyable links.",
+        "Test real native host, hidden panes, narrow layouts, stale reports and performance."
+      ],
+      "acceptance": [
+        "Graph edges distinguish extracted, inferred and ambiguous data.",
+        "A dashboard never rebrands simulated status as live Hermes or real health telemetry.",
+        "Escape/close returns focus to pending approvals instead of hiding them.",
+        "Bound graph size/frame updates and report exact test/input revisions."
+      ],
+      "risks": [
+        "Beautiful but untrustworthy dashboards.",
+        "Accidental authority to act on inferred dependencies."
+      ],
+      "metrics": [
+        "Time to locate relevant issue/dependency",
+        "Frame cost and visible latency",
+        "Stale/inferred evidence labeling accuracy"
+      ],
+      "sources": [
+        {
+          "label": "Graphify + HANCORE reference audit",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/637"
+        },
+        {
+          "label": "Tern UX and authority RFC",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/510"
+        },
+        {
+          "label": "SVG/Mermaid native views",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/569"
+        },
+        {
+          "label": "Reuse audit",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/636"
+        }
+      ],
+      "credit": "Graphify-Labs and HANCORE are independently credited for visual references; the original social posters are not misrepresented as source-code authors."
+    },
+    {
+      "slug": "plugin-first-ecosystem",
+      "title": "Plugin-First Hermes",
+      "category": "Platform & Safety",
+      "stage": "Architecture convergence",
+      "tagline": "An extensible agent core with safe, auditable, community-owned capabilities.",
+      "problem": "Core-coupled integrations slow maintenance and tempt plugins to access private imports, global events and invisible side channels.",
+      "outcome": "Use capability-declared, version-pinned standalone plugins for frontends, tools, bounded workflows and external resources.",
+      "journeys": [
+        "A user discovers a compatible community plugin with the privacy and capability disclosure visible.",
+        "The plugin registers supported tools or a frontend without monkeypatching Hermes core.",
+        "Disable or uninstall removes registered authority, and all unknown calls fail safely."
+      ],
+      "ownership": [
+        "Hermes enforces plugin lifecycle, permission and core gateway contracts.",
+        "Each plugin maintainer owns implementation, version support and license.",
+        "A plugin cannot impersonate a different session or acquire additional tool authority by labeling itself as a frontend."
+      ],
+      "phases": [
+        "Inventory existing community integrations before writing another one.",
+        "Prefer generic frontend registration, session-scoped events and explicit client capabilities.",
+        "Validate a pinned plugin in an isolated host and check credential, subprocess and unload boundaries."
+      ],
+      "acceptance": [
+        "No undocumented core patch or unsafe private import is necessary for the accepted seam.",
+        "Plugin manifests and privacy disclosure match observed network/data access.",
+        "A disabled plugin cannot leave active registrations or leak stale events.",
+        "No vendor bundle is merged into Hermes core solely to expose an integration."
+      ],
+      "risks": [
+        "Transitive code execution from unpinned plugin dependencies.",
+        "Unknown API boundaries encouraging file-based side channels."
+      ],
+      "metrics": [
+        "Documented public seams needed per plugin",
+        "Uninstall and isolation correctness",
+        "Review/test coverage for catalog entries"
+      ],
+      "sources": [
+        {
+          "label": "Standalone pinned plugin staging",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/412"
+        },
+        {
+          "label": "Frontend plugin reuse audit",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/636"
+        },
+        {
+          "url": "https://github.com/NousResearch/hermes-agent/pull/141923",
+          "label": "Tern community catalog proposal"
+        },
+        {
+          "url": "https://github.com/NousResearch/hermes-agent/pull/140480",
+          "label": "Public frontend registration draft"
+        },
+        {
+          "url": "https://github.com/NousResearch/hermes-agent/issues/141982",
+          "label": "Plugin API gaps"
+        }
+      ],
+      "credit": "Community plugin authors own their implementations; the catalogue is a discovery mechanism, not a transfer of authorship to Hermes."
+    },
+    {
+      "slug": "context-recovery",
+      "title": "Reliable Context Recovery",
+      "category": "Memory & Context",
+      "stage": "Failure-mode hardening",
+      "tagline": "Never lose a user's work, and never replay an uncertain side effect.",
+      "problem": "Overflow, compression errors and gateway retries can discard prompts, duplicate tool effects, or create endless context-repair loops.",
+      "outcome": "One consistent, measurable recovery contract across TUI, messaging, API and agent-to-agent surfaces.",
+      "journeys": [
+        "A long session approaches the provider's context limit and safely compacts retained evidence.",
+        "A recoverable error retries only a still-owned, not-yet-executed user intent.",
+        "If the output or tool effects are uncertain, Hermes explains the hold and asks for verification instead of blindly replaying."
+      ],
+      "ownership": [
+        "Hermes gateway and execution ledger own submitted prompts and side effects.",
+        "Provider-specific context editing is optional and isolated from canonical session history.",
+        "Surfaces render verified admission and recovery state; they do not invent recovery decisions."
+      ],
+      "phases": [
+        "Enumerate overflow→compaction→retry journeys and current upstream owners.",
+        "Add transport-specific prefix/retry negative controls and cache-consistency evidence.",
+        "Measure successful recovery at the same verified outcome and cost before a small upstream change."
+      ],
+      "acceptance": [
+        "No duplicate consequential tool call after an ambiguous gateway error.",
+        "A durable user prompt survives busy queue, resume and compaction.",
+        "Compression does not erase required identifiers or pretend contradictory facts agree.",
+        "Provider editing never silently changes unrelated providers or breaks prompt caching without measurement."
+      ],
+      "risks": [
+        "Unbounded retry loops after exhaustion.",
+        "A cache-read improvement hiding extra total cost or lost state."
+      ],
+      "metrics": [
+        "Recovery success by error class",
+        "Duplicate/replayed side effects",
+        "Cache-read tokens and total cost after repair"
+      ],
+      "sources": [
+        {
+          "label": "Overflow/compaction/retry roadmap",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/499"
+        },
+        {
+          "label": "Prefix stability across surfaces",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/411"
+        },
+        {
+          "label": "Context editing qualification",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/413"
+        },
+        {
+          "label": "Compaction identifier anchors",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/418"
+        }
+      ],
+      "credit": "Keep attribution to original upstream issue reporters, provider integrations and individual recovery PR authors."
+    },
+    {
+      "slug": "human-authorization",
+      "title": "Typed Human Authorization",
+      "category": "Platform & Safety",
+      "stage": "Standalone mechanism",
+      "tagline": "Grant exactly one approved operation without handing over reusable privilege.",
+      "problem": "Unstructured shell escalation, retained sudo secrets and implicit approvals make powerful agents hard to trust.",
+      "outcome": "A typed, one-time privilege broker and fail-closed action contracts for consequential system changes.",
+      "journeys": [
+        "The agent requests a named privileged operation with exact arguments, target and scope.",
+        "The human approves only this operation after seeing its side effects and expiration.",
+        "The broker executes once and issues an auditable, revocable receipt; future operations require fresh approval."
+      ],
+      "ownership": [
+        "Hermes owns the agent's request and its existing approval flow.",
+        "A separate privilege broker owns OS-specific elevation and never returns a reusable password.",
+        "AODL validation checks authority, effect, budgets and target identity before any commitment."
+      ],
+      "phases": [
+        "Document the allowed typed-operation surface and threat model.",
+        "Build an isolated single-operation workflow with expiry/replay tests.",
+        "Measure negative controls, audit receipts and cross-platform boundaries before any live administrative actions."
+      ],
+      "acceptance": [
+        "No reusable sudo password or long-lived elevated shell escapes the broker.",
+        "Expired, mutated or replayed requests fail closed.",
+        "The approved operation and the executed operation match semantically, including target IDs.",
+        "Failures leave clear diagnostic evidence without leaking secrets."
+      ],
+      "risks": [
+        "Privilege escalation through command/template interpolation.",
+        "Approval UI describing a different effect than the eventual execution."
+      ],
+      "metrics": [
+        "Unauthorized/replayed execution rate",
+        "Approval-to-commit trace completeness",
+        "Recovery without retained credential"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/kvnloo/hermes-privilege-broker",
+          "label": "Standalone privilege broker"
+        },
+        {
+          "url": "https://github.com/kvnloo/aodl",
+          "label": "Typed authority validator"
+        },
+        {
+          "label": "Owner-scoped delegation boundaries",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/426"
+        },
+        {
+          "label": "Hermes retains approvals",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/510"
+        }
+      ],
+      "credit": "Credit the OS security primitives and original human authors of the broker/typed validation mechanisms."
+    },
+    {
+      "slug": "agent-autonomy",
+      "title": "Durable Agent Autonomy",
+      "category": "Agents & Automation",
+      "stage": "Research & prototype",
+      "tagline": "Work that persists and recovers without creating unbounded agent authority.",
+      "problem": "Recurring agents can drift, repeat partial jobs, or lose context across restarts. A timer alone does not define ownership, budget or success.",
+      "outcome": "A recoverable autonomy layer for recurring goals, bounded background work, task handoff and human-visible receipts.",
+      "journeys": [
+        "A user creates a durable work goal with permissions, time/cost budget and stop conditions.",
+        "Hermes schedules bounded work, resumes from completed receipts and surfaces blockers.",
+        "The user can pause, inspect, redirect or revoke the goal without losing traceability."
+      ],
+      "ownership": [
+        "Hermes's scheduler and execution ledger remain authoritative.",
+        "Optional typed workflows and multi-agent delegates cannot bypass parent budget or permissions.",
+        "Evolution/optimization experiments remain sandboxed from live user tasks."
+      ],
+      "phases": [
+        "Unify goal/session/work receipt identity and define idempotence semantics.",
+        "Rehearse scheduled worker restart, mid-action failure and cancellation with deterministic fixtures.",
+        "Verify recoverability and human controls before longer unattended runs."
+      ],
+      "acceptance": [
+        "No duplicate side effect after a crash/replay.",
+        "Every active task has a named owner, budget, checkpoint and termination rule.",
+        "Paused/revoked goals stop creating new work, with existing unsafe effects reconciled.",
+        "Uncertain outcomes produce an explicit verification task, never self-reported green."
+      ],
+      "risks": [
+        "Infinite retry/agent spawning.",
+        "Automation optimizing activity rather than user-visible outcomes."
+      ],
+      "metrics": [
+        "Verified completed goals per budget",
+        "Safe retry/recovery rate",
+        "Human intervention and cancellation latency"
+      ],
+      "sources": [
+        {
+          "label": "Reusable workflow plugin",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/490"
+        },
+        {
+          "label": "Self-maintaining intelligence research",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/330"
+        },
+        {
+          "label": "Failure-injection receipts",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/322"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-keel",
+          "label": "Experimental execution kernel"
+        }
+      ],
+      "credit": "Hermes runtime, standalone workflow engines and execution-kernel contributors retain provenance by mechanism."
+    },
+    {
+      "slug": "compute-and-token-efficiency",
+      "title": "Compute & Token Efficiency",
+      "category": "Systems",
+      "stage": "Measured optimization",
+      "tagline": "Fewer expensive model calls without sacrificing verified outcomes or interactive flow.",
+      "problem": "Agent costs can be driven by repeated large prompts, unnecessary serialization and UI overhead. A nominal cache hit or local model win can hide end-to-end regressions.",
+      "outcome": "A transparent efficiency portfolio across context, model routing, computer-use observations, frame rendering and execution-kernel timing.",
+      "journeys": [
+        "An engineer captures a baseline trace that includes setup, provider, tools, context and presentation.",
+        "A single optimization arm changes one component; task verification remains identical.",
+        "The report shows actual saved tokens/dollars and latency distributions, with failure cases highlighted."
+      ],
+      "ownership": [
+        "Hermes remains the dispatcher and tool executor.",
+        "z0int/Jev and local backends may advise only bounded decisions.",
+        "Tokenomics/bench harness records counterfactual and realized cost separately; verified outcome is the gate."
+      ],
+      "phases": [
+        "Instrument provider call, first chunk, context length and cache receipts.",
+        "Test bounded routing, context editing, state-packet reuse and UI frame changes independently.",
+        "Promote improvements only when end-to-end verification, latency and cost pass matched controls."
+      ],
+      "acceptance": [
+        "Use real usage accounting when available and label unavailable values rather than fabricate.",
+        "Include cold/warm and p50/p95, not only favorable steady-state numbers.",
+        "A cheap failed arm is not a saving; show retry and infrastructure overhead.",
+        "No production-ready claim from synthetic microbenchmark alone."
+      ],
+      "risks": [
+        "Cache-prefix churn after attempted optimization.",
+        "Local backend memory or resource contention degrading user flow."
+      ],
+      "metrics": [
+        "Verified outcomes per dollar",
+        "Root-input/total token deltas",
+        "End-to-end wall time and presentation latency"
+      ],
+      "sources": [
+        {
+          "label": "NanoJev token savings experiment",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/309"
+        },
+        {
+          "label": "Cognitive state token baseline",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/312"
+        },
+        {
+          "label": "Token usage unavailable cases",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/407"
+        },
+        {
+          "label": "Provider timing instrumentation",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/408"
+        },
+        {
+          "label": "Prompt-cache-aware editing",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/413"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-keel",
+          "label": "Execution kernel experiment"
+        }
+      ],
+      "credit": "Attribute performance algorithms and models to their human authors, and separate estimation from verified savings."
+    },
+    {
+      "slug": "multi-host-presence",
+      "title": "Cross-Device Agent Presence",
+      "category": "Interfaces",
+      "stage": "Exploratory contract",
+      "tagline": "One accountable agent across desktop, mobile, terminal and remote sessions.",
+      "problem": "A task in progress on one device can lose focus, context or safety state when a second device starts listening or controlling it.",
+      "outcome": "Consistent session ownership and safe handoff between desktop, voice, mobile and remote surfaces, without cloned executors.",
+      "journeys": [
+        "A user views the same durable task across two permitted devices.",
+        "Foreground device changes without abandoning the prompt, approval or voice state.",
+        "Remote actions carry target host identity, expiration and human attention requirements."
+      ],
+      "ownership": [
+        "Hermes/gateway owns the task and durable session.",
+        "Each client advertises capability and visibility; no surface can assert another's permissions.",
+        "Remote control transport is explicit and encrypted; device scope is independent of model privileges."
+      ],
+      "phases": [
+        "Specify session/admission and client-capability contracts for handoff.",
+        "Test desktop-to-remote reconnection and concurrent viewers under stale-event injection.",
+        "Dogfood limited voice/mobile attention paths with explicit host selectors."
+      ],
+      "acceptance": [
+        "Only authorized viewers receive private session events.",
+        "Old panes cannot approve or send into a newer active session.",
+        "Cross-device errors preserve drafts and a usable fallback path.",
+        "Remote authority remains bounded by the underlying host and action permissions."
+      ],
+      "risks": [
+        "Confusing visibility with control ownership.",
+        "Access broadened by opportunistic mobile convenience."
+      ],
+      "metrics": [
+        "Safe handoff success rate",
+        "Stale-client action rejection",
+        "Time to recover a disconnected session"
+      ],
+      "sources": [
+        {
+          "label": "Tern client lifecycle RFC",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/510"
+        },
+        {
+          "label": "Cross-owner trust boundaries",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/426"
+        },
+        {
+          "url": "https://github.com/NousResearch/hermes-agent/issues/141974",
+          "label": "Frontend client capabilities"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-agent/tree/feat/realtime-voice-session-runtime-hardening",
+          "label": "Voice handoff donor"
+        }
+      ],
+      "credit": "Individual transport/client authors retain their own project and code credit; no public device identifiers are embedded."
+    },
+    {
+      "slug": "upstream-contribution-factory",
+      "title": "Upstream Contribution Factory",
+      "category": "Systems",
+      "stage": "Operational workflow",
+      "tagline": "Evidence-driven OSS integration, not a flood of unreviewed changes.",
+      "problem": "Parallel downstream prototypes are easy to start but difficult to maintain or land upstream when they overlap, age or lack reproductions.",
+      "outcome": "A governed intake→deduplicate→verify→review→promote workflow that optimizes accepted fixes and maintainer trust.",
+      "journeys": [
+        "The factory finds a canonical problem family and current upstream owner before writing code.",
+        "A minimal fix is tested red-on-base and green-on-head with exact committed SHA and no network side effects.",
+        "Maintainers see a focused PR or helpful review, with provenance, regression receipts and no duplicate competing submission."
+      ],
+      "ownership": [
+        "The canonical Hermes promotion queue remains in the fork; no second public PRD queue.",
+        "Maintainers determine upstream acceptance and prioritize release safety.",
+        "The operations system can recommend or stage changes but cannot self-authorize unrelated upstream actions."
+      ],
+      "phases": [
+        "Index live issues/PRs by root cause, conflicts and existing improvements.",
+        "Build bounded negative-control suites and exact-head review receipts.",
+        "Promote the smallest non-duplicate slice, adapt cadence to reviewer feedback and close obsolete work."
+      ],
+      "acceptance": [
+        "Respect the explicit upstream PR ceiling and do not submit duplicates.",
+        "Reproduce the defect on the true base rather than asserting fixed tests alone.",
+        "Record reviewer feedback and supersession instead of re-opening an already rejected approach.",
+        "Keep source authorship and external issue provenance intact."
+      ],
+      "risks": [
+        "Artificial PR volume damaging reviewer attention.",
+        "Accidentally treating a fork merge as an upstream merge."
+      ],
+      "metrics": [
+        "Verified upstream merges and review quality",
+        "Duplicate PRs avoided",
+        "Time from reproduction to accepted fix"
+      ],
+      "sources": [
+        {
+          "label": "Canonical Hermes promotion queue",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/447"
+        },
+        {
+          "label": "Promotion replay gate",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/414"
+        },
+        {
+          "label": "Salvage review wave",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/402"
+        },
+        {
+          "label": "Superseded close wave",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/403"
+        },
+        {
+          "url": "https://github.com/kvnloo/hermes-maintainer",
+          "label": "Maintainer coordination product"
+        }
+      ],
+      "credit": "Original upstream reporters, code authors and maintainers are always credited; fork authors are not artificially counted as separate people."
+    },
+    {
+      "slug": "public-interest-agent-workflows",
+      "title": "Public-Interest Agent Workflows",
+      "category": "Public Impact",
+      "stage": "Exploratory application",
+      "tagline": "Practical agent assistance for time-sensitive human and community decisions.",
+      "problem": "Large civic, disaster and health-related workflows often fragment relevant observations across tools and agencies. An opaque autonomous agent can amplify harm or misinformation.",
+      "outcome": "Use Hermes as a consent-aware assistant for public-interest triage, evidence gathering, and safe planning while keeping human and domain-authority decisions explicit.",
+      "journeys": [
+        "A responder or community operator asks a bounded question about public data and records evidence sources.",
+        "An agent synthesizes alternatives with uncertainty, resource limits, geospatial provenance and no fabricated live availability.",
+        "A trained human authorizes consequential decisions; the agent preserves the review trail."
+      ],
+      "ownership": [
+        "Hermes provides bounded tools and evidence/approval semantics, not domain professional authority.",
+        "Separate mapping/simulation/public-dataset systems retain canonical fact ownership.",
+        "Privacy, accessibility and informed consent govern any personally identifiable or sensitive data."
+      ],
+      "phases": [
+        "Define low-risk public-data scenarios first: disaster resource mapping and accessibility-oriented coordination.",
+        "Construct frozen scenarios with deliberately missing/outdated/conflicting inputs.",
+        "Pilot only informational or simulated decisions before considering live external integrations."
+      ],
+      "acceptance": [
+        "No fabricated responder location, medical outcome, operational availability or authoritative alert.",
+        "Every claim has source date, geographic scope and confidence/uncertainty.",
+        "A user can refuse or correct a suggestion; all irreversible actions remain human-authorized.",
+        "Use sanitized public or consented data in demos and receipts."
+      ],
+      "risks": [
+        "A humanitarian label being mistaken for operational validation.",
+        "Private or sensitive personal data leaking into public reports."
+      ],
+      "metrics": [
+        "Grounded answer accuracy in frozen scenarios",
+        "Action reversibility and human review coverage",
+        "Time saved in information gathering without added errors"
+      ],
+      "sources": [
+        {
+          "label": "Persistent safety/viability research",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/330"
+        },
+        {
+          "label": "Viability of future action space",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/335"
+        },
+        {
+          "label": "Independent evaluation receipts",
+          "url": "https://github.com/kvnloo/hermes-agent/issues/322"
+        },
+        {
+          "url": "https://github.com/bilawalsidhu/gods-eye-view",
+          "label": "Public geospatial visualization reference"
+        }
+      ],
+      "credit": "Datasets, source agencies, community tool authors and domain experts must receive explicit attribution. No operational deployment is implied."
+    }
+  ]
+}

@@ -27,8 +27,8 @@
     <div class="crumb"><a href="../">Overview</a><span aria-hidden="true">/</span> Feature library</div>
     <section class="hero" aria-labelledby="main-title">
       <div class="hero-line"><span class="kicker"><span class="dot"></span> PRODUCT ENGINEERING</span><span class="small">Living specifications</span></div>
-      <h1 id="main-title">Ideas worth<br>making real<span style="color:#91acf8">.</span></h1>
-      <p class="lede">A home for each feature we're building around Hermes. Problem, experience, implementation and evidence in one shareable place, before it becomes an upstream PR.</p>
+      <h1 id="main-title">Engineering<br>the next Hermes<span style="color:#91acf8">.</span></h1>
+      <p class="lede">A public atlas of Hermes engineering and research: interfaces, memory, bounded intelligence, reliable tools, safety and future cognition. Every feature has a source-linked PRD and independent evidence gates.</p>
       <div class="hero-actions"><a href="#features" class="btn primary">Explore features <span aria-hidden="true">↘</span></a><a href="https://github.com/kvnloo/hermes-maintainer/tree/preview/features" class="btn">View source on GitHub ↗</a></div>
     </section>
     <section class="meta-grid" aria-label="Library principles">
@@ -39,17 +39,17 @@
     </section>
     <section class="section" id="features" aria-labelledby="features-heading">
       <div class="section-head">
-        <div><span class="eyebrow">FEATURE INDEX</span><h2 id="features-heading" style="margin-top:10px">Explore the work</h2><p>Each feature gets its own URL, acceptance criteria and source links.</p></div>
+        <div><span class="eyebrow">FEATURE INDEX</span><h2 id="features-heading" style="margin-top:10px">Explore the work</h2><p>Built work, experiments and theory stay clearly separated. Every initiative gets a permanent link and primary RFC sources.</p></div>
         <span class="pill">1 published spec</span>
       </div>
-      <div class="searchbar" role="search"><span aria-hidden="true" style="font-size:19px;color:#7790b6">⌕</span><input type="search" id="feature-search" placeholder="Filter features…" aria-label="Filter features by name or description"><kbd style="background:#f3f6fa;border-radius:7px;padding:3px 7px;font-size:11px;color:#a0a9b6">/</kbd></div>
+      <div class="searchbar" role="search"><span aria-hidden="true" style="font-size:19px;color:#7790b6">⌕</span><input type="search" id="feature-search" placeholder="Search features, research, RFCs…" aria-label="Filter features by name or description"><kbd style="background:#f3f6fa;border-radius:7px;padding:3px 7px;font-size:11px;color:#a0a9b6">/</kbd></div>
       <div style="height:15px" aria-hidden="true"></div>
       <article class="paper feature-row" id="tern-feature" data-search="hermes tern tsp ui ux plugin terminal native frontend opm">
         <div class="feature-mark" aria-hidden="true">H×T</div>
         <div><div class="tagline"><span class="pill amber">Architecture decision pending</span><span class="micro">Feature 001 · Oct 20, 2026</span></div><h3><a href="./hermes-tern/">Hermes × Tern</a></h3><p>Make Hermes feel native inside Tern without compromising its runtime, approval flows or fallback terminal.</p></div>
         <a href="./hermes-tern/" class="btn feature-cta">Open PRD <span aria-hidden="true">↗</span></a>
       </article>
-      <p class="empty" id="search-empty" role="status">No features match. Try “Tern” or “frontend”.</p>
+      <p class="empty" id="search-empty" role="status">No matches. Try a broader architecture, topic or component.</p>
     </section>
     <section class="section" aria-labelledby="system-heading" style="padding-top:8px">
       <div class="section-head"><div><span class="eyebrow">THE METHOD</span><h2 id="system-heading" style="margin-top:10px">Not another backlog</h2><p>Specs complement canonical issue and promotion queues. They don't replace them.</p></div></div>
@@ -74,6 +74,9 @@
         const match = (el.textContent.toLowerCase() + ' ' + el.dataset.search).includes(q);
         el.hidden = !match;
         if (match) count += 1;
+      });
+      document.querySelectorAll('[data-prd-category]').forEach(group => {
+        group.hidden = !group.querySelector('[data-search]:not([hidden])');
       });
       empty.style.display = count ? 'none' : 'block';
     };
