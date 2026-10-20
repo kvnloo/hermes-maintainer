@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f8f9fc">
+  <meta name="description" content="Hermes × Tern product requirements: native terminal UX, plugin-first architecture decision, implementation opportunities, test gates and linked source.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Hermes × Tern · Product requirements">
+  <meta property="og:description" content="One Hermes runtime. A native Tern experience. A living PRD with acceptance criteria and implementation evidence.">
+  <meta property="og:image" content="https://kvnloo.github.io/hermes-maintainer/docs/assets/hermes-tern-overview.svg">
+  <title>Hermes × Tern · Feature PRD · hermes-maintainer</title>
+  <link rel="canonical" href="https://kvnloo.github.io/hermes-maintainer/features/hermes-tern/">
+  <link rel="stylesheet" href="../assets/prd.css">
+</head>
+<body>
+<header class="topbar"><div class="bar-inner">
+  <a class="brand" href="../../"><span class="mark" aria-hidden="true">H</span> hermes-maintainer <span style="color:#a7afbb;font-weight:500;margin-left:3px">/ product</span></a>
+  <nav class="bar-links" aria-label="Global"><a href="../../">Dashboard</a><a href="../" aria-current="page">Feature library</a><a class="top-cta" href="https://github.com/kvnloo/hermes-agent/issues/636">Contribute ↗</a></nav>
+</div></header>
+<main class="wrap">
+  <div class="crumb"><a href="../../">Overview</a><span>/</span><a href="../">Features</a><span>/</span> Hermes × Tern</div>
+  <section class="hero" aria-labelledby="title">
+    <div class="hero-line"><span class="kicker"><span class="dot"></span> FEATURE 001 / PRODUCT REQUIREMENTS</span><span class="pill amber">Architecture decision pending</span><span class="micro">Snapshot · Oct 20, 2026</span></div>
+    <h1 id="title">Hermes, native<br>inside <span style="color:#2b72e8">Tern.</span></h1>
+    <p class="lede">One Hermes brain, a terminal that understands what it is drawing. Build a fast, semantic, accessible native experience without moving authority out of the agent runtime.</p>
+    <div class="hero-actions"><a class="btn primary" href="https://github.com/kvnloo/hermes-agent/issues/636">Review reuse plan <span aria-hidden="true">↗</span></a><a class="btn" href="#requirements">Read requirements <span aria-hidden="true">↓</span></a><a class="btn" href="https://github.com/NousResearch/hermes-agent/pull/141923">Plugin proposal ↗</a></div>
+  </section>
+
+  <div class="meta-grid" aria-label="Feature facts">
+    <div class="meta-item"><span>Outcome</span><b>Native Tern UX</b></div>
+    <div class="meta-item"><span>Current state</span><b>Downstream integration</b></div>
+    <div class="meta-item"><span>Upstream path</span><b>Under discussion</b></div>
+    <div class="meta-item"><span>Key gate</span><b>Real Tern E2E</b></div>
+  </div>
+
+  <div class="layout">
+    <article class="content">
+      <section id="overview" class="section">
+        <div class="section-head"><div><span class="eyebrow">01 / PRODUCT INTENT</span><h2 style="margin-top:10px">The problem</h2></div></div>
+        <div class="paper panel">
+          <p style="font-size:17px;color:#49566b;line-height:1.7">Hermes owns a capable terminal agent, but Tern can render more than ANSI cells. A bespoke UI that duplicates session state, approvals, or tools would be costly to maintain and unsafe to evolve. We need <strong>native interaction, not a second agent.</strong></p>
+          <div class="columns-2" style="margin-top:22px">
+            <div class="card" style="background:#f8faff"><div class="num">FOR PEOPLE</div><h3>Stay in flow</h3><p>Write, edit, inspect tools and approve work without context switches or opaque terminal control sequences.</p></div>
+            <div class="card" style="background:#f8faff"><div class="num">FOR MAINTAINERS</div><h3>Keep one source of truth</h3><p>Hermes continues to own sessions, credentials, models, work, approvals, tools, safety and persistence.</p></div>
+          </div>
+        </div>
+        <div class="note" style="margin-top:13px"><strong>PRD rule:</strong> this is a proposed product contract, not a claim that every item has shipped. The fork's source-implemented features and real-host acceptance are tracked separately in <a href="https://github.com/kvnloo/hermes-agent/issues/510">RFC #510</a>.</div>
+      </section>
+
+      <section id="requirements" class="section">
+        <div class="section-head"><div><span class="eyebrow">02 / EXPERIENCE CONTRACT</span><h2 style="margin-top:10px">What great looks like</h2><p>Five journeys from the user's point of view, each tied to a testable requirement.</p></div></div>
+        <div class="paper">
+          <div class="story"><span class="index">01</span><div><b>Start anywhere</b><p>Inside a conforming Tern pane, present native content. Outside Tern or after an unsupported handshake, return to the ordinary Ink TUI. No terminal corruption or leaked TSP bytes.</p></div></div>
+          <div class="story"><span class="index">02</span><div><b>Make every turn legible</b><p>Stream text and tools with stable identities, readable errors, accurate running and waiting states, and bounded scrollback work. No fabricated progress or duplicate submissions.</p></div></div>
+          <div class="story"><span class="index">03</span><div><b>Keep the composer safe</b><p>Multiline, Unicode, paste, undo, history, attachments and contextual commands must preserve the user's draft. Approvals, masked prompts, clarification and interrupts remain gateway-owned.</p></div></div>
+          <div class="story"><span class="index">04</span><div><b>Make parallel work understandable</b><p>Show parent/child subagents, background jobs, plans, model settings and activity without stealing focus. Resume and session switching must reject stale events from other owners.</p></div></div>
+          <div class="story"><span class="index">05</span><div><b>Respect the terminal host</b><p>Dark/light themes, narrow panes, reduced motion, hidden/visible events, host focus ownership and credit/ACK backpressure should behave correctly under real Tern.</p></div></div>
+        </div>
+      </section>
+
+      <section id="visual" class="section">
+        <div class="section-head"><div><span class="eyebrow">03 / VISUAL REFERENCE</span><h2 style="margin-top:10px">The project at a glance</h2><p>Our original issue/branch/PR map is one artifact in this larger product spec, not the product itself.</p></div><a class="btn" href="../../docs/assets/hermes-tern-overview.svg">Full-size SVG ↗</a></div>
+        <div class="figure-frame">
+          <object type="image/svg+xml" data="../../docs/assets/hermes-tern-overview.svg" aria-label="Hermes and Tern issue, branch and PR overview" title="Hermes × Tern issue and pull-request map">
+            <a href="../../docs/assets/hermes-tern-overview.svg">Open the issue and PR overview image</a>
+          </object>
+        </div>
+        <p class="figcap">Snapshot from Oct 20, 2026 · linked items are historical states, not a live GitHub query.</p>
+      </section>
+
+      <section id="architecture" class="section">
+        <div class="section-head"><div><span class="eyebrow">04 / SYSTEM DESIGN</span><h2 style="margin-top:10px">One authority. Two surfaces.</h2><p>The architectural boundary is fixed; the packaging decision is not.</p></div></div>
+        <div class="diagram">
+          <div class="diagram-stack">
+            <div class="diagram-layer"><div><strong>Hermes agent + tools + sessions</strong><div class="small">Models · state · approvals · persistence</div></div><span class="pill green">Authority</span></div>
+            <div class="diagram-connector">JSON-RPC gateway</div>
+            <div class="diagram-layer"><div><strong>Native frontend adapter</strong><div class="small">Present Hermes data, forward intents · no shadow runtime</div></div><span class="pill">TSP client</span></div>
+            <div class="diagram-connector">Tern Surface Protocol + credit/ACK</div>
+            <div class="diagram-layer"><div><strong>Tern renderer</strong><div class="small">Markdown · widgets · tool rows · panes · input</div></div><span class="pill">Presentation</span></div>
+            <div class="diagram-fallback"><strong>Fallback:</strong> no compatible TSP handshake → standard Ink TUI; all existing non-Tern behavior remains.</div>
+          </div>
+        </div>
+        <div class="columns-2" style="margin-top:14px">
+          <div class="card"><div class="hero-line"><span class="pill amber">Community plugin path</span></div><h3 style="margin-top:14px">Plugin-owned native frontend</h3><p><a href="https://github.com/NousResearch/hermes-agent/pull/141923">Catalog PR #141923</a> proposes <code>hermes-tern</code>. <a href="https://github.com/NousResearch/hermes-agent/pull/140480">API PR #140480</a> proposes a public frontend registration and exit-75 fallback. The plugin implementation is independent from our fork.</p></div>
+          <div class="card"><div class="hero-line"><span class="pill gray">Fork prototype</span></div><h3 style="margin-top:14px">Hermes-owned <code>ui-tsp/</code></h3><p><a href="https://github.com/kvnloo/hermes-agent/tree/feat/tern-omp-parity">Parity branch</a> contains extensive TS presentation and gateway work. <a href="https://github.com/kvnloo/hermes-agent/pull/542">Draft #542</a> explores a smaller in-core opt-in seam; neither automatically supersedes the plugin path.</p></div>
+        </div>
+        <div class="note" style="margin-top:14px"><strong>Open decision:</strong> prefer one compatible frontend over two competing implementations. First compare actual plugin source, decide what to reuse, and ask maintainers which generic API seams belong in core. <a href="https://github.com/NousResearch/hermes-agent/issues/141982">Plugin API gap tracker ↗</a></div>
+      </section>
+
+      <section id="reuse" class="section">
+        <div class="section-head"><div><span class="eyebrow">05 / IMPLEMENTATION</span><h2 style="margin-top:10px">Reuse, don't rebuild</h2><p>These are source-backed candidate contributions, not confirmed omissions in the community plugin. <a href="https://github.com/kvnloo/hermes-agent/issues/636">See the detailed audit →</a></p></div></div>
+        <div class="paper table-scroll">
+          <table class="data-table"><thead><tr><th>Priority / area</th><th>Fork evidence</th><th>Plugin acceptance opportunity</th></tr></thead><tbody>
+            <tr><td><span class="pill">P0</span><div>Protocol + lifecycle</div></td><td><a href="https://github.com/kvnloo/hermes-agent/blob/feat/tern-omp-parity/ui-tsp/src/entry.ts">entry.ts</a> · <a href="https://github.com/kvnloo/hermes-agent/blob/feat/tern-omp-parity/ui-tsp/src/flow.ts">flow.ts</a></td><td>Fallback and exit 75, stale events, key ownership, clean close/resume</td></tr>
+            <tr><td><span class="pill">P0</span><div>Frame + retention</div></td><td><a href="https://github.com/kvnloo/hermes-agent/blob/feat/tern-omp-parity/ui-tsp/src/frame.ts">frame.ts</a> · <a href="https://github.com/kvnloo/hermes-agent/blob/feat/tern-omp-parity/ui-tsp/src/retention.ts">retention.ts</a></td><td>ACK backpressure, stable nodes, memory bounds; benchmark rather than layer timers</td></tr>
+            <tr><td><span class="pill">P1</span><div>Settings + models</div></td><td><a href="https://github.com/kvnloo/hermes-agent/blob/feat/tern-omp-parity/ui-tsp/src/overlays/settings.tsx">settings.tsx</a></td><td>Revision-safe writes, secret privacy, session/profile scopes, canonical readback</td></tr>
+            <tr><td><span class="pill">P1</span><div>Images + media</div></td><td><a href="https://github.com/kvnloo/hermes-agent/blob/feat/tern-omp-parity/ui-tsp/src/attachments.ts">attachments.ts</a> · <a href="https://github.com/kvnloo/hermes-agent/blob/feat/tern-omp-parity/ui-tsp/src/media-delivery.ts">media-delivery.ts</a></td><td>Host-scoped media, MIME validation, byte bounds, paste lifecycle</td></tr>
+            <tr><td><span class="pill">P1</span><div>Session/tool UX</div></td><td><a href="https://github.com/kvnloo/hermes-agent/blob/feat/tern-omp-parity/ui-tsp/src/session-tree.ts">session-tree.ts</a> · <a href="https://github.com/kvnloo/hermes-agent/blob/feat/tern-omp-parity/ui-tsp/src/tool-presentation.ts">tool-presentation.ts</a></td><td>Owned resume tree, settled-only folding, no false state</td></tr>
+            <tr><td><span class="pill gray">P2</span><div>Optional visuals/voice</div></td><td><a href="https://github.com/kvnloo/hermes-agent/blob/feat/tern-omp-parity/ui-tsp/src/visual-discovery.ts">visual-discovery.ts</a> · <a href="https://github.com/kvnloo/hermes-agent/blob/feat/tern-omp-parity/ui-tsp/src/live-voice.tsx">live-voice.tsx</a></td><td>Opt-in, bounded visual discovery and voice without blocking core acceptance</td></tr>
+          </tbody></table>
+        </div>
+        <p class="small" style="margin:12px 0 0"><strong>Known limitation:</strong> direct read of <a href="https://github.com/alt-glitch/hermes-tern">alt-glitch/hermes-tern</a> returned 404 during the Oct 20 audit. Re-run a pinned-source comparison before calling any row missing.</p>
+      </section>
+
+      <section id="acceptance" class="section">
+        <div class="section-head"><div><span class="eyebrow">06 / DEFINITION OF DONE</span><h2 style="margin-top:10px">What proves it works?</h2><p>Separate source implementation, deterministic tests and actual terminal-host evidence.</p></div></div>
+        <div class="columns-2">
+          <div class="card"><div class="num">AUTOMATED GATE</div><h3>Correctness</h3><p>Typecheck, Vitest, contract tests, pinned SDK/Node dependencies, artifact checks and clean Ink fallback. Native actions must never bypass Hermes authorization.</p></div>
+          <div class="card"><div class="num">REAL HOST GATE</div><h3>Native UX</h3><p>Isolated Tern screenshots and end-to-end flows at 80×28, 120×36, 180×44; dark/light; reduced motion; approval, masked secret, resume, error and exit.</p></div>
+          <div class="card"><div class="num">LATENCY GATE</div><h3>Measured presentation</h3><p>Record time-to-visible content, input responsiveness, frame/op counts, ACK backlog and p50/p95 frame age under matching host/version. Never infer speed from source alone.</p></div>
+          <div class="card"><div class="num">SAFETY / GOVERNANCE</div><h3>Upstream fit</h3><p>No private dependency or second runtime authority, no terminal escape leaks, explicit maintainer review, attribution and compatible plugin licensing.</p></div>
+        </div>
+        <div class="note" style="margin-top:15px"><strong>Promotion hold:</strong> a merged downstream code slice, passing mocked tests, and a real signed-in Tern session are different evidence levels. This page intentionally makes no claim of completed native acceptance.</div>
+      </section>
+
+      <section id="roadmap" class="section">
+        <div class="section-head"><div><span class="eyebrow">07 / DELIVERY PLAN</span><h2 style="margin-top:10px">The path to upstream</h2><p>Small reviewed slices beat importing an entire frontend.</p></div></div>
+        <div class="paper panel">
+          <div class="timeline">
+            <div class="timeline-item done"><b>0 · Establish reusable downstream baseline <span class="pill green">Source exists</span></b><p>Parity branch, preview and tests documented in <a href="https://github.com/kvnloo/hermes-agent/pull/508">#508</a>; this is not yet equivalent to full native certification.</p></div>
+            <div class="timeline-item"><b>1 · Audit the standalone plugin <span class="pill amber">Waiting on source access</span></b><p>Compare pinned plugin implementation to fork semantics; classify equivalent vs missing vs incompatible. <a href="https://github.com/kvnloo/hermes-agent/issues/636">Audit #636 ↗</a></p></div>
+            <div class="timeline-item"><b>2 · Choose one bounded reuse improvement <span class="pill gray">Not started</span></b><p>Coordinate with the plugin owner; prefer test or generic API contributions when the behavior already exists.</p></div>
+            <div class="timeline-item"><b>3 · Run host + contract qualification <span class="pill gray">Pending</span></b><p>Verify exact revision and reproducible real Tern screenshots/flows with Ink fallback.</p></div>
+            <div class="timeline-item"><b>4 · Seek explicit maintainer acceptance <span class="pill gray">Pending</span></b><p>Honor upstream permissions, review queues and provenance. <a href="https://github.com/NousResearch/hermes-agent/issues/134833">Architecture RFC ↗</a></p></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="decisions" class="section">
+        <div class="section-head"><div><span class="eyebrow">08 / DECISION REGISTER</span><h2 style="margin-top:10px">What isn't settled</h2></div></div>
+        <div class="paper panel">
+          <div class="story" style="padding:14px 0"><span class="index">A</span><div><b>Plugin or small in-core adapter?</b><p>Community plugin exists as an open catalog proposal; upstream frontend registration API remains a separate draft. Avoid promoting both paths without a boundary decision.</p></div></div>
+          <div class="story" style="padding:14px 0"><span class="index">B</span><div><b>Which changes are actually new?</b><p>Don't duplicate native transcript, approvals, subagents, PR dock or process charts that the plugin already advertises. Pin implementation and compare behavior.</p></div></div>
+          <div class="story" style="padding:14px 0"><span class="index">C</span><div><b>Which platform capabilities may be trusted?</b><p>Version and validate session-scoped UI capabilities and plugin RPC/event boundaries; don't rely on unchecked file markers or hidden global state.</p></div></div>
+          <div class="story" style="padding:14px 0"><span class="index">D</span><div><b>How do we avoid introducing new security risks?</b><p>Review plugin command middleware, TERN_PANE propagation, image data ownership, secrets/approvals, and the typed-versus-pasted shell-command distinction.</p></div></div>
+        </div>
+      </section>
+
+      <section id="references" class="section">
+        <div class="section-head"><div><span class="eyebrow">09 / TRACEABILITY</span><h2 style="margin-top:10px">Evidence and owners</h2><p>Every important assertion should have an issue, branch, PR or test attached.</p></div></div>
+        <div class="columns-2">
+          <div class="card"><div class="num">PRODUCT / COLLABORATION</div>
+            <a class="repo-link" href="https://github.com/kvnloo/hermes-agent/issues/509">#509 · Working roadmap ↗</a>
+            <a class="repo-link" href="https://github.com/kvnloo/hermes-agent/issues/510">#510 · Architecture + parity RFC ↗</a>
+            <a class="repo-link" href="https://github.com/kvnloo/hermes-agent/issues/477">#477 · FullCtx collaboration ↗</a>
+            <a class="repo-link" href="https://github.com/kvnloo/hermes-agent/issues/636">#636 · Plugin reuse audit ↗</a>
+          </div>
+          <div class="card"><div class="num">CODE / UPSTREAM</div>
+            <a class="repo-link" href="https://github.com/kvnloo/hermes-agent/tree/feat/tern-omp-parity">Fork integration branch ↗</a>
+            <a class="repo-link" href="https://github.com/NousResearch/hermes-agent/pull/141923">#141923 · Plugin catalog proposal ↗</a>
+            <a class="repo-link" href="https://github.com/NousResearch/hermes-agent/pull/140480">#140480 · Plugin frontend API ↗</a>
+            <a class="repo-link" href="https://github.com/NousResearch/hermes-agent/issues/134833">#134833 · Upstream RFC ↗</a>
+          </div>
+        </div>
+        <div class="note" style="margin-top:14px"><strong>Provenance:</strong> Hermes's runtime and gateway are by NousResearch/Hermes contributors. Tern, TSP and OMP-native presentation patterns are by Can Bölük / Stencil Labs and contributors. Separate Tern UX work by <a href="https://github.com/thefullctx/hermes-for-tern">thefullctx</a>; community plugin by <a href="https://github.com/alt-glitch/hermes-tern">alt-glitch</a>. Preserve original license notices for any imported code.</div>
+      </section>
+    </article>
+
+    <aside class="aside" aria-label="On this page">
+      <div class="paper navcard"><h3>In this PRD</h3>
+        <a href="#overview">01 · Problem / intent</a>
+        <a href="#requirements">02 · Experience contract</a>
+        <a href="#visual">03 · Visual reference</a>
+        <a href="#architecture">04 · Architecture</a>
+        <a href="#reuse">05 · Reuse audit</a>
+        <a href="#acceptance">06 · Acceptance</a>
+        <a href="#roadmap">07 · Delivery plan</a>
+        <a href="#decisions">08 · Decisions</a>
+        <a href="#references">09 · Traceability</a>
+      </div>
+      <div class="paper navcard"><h3>Working documents</h3>
+        <a href="https://github.com/kvnloo/hermes-agent/issues/509">Current roadmap ↗</a>
+        <a href="https://github.com/kvnloo/hermes-agent/issues/510">Architecture contract ↗</a>
+        <a href="https://github.com/kvnloo/hermes-agent/issues/636">Reuse audit issue ↗</a>
+        <a href="https://github.com/NousResearch/hermes-agent/pull/141923">Plugin catalog PR ↗</a>
+      </div>
+      <div class="note"><strong>Living document</strong><p style="margin:8px 0 0">Static, versioned and shareable. For live PR states, use the linked GitHub pages.</p></div>
+      <button type="button" class="btn" id="copy-link" aria-live="polite">Copy PRD link</button>
+    </aside>
+  </div>
+
+  <footer class="footer"><span>Feature 001 · Last reconciled Oct 20, 2026 · <a href="../">All features</a></span><span>Design for native UX. Verify before promotion.</span></footer>
+</main>
+<script>
+(() => {
+  const button = document.getElementById('copy-link');
+  if (!button) return;
+  button.addEventListener('click', async () => {
+    const value = 'https://kvnloo.github.io/hermes-maintainer/features/hermes-tern/';
+    try { await navigator.clipboard.writeText(value); button.textContent = 'Copied link ✓'; }
+    catch { button.textContent = 'Link: ' + value; }
+  });
+})();
+</script>
+</body>
+</html>
