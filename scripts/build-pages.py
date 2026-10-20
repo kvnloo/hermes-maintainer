@@ -54,7 +54,8 @@ ADAPTER_JS = """(() => {
 BANNER = (
     '<p id="pages-banner" class="banner">'
     "GitHub Pages snapshot of the dashboard (audit seed campaigns). "
-    "Live scans run locally via <code>hermes-maintainer serve</code>."
+    "Live scans run locally via <code>hermes-maintainer serve</code>. "
+    '<a href="./features/">Feature PRDs →</a>.'
     "</p>"
 )
 
@@ -129,6 +130,13 @@ def copy_markdown(site: Path) -> None:
         write_docs_index(docs_src, docs_dest / "index.html")
 
 
+def copy_feature_specs(site: Path) -> None:
+    """Publish every feature PRD at /features/<slug>/ without a new Pages app."""
+    src = ROOT / "features"
+    if src.is_dir():
+        shutil.copytree(src, site / "features")
+
+
 def build(out: Path) -> Path:
     if out.exists():
         shutil.rmtree(out)
@@ -140,6 +148,7 @@ def build(out: Path) -> Path:
     rewrite_index(static_src / "index.html", out / "index.html")
     (out / "pages-adapter.js").write_text(ADAPTER_JS, encoding="utf-8")
     copy_markdown(out)
+    copy_feature_specs(out)
     snapshot_api(out)
     return out
 
