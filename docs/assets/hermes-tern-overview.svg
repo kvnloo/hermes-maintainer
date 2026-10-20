@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1448" height="1086" viewBox="0 0 1448 1086" role="img" aria-labelledby="img-title img-desc">
+<title id="img-title">Hermes × Tern — issues, branches and pull requests</title>
+<desc id="img-desc">Shareable October 20, 2026 project navigation board linking 5 issues, 5 branches and 6 pull requests. Links are clickable when viewed as a standalone SVG.</desc>
+<defs><linearGradient id="paper" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#FFFFFF"/><stop offset="100%" stop-color="#FCFCFD"/></linearGradient><filter id="softshadow" x="-10%" y="-25%" width="120%" height="150%"><feDropShadow dx="0" dy="9" stdDeviation="15" flood-color="#222B3F" flood-opacity=".055"/></filter></defs>
+<style>
+ text{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;text-rendering:geometricPrecision}
+ .heading{fill:#111827;font-size:45px;font-weight:720;letter-spacing:-1.8px}
+ .sub{fill:#858D9A;font-size:21px;font-weight:400}
+ .section{fill:#1F2530;font-size:21px;font-weight:650;letter-spacing:-.25px}
+ .line{fill:#454E5C;font-size:17px;font-weight:430}
+ .link{fill:#2470ED;text-decoration:underline;text-decoration-color:#B1C9FB}
+ .count{fill:#858C96;font-size:14px}
+ .pill{font-size:13px;font-weight:650}
+ .code{font:500 15px ui-monospace,SFMono-Regular,Consolas,Menlo,monospace;fill:#286FE9}
+ a{cursor:pointer}
+ a:hover .link,a:hover .code{fill:#154AC4;text-decoration:underline}
+</style>
+<rect width="1448" height="1086" fill="url(#paper)"/>
+<text class="heading" x="724" y="81" text-anchor="middle"><tspan>Hermes</tspan><tspan fill="#9199A6"> × </tspan><tspan>Tern</tspan></text>
+<text class="sub" x="724" y="114" text-anchor="middle">Most relevant issues, branches, and PRs</text>
+<g filter="url(#softshadow)"><rect x="280" y="138" width="848" height="261" rx="17" fill="white" stroke="#E4E8EE" stroke-width="1"/></g><g transform="translate(307 157)" stroke="#3078F5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><circle cx="12" cy="12" r="12"/><path d="M12 7v6M12 18h.01"/></g><text x="353" y="174" class="section">Issues</text><rect x="1061" y="154" width="45" height="29" rx="14.5" fill="#F1F3F5"/><text class="count" x="1083.5" y="174" text-anchor="middle">5</text>
+<path d="M336 215v145" stroke="#CBD4DF" stroke-width="1.5" stroke-dasharray="3 11"/>
+<g>
+<a href="https://github.com/kvnloo/hermes-agent/issues/509" target="_blank" rel="noopener noreferrer"><rect x="366" y="188" width="635" height="35" rx="8" fill="#FFFFFF" fill-opacity=".001"/>
+<text class="line" x="377" y="213"><tspan class="link">#509</tspan><tspan fill="#495160"> — Active roadmap</tspan></text></a>
+<circle cx="336" cy="206" r="6.1" stroke="#8491A3" stroke-width="1.65" fill="white"/>
+<g><rect x="1025" y="194" width="80" height="30" rx="15" fill="#DCF5E6"/><text class="pill" x="1065" y="214" fill="#087548" text-anchor="middle">OPEN</text></g></g><g>
+<a href="https://github.com/kvnloo/hermes-agent/issues/510" target="_blank" rel="noopener noreferrer"><rect x="366" y="226" width="635" height="35" rx="8" fill="#FFFFFF" fill-opacity=".001"/>
+<text class="line" x="377" y="251"><tspan class="link">#510</tspan><tspan fill="#495160"> — Architecture &amp; parity RFC</tspan></text></a>
+<circle cx="336" cy="244" r="6.1" stroke="#8491A3" stroke-width="1.65" fill="white"/>
+<g><rect x="1025" y="232" width="80" height="30" rx="15" fill="#DCF5E6"/><text class="pill" x="1065" y="252" fill="#087548" text-anchor="middle">OPEN</text></g></g><g>
+<a href="https://github.com/kvnloo/hermes-agent/issues/477" target="_blank" rel="noopener noreferrer"><rect x="366" y="264" width="635" height="35" rx="8" fill="#FFFFFF" fill-opacity=".001"/>
+<text class="line" x="377" y="289"><tspan class="link">#477</tspan><tspan fill="#495160"> — FullCtx collaboration</tspan></text></a>
+<circle cx="336" cy="282" r="6.1" stroke="#8491A3" stroke-width="1.65" fill="white"/>
+<g><rect x="1025" y="270" width="80" height="30" rx="15" fill="#DCF5E6"/><text class="pill" x="1065" y="290" fill="#087548" text-anchor="middle">OPEN</text></g></g><g>
+<a href="https://github.com/NousResearch/hermes-agent/issues/134833" target="_blank" rel="noopener noreferrer"><rect x="366" y="302" width="635" height="35" rx="8" fill="#FFFFFF" fill-opacity=".001"/>
+<text class="line" x="377" y="327"><tspan class="link">NousResearch #134833</tspan><tspan fill="#495160"> — Upstream RFC</tspan></text></a>
+<circle cx="336" cy="320" r="6.1" stroke="#8491A3" stroke-width="1.65" fill="white"/>
+<g><rect x="1025" y="308" width="80" height="30" rx="15" fill="#DCF5E6"/><text class="pill" x="1065" y="328" fill="#087548" text-anchor="middle">OPEN</text></g></g><g>
+<a href="https://github.com/thefullctx/hermes-for-tern/issues/20" target="_blank" rel="noopener noreferrer"><rect x="366" y="340" width="635" height="35" rx="8" fill="#FFFFFF" fill-opacity=".001"/>
+<text class="line" x="377" y="365"><tspan class="link">FullCtx #20</tspan><tspan fill="#495160"> — Image paste issue</tspan></text></a>
+<circle cx="336" cy="358" r="6.1" stroke="#8491A3" stroke-width="1.65" fill="white"/>
+<g><rect x="1025" y="346" width="80" height="30" rx="15" fill="#DCF5E6"/><text class="pill" x="1065" y="366" fill="#087548" text-anchor="middle">OPEN</text></g></g>
+<g filter="url(#softshadow)"><rect x="280" y="419" width="848" height="259" rx="17" fill="white" stroke="#E4E8EE" stroke-width="1"/></g><g transform="translate(307 438)" stroke="#2875F4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><circle cx="5" cy="4" r="3"/><circle cx="5" cy="26" r="3"/><circle cx="21" cy="13" r="3"/><path d="M5 7v16M5 18c4-6 16 0 16-5"/></g><text x="353" y="455" class="section">Branches</text><rect x="1061" y="435" width="45" height="29" rx="14.5" fill="#F1F3F5"/><text class="count" x="1083.5" y="455" text-anchor="middle">5</text>
+<g><g transform="translate(326 473)" stroke="#737D90" fill="none" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="3" r="2.4"/><circle cx="6" cy="26" r="2.4"/><circle cx="19" cy="15" r="2.4"/><path d="M6 6v17m0-9h13"/></g>
+ <a href="https://github.com/kvnloo/hermes-agent/tree/feat/tern-omp-parity" target="_blank" rel="noopener noreferrer"><rect x="376" y="469" width="212" height="28" rx="8" fill="#EFF4FF"/><text x="385" y="488" class="code">feat/tern-omp-parity</text><rect x="370" y="467" width="575" height="36" rx="8" fill="white" fill-opacity=".001"/></a>
+ <g><rect x="982" y="475" width="124" height="30" rx="15" fill="#E8F0FF"/><text class="pill" x="1044" y="495" fill="#286DE8" text-anchor="middle">integration</text></g>
+ </g><g><g transform="translate(326 511)" stroke="#737D90" fill="none" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="3" r="2.4"/><circle cx="6" cy="26" r="2.4"/><circle cx="19" cy="15" r="2.4"/><path d="M6 6v17m0-9h13"/></g>
+ <a href="https://github.com/kvnloo/hermes-agent/tree/preview/tern-frontend" target="_blank" rel="noopener noreferrer"><rect x="376" y="507" width="222" height="28" rx="8" fill="#EFF4FF"/><text x="385" y="526" class="code">preview/tern-frontend</text><rect x="370" y="505" width="575" height="36" rx="8" fill="white" fill-opacity=".001"/></a>
+ <g><rect x="982" y="513" width="124" height="30" rx="15" fill="#F4E8FF"/><text class="pill" x="1044" y="533" fill="#8B4CDE" text-anchor="middle">dogfood</text></g>
+ </g><g><g transform="translate(326 549)" stroke="#737D90" fill="none" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="3" r="2.4"/><circle cx="6" cy="26" r="2.4"/><circle cx="19" cy="15" r="2.4"/><path d="M6 6v17m0-9h13"/></g>
+ <a href="https://github.com/kvnloo/hermes-agent/tree/sync/tern-preview-onto-main" target="_blank" rel="noopener noreferrer"><rect x="376" y="545" width="280" height="28" rx="8" fill="#EFF4FF"/><text x="385" y="564" class="code">sync/tern-preview-onto-main</text><rect x="370" y="543" width="575" height="36" rx="8" fill="white" fill-opacity=".001"/></a>
+ <g><rect x="982" y="551" width="124" height="30" rx="15" fill="#E4F6EA"/><text class="pill" x="1044" y="571" fill="#1E925E" text-anchor="middle">sync</text></g>
+ </g><g><g transform="translate(326 587)" stroke="#737D90" fill="none" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="3" r="2.4"/><circle cx="6" cy="26" r="2.4"/><circle cx="19" cy="15" r="2.4"/><path d="M6 6v17m0-9h13"/></g>
+ <a href="https://github.com/kvnloo/hermes-agent/tree/upstream/tern-optin-seam" target="_blank" rel="noopener noreferrer"><rect x="376" y="583" width="251" height="28" rx="8" fill="#EFF4FF"/><text x="385" y="602" class="code">upstream/tern-optin-seam</text><rect x="370" y="581" width="575" height="36" rx="8" fill="white" fill-opacity=".001"/></a>
+ <g><rect x="982" y="589" width="124" height="30" rx="15" fill="#FFF0D9"/><text class="pill" x="1044" y="609" fill="#B9781A" text-anchor="middle">upstream</text></g>
+ </g><g><g transform="translate(326 625)" stroke="#737D90" fill="none" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="3" r="2.4"/><circle cx="6" cy="26" r="2.4"/><circle cx="19" cy="15" r="2.4"/><path d="M6 6v17m0-9h13"/></g>
+ <a href="https://github.com/thefullctx/hermes-for-tern/tree/main" target="_blank" rel="noopener noreferrer"><rect x="376" y="621" width="319" height="28" rx="8" fill="#EFF4FF"/><text x="385" y="640" class="code">thefullctx/hermes-for-tern main</text><rect x="370" y="619" width="575" height="36" rx="8" fill="white" fill-opacity=".001"/></a>
+ <g><rect x="982" y="627" width="124" height="30" rx="15" fill="#F0F1F2"/><text class="pill" x="1044" y="647" fill="#66707A" text-anchor="middle">separate</text></g>
+ </g>
+<g filter="url(#softshadow)"><rect x="280" y="698" width="848" height="278" rx="17" fill="white" stroke="#E4E8EE" stroke-width="1"/></g><g transform="translate(307 717)" stroke="#199C68" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><circle cx="5" cy="4" r="3"/><circle cx="5" cy="26" r="3"/><circle cx="21" cy="26" r="3"/><path d="M5 7v16M14 5h5a2 2 0 0 1 2 2v16M14 5l3-3m-3 3l3 3"/></g><text x="353" y="734" class="section">PRs</text><rect x="1061" y="714" width="45" height="29" rx="14.5" fill="#F1F3F5"/><text class="count" x="1083.5" y="734" text-anchor="middle">6</text>
+<g>
+<a href="https://github.com/kvnloo/hermes-agent/pull/633" target="_blank" rel="noopener noreferrer"><rect x="366" y="736" width="635" height="35" rx="8" fill="#FFFFFF" fill-opacity=".001"/>
+<text class="line" x="377" y="761"><tspan class="link">#633</tspan><tspan fill="#495160"> — Native TSP CI</tspan></text></a>
+<g transform="translate(326 742)" stroke="#768194" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="4" r="2.5"/><circle cx="7" cy="26" r="2.5"/><circle cx="19" cy="17" r="2.5"/><path d="M7 6.5 V23.5 M7 17 H19"/></g>
+<g><rect x="1025" y="742" width="80" height="30" rx="15" fill="#F0F1F3"/><text class="pill" x="1065" y="762" fill="#647181" text-anchor="middle">DRAFT</text></g></g><g>
+<a href="https://github.com/kvnloo/hermes-agent/pull/626" target="_blank" rel="noopener noreferrer"><rect x="366" y="774" width="635" height="35" rx="8" fill="#FFFFFF" fill-opacity=".001"/>
+<text class="line" x="377" y="799"><tspan class="link">#626</tspan><tspan fill="#495160"> — Working-row spinner</tspan></text></a>
+<g transform="translate(326 780)" stroke="#768194" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="4" r="2.5"/><circle cx="7" cy="26" r="2.5"/><circle cx="19" cy="17" r="2.5"/><path d="M7 6.5 V23.5 M7 17 H19"/></g>
+<g><rect x="1025" y="780" width="80" height="30" rx="15" fill="#DCF5E6"/><text class="pill" x="1065" y="800" fill="#087548" text-anchor="middle">OPEN</text></g></g><g>
+<a href="https://github.com/kvnloo/hermes-agent/pull/540" target="_blank" rel="noopener noreferrer"><rect x="366" y="812" width="635" height="35" rx="8" fill="#FFFFFF" fill-opacity=".001"/>
+<text class="line" x="377" y="837"><tspan class="link">#540</tspan><tspan fill="#495160"> — Preview → main integration</tspan></text></a>
+<g transform="translate(326 818)" stroke="#768194" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="4" r="2.5"/><circle cx="7" cy="26" r="2.5"/><circle cx="19" cy="17" r="2.5"/><path d="M7 6.5 V23.5 M7 17 H19"/></g>
+<g><rect x="1025" y="818" width="80" height="30" rx="15" fill="#F0F1F3"/><text class="pill" x="1065" y="838" fill="#647181" text-anchor="middle">DRAFT</text></g></g><g>
+<a href="https://github.com/kvnloo/hermes-agent/pull/542" target="_blank" rel="noopener noreferrer"><rect x="366" y="850" width="635" height="35" rx="8" fill="#FFFFFF" fill-opacity=".001"/>
+<text class="line" x="377" y="875"><tspan class="link">#542</tspan><tspan fill="#495160"> — Minimal upstream seam</tspan></text></a>
+<g transform="translate(326 856)" stroke="#768194" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="4" r="2.5"/><circle cx="7" cy="26" r="2.5"/><circle cx="19" cy="17" r="2.5"/><path d="M7 6.5 V23.5 M7 17 H19"/></g>
+<g><rect x="1025" y="856" width="80" height="30" rx="15" fill="#F0F1F3"/><text class="pill" x="1065" y="876" fill="#647181" text-anchor="middle">DRAFT</text></g></g><g>
+<a href="https://github.com/kvnloo/hermes-agent/pull/508" target="_blank" rel="noopener noreferrer"><rect x="366" y="888" width="635" height="35" rx="8" fill="#FFFFFF" fill-opacity=".001"/>
+<text class="line" x="377" y="913"><tspan class="link">#508</tspan><tspan fill="#495160"> — OMP parity integration</tspan></text></a>
+<g transform="translate(326 894)" stroke="#768194" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="4" r="2.5"/><circle cx="7" cy="26" r="2.5"/><circle cx="19" cy="17" r="2.5"/><path d="M7 6.5 V23.5 M7 17 H19"/></g>
+<g><rect x="1025" y="894" width="80" height="30" rx="15" fill="#CEF3DC"/><text class="pill" x="1065" y="914" fill="#076C41" text-anchor="middle">MERGED</text></g></g><g>
+<a href="https://github.com/thefullctx/hermes-for-tern/pull/19" target="_blank" rel="noopener noreferrer"><rect x="366" y="926" width="635" height="35" rx="8" fill="#FFFFFF" fill-opacity=".001"/>
+<text class="line" x="377" y="951"><tspan class="link">FullCtx #19</tspan><tspan fill="#495160"> — Model picker improvements</tspan></text></a>
+<g transform="translate(326 932)" stroke="#768194" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="4" r="2.5"/><circle cx="7" cy="26" r="2.5"/><circle cx="19" cy="17" r="2.5"/><path d="M7 6.5 V23.5 M7 17 H19"/></g>
+<g><rect x="1025" y="932" width="80" height="30" rx="15" fill="#CEF3DC"/><text class="pill" x="1065" y="952" fill="#076C41" text-anchor="middle">MERGED</text></g></g>
+<g filter="url(#softshadow)"><rect x="280" y="995" width="848" height="49" rx="19" fill="white" stroke="#E4E8EE"/></g>
+<path d="M310 1009l3.4 8.3 8.3 3.4-8.3 3.4-3.4 8.3-3.4-8.3-8.3-3.4 8.3-3.4z" stroke="#3079FF" stroke-width="1.7" fill="none"/>
+<text x="344" y="1026" font-size="16" fill="#4D5664">Start here:</text>
+<a href="https://github.com/kvnloo/hermes-agent/issues/509"><text x="428" y="1026" font-size="17" fill="#2874F3">#509</text></a>
+<text x="481" y="1026" font-size="16" fill="#9199A4">→</text>
+<a href="https://github.com/kvnloo/hermes-agent/issues/510"><text x="514" y="1026" font-size="17" fill="#2874F3">#510</text></a>
+<text x="568" y="1026" font-size="16" fill="#9199A4">→</text>
+<a href="https://github.com/kvnloo/hermes-agent/issues/477"><text x="600" y="1026" font-size="17" fill="#2874F3">#477</text></a>
+<a href="https://github.com/kvnloo/hermes-agent/issues/509" target="_blank" rel="noopener noreferrer"><rect x="1013" y="1000" width="108" height="39" rx="19" fill="#2874EE"/><text x="1036" y="1025" font-size="16" fill="#FFF">Open</text><path d="M1085 1020h17m-7-7 7 7-7 7" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></a>
+</svg>
