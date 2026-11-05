@@ -18,6 +18,18 @@ hermes-maintainer daemon
 hermes-maintainer serve --host 127.0.0.1 --port 8766
 ```
 
+## Local complaint inbox
+
+User reports default to a **local draft**. This command does not open GitHub issues
+(including on `NousResearch/hermes-agent`). See [COMMUNITY_AUTODEVELOP.md](COMMUNITY_AUTODEVELOP.md)
+and verified-oss-loop SPEC §10.
+
+```bash
+hermes-maintainer report ingest --title "composer lost focus" --body "repro notes"
+hermes-maintainer report list
+hermes-maintainer report promote <id>
+```
+
 The database uses WAL locally. Keep the data directory on a local filesystem. If this moves to a
 shared/network filesystem, revisit SQLite locking and journal-mode assumptions first.
 

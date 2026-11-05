@@ -5,6 +5,8 @@ import json
 import logging
 import shutil
 import subprocess
+from pathlib import Path
+from typing import Annotated
 
 import typer
 import uvicorn
@@ -17,10 +19,16 @@ from hermes_maintainer.git.mirror import ensure_mirror
 from hermes_maintainer.github.ingest import deep_enrich_prs, fast_scan
 from hermes_maintainer.optimizer.cpsat import solve_cpsat
 from hermes_maintainer.optimizer.greedy import solve_greedy
+from hermes_maintainer.reports import ingest as ingest_report
+from hermes_maintainer.reports import list_reports
+from hermes_maintainer.reports import load as load_report
+from hermes_maintainer.reports import promote as promote_report
 from hermes_maintainer.scheduler.runner import analyze as run_analysis
 from hermes_maintainer.scheduler.runner import daemon as run_daemon
 
 app = typer.Typer(no_args_is_help=True, help="Hermes repository maintenance intelligence")
+report_app = typer.Typer(no_args_is_help=True, help="Local complaint inbox. Never writes GitHub.")
+app.add_typer(report_app, name="report")
 console = Console()
 
 
@@ -123,6 +131,95 @@ def seed_audit():
     s = settings()
     path = s.root / "seed" / "audit" / "HERMES_TRIAGE_AUDIT.md"
     console.print(path)
+
+
+def _data_dir(data_dir: Path | None):
+    if data_dir is not None:
+        return data_dir
+    return settings().paths.data_dir
+
+
+@report_app.command("ingest")
+def report_ingest(
+    title: Annotated[str, typer.Option(help="Short complaint title")],
+    body: Annotated[str, typer.Option(help="Complaint body / repro notes")] = "",
+    body_file: Annotated[Path | None, typer.Option(help="Read body from a file")] = None,
+    target_repo: Annotated[str, typer.Option()] = "NousResearch/hermes-agent",
+    duplicate_of: Annotated[str | None, typer.Option()] = None,
+    competing_pr: Annotated[bool, typer.Option()] = False,
+    data_dir: Annotated[Path | None, typer.Option(help="Inbox parent directory")] = None,
+):
+    """Capture a complaint as a local draft. Does not open GitHub issues."""
+    text = body_file.read_text(encoding="utf-8") if body_file is not None else body
+    record = ingest_report(
+        _data_dir(data_dir),
+        title=title,
+        body=text,
+        target_repo=target_repo,
+        duplicate_of=duplicate_of,
+        competing_pr=competing_pr,
+    )
+    console.print_json(json.dumps(record))
+
+
+@report_app.command("list")
+def report_list(
+    data_dir: Annotated[Path | None, typer.Option()] = None,
+):
+    """List local drafts."""
+    rows = list_reports(_data_dir(data_dir))
+    console.print_json(
+        json.dumps(
+            [
+                {
+                    "id": row.get("id"),
+                    "title": row.get("title"),
+                    "disposition": (row.get("intake") or {}).get("disposition"),
+                    "origin_write_permitted": (row.get("intake") or {}).get("origin_write_permitted"),
+                    "performed_origin_write": (row.get("intake") or {}).get("performed_origin_write"),
+                }
+                for row in rows
+            ]
+        )
+    )
+
+
+@report_app.command("show")
+def report_show(
+    report_id: Annotated[str, typer.Argument()],
+    data_dir: Annotated[Path | None, typer.Option()] = None,
+):
+    """Print one local report."""
+    console.print_json(json.dumps(load_report(_data_dir(data_dir), report_id)))
+
+
+@report_app.command("promote")
+def report_promote(
+    report_id: Annotated[str, typer.Argument()],
+    action: Annotated[str, typer.Option()] = "promote_issue",
+    reproduced: Annotated[bool, typer.Option()] = False,
+    in_scope: Annotated[bool, typer.Option()] = False,
+    origin_policy: Annotated[str, typer.Option()] = "unknown",
+    github_writes: Annotated[bool, typer.Option()] = False,
+    human_or_policy_allow: Annotated[bool, typer.Option()] = False,
+    claimed: Annotated[bool, typer.Option()] = False,
+    has_receipt: Annotated[bool, typer.Option()] = False,
+    data_dir: Annotated[Path | None, typer.Option()] = None,
+):
+    """Reclassify a draft against the intake ladder. Still does not write GitHub."""
+    record = promote_report(
+        _data_dir(data_dir),
+        report_id,
+        action=action,
+        reproduced=reproduced,
+        in_scope=in_scope,
+        origin_policy=origin_policy,
+        github_writes=github_writes,
+        human_or_policy_allow=human_or_policy_allow,
+        claimed=claimed,
+        has_receipt=has_receipt,
+    )
+    console.print_json(json.dumps(record))
 
 
 if __name__ == "__main__":

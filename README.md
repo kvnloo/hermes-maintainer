@@ -25,6 +25,8 @@ and an optional optimization layer.
 3. **Evidence before closure.** `duplicate_of`, `same_root_cause`, `partially_addresses`, and
    `verified_fixed_on` are different relationships.
 4. **Read-only reasoning, restricted writes.** The MVP has no GitHub mutation path.
+   `hermes-maintainer report ingest` stores a local draft (SPEC §10); it does not open
+   origin issues.
 5. **Deterministic core first.** Git, SQLite, FTS5, and explicit relations are the source of
    truth. Embeddings and solver support are optional accelerators.
 6. **Optimize integration, not output volume.** The system should redirect agents toward
