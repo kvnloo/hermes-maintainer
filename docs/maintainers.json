@@ -1,0 +1,1260 @@
+{
+ "repo": "NousResearch/hermes-agent",
+ "window": [
+  "2026-10-07",
+  "2026-11-06"
+ ],
+ "generated": "2026-11-05T23:58:32+00:00",
+ "merged_prs": 2538,
+ "self_merged": 1314,
+ "mergers": [
+  {
+   "login": "teknium1",
+   "merged": 1969,
+   "median_hours_open_to_merge": 13.0,
+   "top_areas": [
+    [
+     "plugin-catalog",
+     1150
+    ],
+    [
+     "tests",
+     631
+    ],
+    [
+     "contributors",
+     361
+    ],
+    [
+     "hermes_cli",
+     276
+    ],
+    [
+     "website",
+     218
+    ],
+    [
+     "apps",
+     206
+    ]
+   ]
+  },
+  {
+   "login": "unsupportedpastels",
+   "merged": 164,
+   "median_hours_open_to_merge": 7.5,
+   "top_areas": [
+    [
+     "tests",
+     133
+    ],
+    [
+     "hermes_cli",
+     79
+    ],
+    [
+     "gateway",
+     68
+    ],
+    [
+     "apps",
+     48
+    ],
+    [
+     "website",
+     33
+    ],
+    [
+     "agent",
+     31
+    ]
+   ]
+  },
+  {
+   "login": "kshitijk4poor",
+   "merged": 126,
+   "median_hours_open_to_merge": 2.2,
+   "top_areas": [
+    [
+     "tests",
+     104
+    ],
+    [
+     "hermes_cli",
+     52
+    ],
+    [
+     "gateway",
+     34
+    ],
+    [
+     "website",
+     28
+    ],
+    [
+     "agent",
+     24
+    ],
+    [
+     "apps",
+     19
+    ]
+   ]
+  },
+  {
+   "login": "ethernet8023",
+   "merged": 83,
+   "median_hours_open_to_merge": 2.0,
+   "top_areas": [
+    [
+     "tests",
+     47
+    ],
+    [
+     "scripts",
+     27
+    ],
+    [
+     ".github",
+     22
+    ],
+    [
+     "apps",
+     13
+    ],
+    [
+     "pm",
+     13
+    ],
+    [
+     "website",
+     10
+    ]
+   ]
+  },
+  {
+   "login": "alt-glitch",
+   "merged": 42,
+   "median_hours_open_to_merge": 4.3,
+   "top_areas": [
+    [
+     "tests",
+     30
+    ],
+    [
+     "hermes_cli",
+     21
+    ],
+    [
+     "apps",
+     21
+    ],
+    [
+     "agent",
+     14
+    ],
+    [
+     "gateway",
+     11
+    ],
+    [
+     "tools/connectors",
+     9
+    ]
+   ]
+  },
+  {
+   "login": "c2h5oh",
+   "merged": 39,
+   "median_hours_open_to_merge": 0.7,
+   "top_areas": [
+    [
+     "website",
+     18
+    ],
+    [
+     "package-lock.json",
+     13
+    ],
+    [
+     ".github",
+     12
+    ],
+    [
+     "tests",
+     11
+    ],
+    [
+     "apps",
+     10
+    ],
+    [
+     "package.json",
+     8
+    ]
+   ]
+  },
+  {
+   "login": "austinpickett",
+   "merged": 35,
+   "median_hours_open_to_merge": 24.9,
+   "top_areas": [
+    [
+     "apps",
+     22
+    ],
+    [
+     "tests",
+     13
+    ],
+    [
+     "hermes_cli",
+     8
+    ],
+    [
+     "locales",
+     5
+    ],
+    [
+     "web",
+     5
+    ],
+    [
+     "gateway",
+     3
+    ]
+   ]
+  },
+  {
+   "login": "OutThisLife",
+   "merged": 25,
+   "median_hours_open_to_merge": 108.7,
+   "top_areas": [
+    [
+     "tests",
+     13
+    ],
+    [
+     "apps",
+     13
+    ],
+    [
+     "hermes_cli",
+     4
+    ],
+    [
+     "tui_gateway",
+     4
+    ],
+    [
+     "agent",
+     3
+    ],
+    [
+     "contributors",
+     3
+    ]
+   ]
+  },
+  {
+   "login": "jquesnelle",
+   "merged": 19,
+   "median_hours_open_to_merge": 7.9,
+   "top_areas": [
+    [
+     "tests",
+     16
+    ],
+    [
+     "hermes_cli",
+     12
+    ],
+    [
+     "website",
+     7
+    ],
+    [
+     "tools",
+     5
+    ],
+    [
+     "apps",
+     4
+    ],
+    [
+     "agent",
+     4
+    ]
+   ]
+  },
+  {
+   "login": "hermes-seaeye",
+   "merged": 12,
+   "median_hours_open_to_merge": 0.1,
+   "top_areas": [
+    [
+     "apps",
+     12
+    ]
+   ]
+  },
+  {
+   "login": "yoniebans",
+   "merged": 12,
+   "median_hours_open_to_merge": 7.2,
+   "top_areas": [
+    [
+     "tests",
+     10
+    ],
+    [
+     "gateway",
+     10
+    ],
+    [
+     "apps",
+     5
+    ],
+    [
+     "ui-tui",
+     4
+    ],
+    [
+     "tui_gateway",
+     4
+    ],
+    [
+     "tools",
+     3
+    ]
+   ]
+  },
+  {
+   "login": "BearHuddleston",
+   "merged": 10,
+   "median_hours_open_to_merge": 3.8,
+   "top_areas": [
+    [
+     "tests",
+     6
+    ],
+    [
+     "apps",
+     5
+    ],
+    [
+     "website",
+     4
+    ],
+    [
+     "scripts",
+     3
+    ],
+    [
+     "tests-js",
+     2
+    ],
+    [
+     "hermes_cli",
+     2
+    ]
+   ]
+  },
+  {
+   "login": "ghgoodreau",
+   "merged": 1,
+   "median_hours_open_to_merge": 0.4,
+   "top_areas": [
+    [
+     "apps",
+     1
+    ]
+   ]
+  }
+ ],
+ "reviewers": [
+  {
+   "login": "unsupportedpastels",
+   "prs_reviewed": 225,
+   "top_areas": [
+    [
+     "tests",
+     152
+    ],
+    [
+     "hermes_cli",
+     88
+    ],
+    [
+     "apps",
+     83
+    ],
+    [
+     "gateway",
+     70
+    ],
+    [
+     "website",
+     45
+    ],
+    [
+     "tools",
+     32
+    ]
+   ]
+  },
+  {
+   "login": "teknium1",
+   "prs_reviewed": 219,
+   "top_areas": [
+    [
+     "plugin-catalog",
+     174
+    ],
+    [
+     "contributors",
+     85
+    ],
+    [
+     "tests",
+     31
+    ],
+    [
+     "hermes_cli",
+     17
+    ],
+    [
+     "website",
+     14
+    ],
+    [
+     "apps",
+     14
+    ]
+   ]
+  },
+  {
+   "login": "kshitijk4poor",
+   "prs_reviewed": 96,
+   "top_areas": [
+    [
+     "tests",
+     59
+    ],
+    [
+     "apps",
+     45
+    ],
+    [
+     "gateway",
+     44
+    ],
+    [
+     "hermes_cli",
+     40
+    ],
+    [
+     "agent",
+     17
+    ],
+    [
+     "website",
+     11
+    ]
+   ]
+  },
+  {
+   "login": "BearHuddleston",
+   "prs_reviewed": 54,
+   "top_areas": [
+    [
+     "tests",
+     42
+    ],
+    [
+     "hermes_cli",
+     16
+    ],
+    [
+     "agent",
+     13
+    ],
+    [
+     "apps",
+     11
+    ],
+    [
+     "website",
+     10
+    ],
+    [
+     "tools",
+     10
+    ]
+   ]
+  },
+  {
+   "login": "ethernet8023",
+   "prs_reviewed": 31,
+   "top_areas": [
+    [
+     "website",
+     11
+    ],
+    [
+     "tests",
+     9
+    ],
+    [
+     "package-lock.json",
+     8
+    ],
+    [
+     "uv.lock",
+     5
+    ],
+    [
+     "pyproject.toml",
+     5
+    ],
+    [
+     "package.json",
+     4
+    ]
+   ]
+  },
+  {
+   "login": "c2h5oh",
+   "prs_reviewed": 29,
+   "top_areas": [
+    [
+     "tests",
+     20
+    ],
+    [
+     ".github",
+     17
+    ],
+    [
+     "scripts",
+     12
+    ],
+    [
+     "website",
+     4
+    ],
+    [
+     "apps",
+     4
+    ],
+    [
+     "hermes_cli",
+     3
+    ]
+   ]
+  },
+  {
+   "login": "yoniebans",
+   "prs_reviewed": 24,
+   "top_areas": [
+    [
+     "tests",
+     19
+    ],
+    [
+     "hermes_cli",
+     11
+    ],
+    [
+     "apps",
+     10
+    ],
+    [
+     "gateway",
+     7
+    ],
+    [
+     "website",
+     5
+    ],
+    [
+     "tools",
+     4
+    ]
+   ]
+  },
+  {
+   "login": "alt-glitch",
+   "prs_reviewed": 20,
+   "top_areas": [
+    [
+     "tests",
+     15
+    ],
+    [
+     "gateway",
+     15
+    ],
+    [
+     "hermes_cli",
+     7
+    ],
+    [
+     "apps",
+     6
+    ],
+    [
+     "agent",
+     4
+    ],
+    [
+     "contributors",
+     3
+    ]
+   ]
+  },
+  {
+   "login": "dokterdok",
+   "prs_reviewed": 19,
+   "top_areas": [
+    [
+     "tests",
+     14
+    ],
+    [
+     "gateway",
+     12
+    ],
+    [
+     "hermes_cli",
+     8
+    ],
+    [
+     "apps",
+     8
+    ],
+    [
+     "website",
+     3
+    ],
+    [
+     "tools",
+     2
+    ]
+   ]
+  },
+  {
+   "login": "JoaoMarcos44",
+   "prs_reviewed": 15,
+   "top_areas": [
+    [
+     "tests",
+     12
+    ],
+    [
+     "agent",
+     4
+    ],
+    [
+     ".github",
+     4
+    ],
+    [
+     "apps",
+     4
+    ],
+    [
+     "pm",
+     3
+    ],
+    [
+     "hermes_cli",
+     3
+    ]
+   ]
+  },
+  {
+   "login": "austinpickett",
+   "prs_reviewed": 10,
+   "top_areas": [
+    [
+     "tests",
+     4
+    ],
+    [
+     "apps",
+     4
+    ],
+    [
+     "gateway",
+     2
+    ],
+    [
+     "hermes_cli",
+     2
+    ],
+    [
+     "web",
+     2
+    ],
+    [
+     "ui-tui",
+     2
+    ]
+   ]
+  },
+  {
+   "login": "OutThisLife",
+   "prs_reviewed": 9,
+   "top_areas": [
+    [
+     "agent",
+     4
+    ],
+    [
+     "apps",
+     3
+    ],
+    [
+     "tests",
+     2
+    ],
+    [
+     "scripts",
+     2
+    ],
+    [
+     ".github",
+     2
+    ],
+    [
+     "tools/computer_use",
+     1
+    ]
+   ]
+  },
+  {
+   "login": "helix4u",
+   "prs_reviewed": 6,
+   "top_areas": [
+    [
+     "tests",
+     5
+    ],
+    [
+     "hermes_cli",
+     3
+    ],
+    [
+     "apps",
+     3
+    ],
+    [
+     "gateway",
+     3
+    ],
+    [
+     "contributors",
+     3
+    ],
+    [
+     "locales",
+     1
+    ]
+   ]
+  },
+  {
+   "login": "andrexibiza",
+   "prs_reviewed": 5,
+   "top_areas": [
+    [
+     "tests",
+     4
+    ],
+    [
+     "gateway",
+     3
+    ],
+    [
+     "scripts",
+     1
+    ],
+    [
+     "tools",
+     1
+    ],
+    [
+     "contributors",
+     1
+    ],
+    [
+     "hermes_state_api_content.py",
+     1
+    ]
+   ]
+  },
+  {
+   "login": "kvnloo",
+   "prs_reviewed": 4,
+   "top_areas": [
+    [
+     "tests",
+     4
+    ],
+    [
+     "website",
+     2
+    ],
+    [
+     "tools",
+     1
+    ],
+    [
+     "hermes_cli",
+     1
+    ],
+    [
+     "tui_gateway",
+     1
+    ],
+    [
+     "apps",
+     1
+    ]
+   ]
+  }
+ ],
+ "first_response": {
+  "prs_with_response": 1155,
+  "median_hours": 4.1,
+  "p90_hours": 56.5,
+  "first_responder": [
+   [
+    "teknium1",
+    335
+   ],
+   [
+    "whyyagswhy",
+    311
+   ],
+   [
+    "unsupportedpastels",
+    147
+   ],
+   [
+    "Adolanium",
+    53
+   ],
+   [
+    "Enough1122",
+    38
+   ],
+   [
+    "kshitijk4poor",
+    37
+   ],
+   [
+    "BearHuddleston",
+    29
+   ],
+   [
+    "ethernet8023",
+    26
+   ],
+   [
+    "dokterdok",
+    25
+   ],
+   [
+    "alt-glitch",
+    24
+   ]
+  ],
+  "external": {
+   "prs": 507,
+   "median_hours": 14.4,
+   "p90_hours": 79.9
+  }
+ },
+ "bots_excluded": [
+  "blacksmith-sh",
+  "copilot-pull-request-reviewer",
+  "github-actions",
+  "greptile-apps"
+ ],
+ "watch": {
+  "login": "teknium1",
+  "reviewed": 219,
+  "approved": 138,
+  "changes_requested": 173,
+  "commented_prs": 293,
+  "merged_count": 1969,
+  "merged_per_day": [
+   [
+    "2026-10-07",
+    58
+   ],
+   [
+    "2026-10-08",
+    71
+   ],
+   [
+    "2026-10-09",
+    51
+   ],
+   [
+    "2026-10-10",
+    71
+   ],
+   [
+    "2026-10-11",
+    35
+   ],
+   [
+    "2026-10-12",
+    54
+   ],
+   [
+    "2026-10-13",
+    73
+   ],
+   [
+    "2026-10-14",
+    42
+   ],
+   [
+    "2026-10-15",
+    18
+   ],
+   [
+    "2026-10-16",
+    115
+   ],
+   [
+    "2026-10-17",
+    96
+   ],
+   [
+    "2026-10-18",
+    52
+   ],
+   [
+    "2026-10-19",
+    78
+   ],
+   [
+    "2026-10-20",
+    126
+   ],
+   [
+    "2026-10-21",
+    31
+   ],
+   [
+    "2026-10-22",
+    26
+   ],
+   [
+    "2026-10-23",
+    110
+   ],
+   [
+    "2026-10-24",
+    83
+   ],
+   [
+    "2026-10-25",
+    88
+   ],
+   [
+    "2026-10-26",
+    36
+   ],
+   [
+    "2026-10-27",
+    41
+   ],
+   [
+    "2026-10-28",
+    44
+   ],
+   [
+    "2026-10-29",
+    140
+   ],
+   [
+    "2026-10-30",
+    13
+   ],
+   [
+    "2026-10-31",
+    2
+   ],
+   [
+    "2026-11-01",
+    32
+   ],
+   [
+    "2026-11-02",
+    180
+   ],
+   [
+    "2026-11-03",
+    23
+   ],
+   [
+    "2026-11-04",
+    11
+   ],
+   [
+    "2026-11-05",
+    169
+   ]
+  ],
+  "recent_merges": [
+   {
+    "number": 149662,
+    "title": "chore(js): make the workspaces pnpm-ready under npm",
+    "author": "c2h5oh",
+    "mergedAt": "2026-11-05T22:08:27Z",
+    "areas": [
+     "apps",
+     "evals",
+     "package-lock.json",
+     "tests"
+    ]
+   },
+   {
+    "number": 149722,
+    "title": "Release publication no longer reports a successful Store commit as failed",
+    "author": "teknium1",
+    "mergedAt": "2026-11-05T21:47:00Z",
+    "areas": [
+     "scripts",
+     "tests"
+    ]
+   },
+   {
+    "number": 148591,
+    "title": "feat(plugin-catalog): add searchapi entry",
+    "author": "christofilojohn",
+    "mergedAt": "2026-11-05T20:16:42Z",
+    "areas": [
+     "contributors",
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 149641,
+    "title": "Catalog: land 11 reviewed entries whose forks refuse maintainer pushes (sweep 1105 copy)",
+    "author": "teknium1",
+    "mergedAt": "2026-11-05T20:07:44Z",
+    "areas": [
+     "contributors",
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 149190,
+    "title": "catalog: living-field",
+    "author": "abuz8studios-ship-it",
+    "mergedAt": "2026-11-05T20:00:47Z",
+    "areas": [
+     "contributors",
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 149186,
+    "title": "Add money-magnet to the plugin catalog",
+    "author": "Whydiriki700",
+    "mergedAt": "2026-11-05T20:00:24Z",
+    "areas": [
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 149507,
+    "title": "feat(plugin-catalog): add apple-health-mcp",
+    "author": "davidmosiah",
+    "mergedAt": "2026-11-05T19:58:48Z",
+    "areas": [
+     "contributors",
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 149629,
+    "title": "Desktop release test finds the p2 tab again after tabs got real names",
+    "author": "teknium1",
+    "mergedAt": "2026-11-05T19:57:40Z",
+    "areas": [
+     "apps"
+    ]
+   },
+   {
+    "number": 149166,
+    "title": "plugin-catalog: add basekit \u2014 read-only live Base (8453) intelligence",
+    "author": "D0xedDevi0",
+    "mergedAt": "2026-11-05T19:57:23Z",
+    "areas": [
+     "contributors",
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 146419,
+    "title": "catalog: pin qdrant-memory to Runtime 0.5.4",
+    "author": "cnkang",
+    "mergedAt": "2026-11-05T19:57:05Z",
+    "areas": [
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 149336,
+    "title": "plugin-catalog: bump tameru to 1.6.0",
+    "author": "0xWhiteMage",
+    "mergedAt": "2026-11-05T19:56:45Z",
+    "areas": [
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 149202,
+    "title": "feat(plugin-catalog): add 3ds-platform",
+    "author": "rndaom",
+    "mergedAt": "2026-11-05T19:56:22Z",
+    "areas": [
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 149364,
+    "title": "plugin-catalog: add hermes-axioma",
+    "author": "percyhendrux123-prog",
+    "mergedAt": "2026-11-05T19:53:37Z",
+    "areas": [
+     "contributors",
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 149243,
+    "title": "plugin-catalog: add network-xray (compare network evidence from two machines)",
+    "author": "rusty4444",
+    "mergedAt": "2026-11-05T19:53:03Z",
+    "areas": [
+     "contributors",
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 149227,
+    "title": "Add fashion-design plugin to catalog",
+    "author": "priticolours",
+    "mergedAt": "2026-11-05T19:52:30Z",
+    "areas": [
+     "contributors",
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 149183,
+    "title": "catalog: add clack \u2014 encrypted agent-to-agent messaging",
+    "author": "adroidian",
+    "mergedAt": "2026-11-05T19:51:55Z",
+    "areas": [
+     "contributors",
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 149159,
+    "title": "plugin-catalog: add understudy \u2014 audition cheaper models on your real Hermes history",
+    "author": "stffinfcti",
+    "mergedAt": "2026-11-05T19:51:23Z",
+    "areas": [
+     "contributors",
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 145016,
+    "title": "plugin-catalog: add dynamic-memory",
+    "author": "ockentap",
+    "mergedAt": "2026-11-05T19:50:51Z",
+    "areas": [
+     "contributors",
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 144514,
+    "title": "plugin-catalog: add antigravity-duet (v0.1.0)",
+    "author": "benfirad",
+    "mergedAt": "2026-11-05T19:50:16Z",
+    "areas": [
+     "contributors",
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 143536,
+    "title": "feat(plugin-catalog): add hermesvault",
+    "author": "Guerilla-ops",
+    "mergedAt": "2026-11-05T19:49:42Z",
+    "areas": [
+     "contributors",
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 142637,
+    "title": "Add the Athena catalog entry (athenaforhermes/athena)",
+    "author": "athenaforhermes",
+    "mergedAt": "2026-11-05T19:49:09Z",
+    "areas": [
+     "contributors",
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 148633,
+    "title": "feat(catalog): bump aircraft-doppler-geolocation to v0.3.1",
+    "author": "mojomast",
+    "mergedAt": "2026-11-05T19:48:42Z",
+    "areas": [
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 149485,
+    "title": "chore(catalog): move anyrouter plugin to AnyRouterHQ org",
+    "author": "duyet",
+    "mergedAt": "2026-11-05T19:48:21Z",
+    "areas": [
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 149476,
+    "title": "chore(plugin-catalog): bump pinned-folders entry to v0.1.11",
+    "author": "jacobhausler",
+    "mergedAt": "2026-11-05T19:48:00Z",
+    "areas": [
+     "plugin-catalog"
+    ]
+   },
+   {
+    "number": 149456,
+    "title": "chore(plugin-catalog): crew 0.10.7, re-pin to ffb0e0c",
+    "author": "macd2",
+    "mergedAt": "2026-11-05T19:47:38Z",
+    "areas": [
+     "plugin-catalog"
+    ]
+   }
+  ]
+ }
+}
