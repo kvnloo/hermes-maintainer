@@ -6,7 +6,14 @@ Read-only (GraphQL search via `gh`). Writes <out>/maintainers.json and <out>/MAI
 Areas are the first path segment (two for tools/, gateway/platforms/, plugins/) of each merged PR's files.
 "Response" is the first review or comment by anyone other than the author or a bot.
 """
-import argparse, collections, datetime as dt, json, pathlib, statistics, subprocess, sys
+import argparse
+import collections
+import datetime as dt
+import json
+import pathlib
+import statistics
+import subprocess
+import sys
 
 Q = """query($q:String!,$c:String){search(query:$q,type:ISSUE,first:50,after:$c){issueCount pageInfo{hasNextPage endCursor}
 nodes{... on PullRequest{number title createdAt mergedAt author{login} mergedBy{login}
@@ -18,7 +25,7 @@ def gql(q, cur):
     a = ["gh", "api", "graphql", "-f", f"query={Q}", "-f", f"q={q}"] + (["-f", f"c={cur}"] if cur else [])
     r = None
     for _ in range(3):
-        r = subprocess.run(a, capture_output=True, text=True, timeout=180)
+        r = subprocess.run(a, capture_output=True, text=True, timeout=180, check=False)
         if r.returncode == 0:
             return json.loads(r.stdout)["data"]["search"]
     sys.exit(f"gh graphql failed: {r.stderr[:300]}")
@@ -45,7 +52,7 @@ def area(p):
 
 
 def ts(x):
-    return dt.datetime.fromisoformat(x.replace("Z", "+00:00"))
+    return dt.datetime.fromisoformat(x)
 
 
 def hours(a, b):
@@ -101,7 +108,7 @@ def main():
             watch["merged"].append({"number": p["number"], "title": p["title"][:90], "author": au, "mergedAt": p["mergedAt"], "areas": sorted(areas)[:4]})
     watch["merged"].sort(key=lambda x: x["mergedAt"], reverse=True)
     days = collections.Counter(x["mergedAt"][:10] for x in watch["merged"])
-    R = {"repo": A.repo, "window": [since.isoformat(), until.isoformat()], "generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+    R = {"repo": A.repo, "window": [since.isoformat(), until.isoformat()], "generated": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
          "merged_prs": len(prs), "self_merged": self_merge,
          "mergers": [{"login": u, "merged": n, "median_hours_open_to_merge": med(to_merge[u]), "top_areas": m_area[u].most_common(6)} for u, n in merger.most_common(15)],
          "reviewers": [{"login": u, "prs_reviewed": n, "top_areas": r_area[u].most_common(6)} for u, n in reviewer.most_common(15)],

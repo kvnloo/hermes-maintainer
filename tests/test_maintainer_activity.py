@@ -1,4 +1,7 @@
-import importlib.util, json, pathlib, sys
+import importlib.util
+import json
+import pathlib
+import sys
 
 P = pathlib.Path(__file__).resolve().parents[1] / "scripts" / "maintainer-activity.py"
 spec = importlib.util.spec_from_file_location("ma", P); ma = importlib.util.module_from_spec(spec); spec.loader.exec_module(ma)
