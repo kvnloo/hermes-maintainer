@@ -1,29 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
-
-
-@dataclass
-class BacklogNode:
-    id: str
-    kind: str
-    number: int | None
-    title: str
-    body: str
-    state: str
-    labels: list[str] = field(default_factory=list)
-    metadata: dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass
-class RelationCandidate:
-    src_id: str
-    dst_id: str
-    relation_type: str
-    confidence: float
-    evidence: str
-    source: str = "analysis"
 
 
 @dataclass

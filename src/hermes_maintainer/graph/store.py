@@ -166,9 +166,6 @@ class GraphStore:
             params + params,
         )
 
-    def export_json(self, **filters) -> dict:
-        return self.export_subgraph(**filters)
-
     def export_subgraph(
         self,
         *,
