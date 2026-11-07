@@ -72,9 +72,6 @@ class GitHubClient:
     def get_pull(self, repo: str, number: int) -> dict[str, Any]:
         return self._get(f"/repos/{repo}/pulls/{number}").json()
 
-    def get_issue(self, repo: str, number: int) -> dict[str, Any]:
-        return self._get(f"/repos/{repo}/issues/{number}").json()
-
     def get_pull_files(self, repo: str, number: int) -> list[dict[str, Any]]:
         out: list[dict[str, Any]] = []
         for page in self.iter_pages(f"/repos/{repo}/pulls/{number}/files"):
