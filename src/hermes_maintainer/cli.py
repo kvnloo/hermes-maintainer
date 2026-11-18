@@ -81,7 +81,15 @@ def serve(
 ):
     """Run the local dashboard and API."""
     s = settings()
-    uvicorn.run("hermes_maintainer.api.app:create_app", factory=True, host=host or s.server.host, port=port or s.server.port)
+    from hermes_maintainer.acp_bridge import acp_settings
+
+    bind_host = host or s.server.host
+    if acp_settings(s.root) is not None and bind_host not in ("127.0.0.1", "::1", "localhost"):
+        raise typer.BadParameter("ACP-enabled chat must bind to loopback only")
+    uvicorn.run(
+        "hermes_maintainer.api.app:create_app", factory=True,
+        host=bind_host, port=port or s.server.port,
+    )
 
 
 @app.command()
