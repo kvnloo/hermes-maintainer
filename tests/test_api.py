@@ -54,7 +54,7 @@ def test_llms_txt_and_dashboard(db):
     assert client.get("/board").status_code == 200
     assert client.get("/api/chat/status").json()["enabled"] is False
     assert client.get("/knowledge/START_HERE.md").status_code == 200
-    hits = client.get("/api/knowledge/search?q=regression").json()
+    hits = client.get("/api/knowledge/search?q=review").json()
     assert any("REVIEW_EVIDENCE.md" in row["path"] for row in hits)
 
 
