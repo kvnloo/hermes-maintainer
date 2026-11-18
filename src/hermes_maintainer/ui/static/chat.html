@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>Hermes Maintainer — learn, triage, contribute</title>
+  <meta name="description" content="The public Hermes contributor playbook with local Hermes ACP conversations." />
+  <link rel="describedby" href="/llms.txt" />
+  <link rel="stylesheet" href="/static/chat.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="top">
+      <a class="identity" href="/" aria-label="Hermes Maintainer home"><span class="logo">H</span><span>hermes<span class="subbrand"> / maintainer</span></span></a>
+      <nav aria-label="Explore"><a href="./knowledge/START_HERE.md">Guide</a><a id="graph-link" href="/graph">Graph</a><a href="https://github.com/kvnloo/hermes-maintainer" target="_blank" rel="noopener noreferrer">Source</a></nav>
+    </header>
+    <main>
+      <div id="hero" class="hero">
+        <p class="eyebrow">CONTRIBUTOR INTELLIGENCE FOR HERMES AGENT</p>
+        <h1>Know the repository.<br /><span>Make the right contribution.</span></h1>
+        <p class="lede">Ask about architecture, investigate an issue, or turn an idea into a reviewable patch. Hermes is the agent; the playbooks are the memory.</p>
+        <div class="suggestions" aria-label="Try a question">
+          <button type="button" data-example="Explain Hermes session ownership across CLI, gateway, Desktop, and ACP.">How do sessions work?</button>
+          <button type="button" data-example="Triage the highest-impact ACP problems using current main, competing PRs, and exact evidence.">Triage an ACP wave</button>
+          <button type="button" data-example="Find a good first Hermes bug to contribute to, check all competing PRs, and give me the red-to-green test plan.">Find a useful first issue</button>
+        </div>
+      </div>
+      <section id="transcript" class="transcript" aria-live="polite" aria-label="Conversation" hidden></section>
+      <section class="composer" aria-label="Ask Hermes">
+        <div class="mode-switch" role="group" aria-label="Conversation mode">
+          <button type="button" class="selected" data-mode="learn" aria-pressed="true">Learn</button>
+          <button type="button" data-mode="triage" aria-pressed="false">Triage</button>
+          <button type="button" data-mode="contribute" aria-pressed="false">Contribute</button>
+        </div>
+        <form id="ask-form">
+          <label for="question" class="sr-only">Ask a question about Hermes</label>
+          <textarea id="question" name="question" rows="2" maxlength="8000" placeholder="Ask anything about the Hermes repository…" required></textarea>
+          <div class="composer-bottom"><span>Enter to send · Shift+Enter for newline</span><div class="actions"><button type="button" id="cancel" hidden>Stop</button><button type="button" id="new-chat" hidden>New conversation</button><button type="submit" id="send">Ask Hermes</button></div></div>
+        </form>
+        <p id="connection" role="status" class="connection">Checking local Hermes ACP…</p>
+        <p class="hint">Contributions require an authorized local fork. No upstream writes or merges by default; tool approvals are one-time.</p>
+      </section>
+      <section class="library" id="library">
+        <div class="section-head"><h2>The contributor field guide</h2><span>Versioned, sourced, and public</span></div>
+        <div id="search-results" hidden></div>
+        <div class="guides">
+          <a href="./knowledge/START_HERE.md"><span>01 / ORIENT</span><strong>Start here</strong><small>Your first ten minutes in Hermes</small></a>
+          <a href="./knowledge/HERMES_INTENT.md"><span>02 / UNDERSTAND</span><strong>Architecture & intent</strong><small>Invariants, owners, public direction</small></a>
+          <a href="./knowledge/TRIAGE_WAVES.md"><span>03 / INVESTIGATE</span><strong>Run a wave</strong><small>Root cause, overlap, prioritization</small></a>
+          <a href="./knowledge/REVIEW_EVIDENCE.md"><span>04 / VERIFY</span><strong>Make it reviewable</strong><small>Red→green evidence and credit</small></a>
+        </div>
+      </section>
+    </main>
+    <footer>Independent contributor companion, not an official NousResearch maintainer policy. <a href="./knowledge/SOURCE_POLICY.md">Sources & safety</a></footer>
+  </div>
+  <script src="/static/chat.js" defer></script>
+</body>
+</html>
