@@ -46,6 +46,9 @@ def search_guides(root: Path, query: str, limit: int = 8) -> list[dict[str, str]
     return [item for _, item in scored[:limit]]
 
 
+LOOPBACK_HOSTS = {"127.0.0.1", "localhost", "::1", "testserver"}
+
+
 def require_local_ui(request: Request) -> None:
     """No cross-origin browser posts or network clients may drive a privileged ACP process."""
     address = request.client.host if request.client else ""
@@ -53,6 +56,11 @@ def require_local_ui(request: Request) -> None:
         local = ipaddress.ip_address(address).is_loopback
     except ValueError:
         local = address == "testclient"  # Starlette's in-process TestClient
+    # DNS rebinding: a foreign page re-pointed at 127.0.0.1 is same-origin to itself,
+    # so Origin alone proves nothing; the Host must be a loopback name.
+    host = (request.url.hostname or "").strip("[]").casefold()
+    if host not in LOOPBACK_HOSTS:
+        raise HTTPException(403, "ACP requires a loopback Host")
     if not local or request.headers.get("x-hermes-maintainer-ui") != "1":
         raise HTTPException(403, "ACP is only available to the local UI")
     origin = request.headers.get("origin")
@@ -94,8 +102,10 @@ def make_chat_router(root: Path) -> APIRouter:
             raise HTTPException(422, "prompt must not be blank")
         try:
             chat = await chats.create(body.prompt.strip(), body.mode)
-        except (ACPUnavailable, OSError, ValueError, KeyError) as exc:
-            raise HTTPException(503, f"Could not start Hermes ACP: {str(exc)[:300]}") from exc
+        except ACPUnavailable as exc:
+            raise HTTPException(503, f"Could not start Hermes ACP: {exc}") from exc
+        except (OSError, ValueError, KeyError, TimeoutError) as exc:
+            raise HTTPException(503, f"Could not start Hermes ACP ({type(exc).__name__})") from exc
         return {"id": chat.id}
 
     @router.post("/api/chat/{chat_id}/prompt", status_code=202)
