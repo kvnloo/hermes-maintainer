@@ -13,6 +13,7 @@ Do not collapse `similar`, `duplicate_of`, `same_root_cause`, `partially_address
 - [Triage waves](./knowledge/TRIAGE_WAVES.md): repeatable issue research and review decisions.
 - [Review evidence](./knowledge/REVIEW_EVIDENCE.md): exact-head red/green, native runtime, credit.
 - [Public case studies](./knowledge/PUBLIC_CASES.md): verified examples with open/merged states.
+- [Current public work radar](./knowledge/CURRENT_PUBLIC_WORK.md): dated live public reports vs official commitments.
 - [Source and privacy policy](./knowledge/SOURCE_POLICY.md): current upstream > memory.
 - [Local ACP webapp](./docs/ACP_WEBAPP.md): setup, trust boundary, and protocol.
 

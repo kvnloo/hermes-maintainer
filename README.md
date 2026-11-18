@@ -7,6 +7,7 @@
 - [Run a triage wave](knowledge/TRIAGE_WAVES.md) — live research, overlap, exact-head receipts and disposition.
 - [Review evidence](knowledge/REVIEW_EVIDENCE.md) — red→green tests, native platforms, author credit.
 - [Public cases](knowledge/PUBLIC_CASES.md) — historical real examples.
+- [Current public work radar](knowledge/CURRENT_PUBLIC_WORK.md) — dated open reports, continuity themes, and historical proposals; **not** an official roadmap.
 - [Source / freshness / privacy rules](knowledge/SOURCE_POLICY.md) — authoritative vs inferred.
 
 The home page at `http://127.0.0.1:8766/` is now a single conversation search bar with **Learn, Triage, Contribute** modes. The prior backlog dashboard and xyflow graph remain available at `/board` and `/graph`. In a static GitHub Pages deployment, the same search bar discovers *public guides*; it does not instantiate a privileged model or claim to execute commands.

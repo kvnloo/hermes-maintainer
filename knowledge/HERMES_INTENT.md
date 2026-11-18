@@ -51,4 +51,4 @@ These are starting hypotheses to verify per issue. They are **not** proof any pa
 - [#157176 ACP image parts in provider clients](https://github.com/NousResearch/hermes-agent/issues/157176) (state must be rechecked).
 - [Historical roadmap proposal #35917 for plugins-as-apps](https://github.com/NousResearch/hermes-agent/issues/35917) (closed, not an active task list).
 
-Do **not** infer team priorities, upcoming releases or maintainer approvals solely from issue volume, a proposal's title, or the fact it was closed. Refresh live source/threads on every wave; link your snapshot and revision.
+For a broader *dated* issue radar see [CURRENT_PUBLIC_WORK.md](./CURRENT_PUBLIC_WORK.md). Do **not** infer team priorities, upcoming releases or maintainer approvals solely from issue volume, a proposal's title, or the fact it was closed. Refresh live source/threads on every wave; link your snapshot and revision.

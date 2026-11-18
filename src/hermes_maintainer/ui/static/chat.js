@@ -8,6 +8,7 @@ let mode = "learn";
 let chatId = null;
 let cursor = 0;
 let pollHandle = null;
+let pollGeneration = 0;
 let busy = false;
 let connected = false;
 let currentReply = null;
@@ -115,18 +116,20 @@ function processEvents(events) {
   }
   updateUI();
 }
-async function poll() {
-  if (!chatId) return;
+async function poll(sessionId, generation) {
+  if (!sessionId || chatId !== sessionId || pollGeneration !== generation) return;
   try {
-    const result = await api("/api/chat/" + encodeURIComponent(chatId) + "/events?cursor=" + cursor);
+    const result = await api("/api/chat/" + encodeURIComponent(sessionId) + "/events?cursor=" + cursor);
+    if (chatId !== sessionId || pollGeneration !== generation) return;
     cursor = result.cursor;
     processEvents(result.events || []);
   } catch (error) {
+    if (chatId !== sessionId || pollGeneration !== generation) return;
     connection(error.message, true);
     busy = false;
     updateUI();
   }
-  pollHandle = setTimeout(poll, 450);
+  pollHandle = setTimeout(() => poll(sessionId, generation), 450);
 }
 async function searchKnowledge(query) {
   const results = el("search-results");
@@ -185,7 +188,8 @@ async function send(value) {
       const result = await api("/api/chat", { method: "POST", body: JSON.stringify({ prompt: text, mode }) });
       chatId = result.id;
       cursor = 0;
-      poll();
+      pollGeneration += 1;
+      poll(chatId, pollGeneration);
     } else {
       await api("/api/chat/" + encodeURIComponent(chatId) + "/prompt", {
         method: "POST", body: JSON.stringify({ prompt: text }),
@@ -229,6 +233,7 @@ el("cancel").addEventListener("click", async () => {
 el("new-chat").addEventListener("click", async () => {
   const oldId = chatId;
   chatId = null;
+  pollGeneration += 1;
   cursor = 0;
   busy = false;
   currentReply = null;
