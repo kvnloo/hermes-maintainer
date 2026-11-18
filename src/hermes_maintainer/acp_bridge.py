@@ -116,7 +116,7 @@ class ACPConversation:
                   options=[o for o in options if isinstance(o, dict) and o.get("optionId") in allowed])
         try:
             choice = await asyncio.wait_for(fut, 90)
-        except (asyncio.TimeoutError, asyncio.CancelledError):
+        except (TimeoutError, asyncio.CancelledError):
             choice = "deny"
         finally:
             self._approvals.pop(request_id, None)
@@ -211,7 +211,7 @@ class ACPConversation:
                 "prompt": [{"type": "text", "text": prompt}],
             }, timeout=1800)
             self.emit("turn_end", stopReason=(result or {}).get("stopReason", "end_turn"))
-        except Exception as exc:
+        except (ACPUnavailable, OSError, TimeoutError, ValueError) as exc:
             self.emit("error", message=f"Hermes turn failed: {str(exc)[:300]}")
         finally:
             self.busy = False
@@ -230,7 +230,7 @@ class ACPConversation:
             self.process.terminate()
             try:
                 await asyncio.wait_for(self.process.wait(), 3)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 self.process.kill()
                 await self.process.wait()
         if self.reader_task:
