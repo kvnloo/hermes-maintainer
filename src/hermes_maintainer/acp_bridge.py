@@ -251,6 +251,7 @@ class ACPChats:
         chat = ACPConversation(self.command, self.workspace)
         await chat.start()
         self.chats[chat.id] = chat
+        chat.busy = True  # Reserve before returning HTTP 201; prevent double submission.
         asyncio.create_task(chat.run_turn(orient_prompt(self.root, mode, prompt)))
         return chat
 

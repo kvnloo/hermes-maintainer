@@ -107,7 +107,12 @@ def make_chat_router(root: Path) -> APIRouter:
         if not body.prompt.strip():
             raise HTTPException(422, "prompt must not be blank")
         import asyncio
-        asyncio.create_task(chat.run_turn(body.prompt.strip()))
+        chat.busy = True  # Reserve the turn synchronously; no admission race.
+        try:
+            asyncio.create_task(chat.run_turn(body.prompt.strip()))
+        except Exception:
+            chat.busy = False
+            raise
         return {"accepted": True}
 
     @router.get("/api/chat/{chat_id}/events")
