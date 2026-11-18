@@ -86,18 +86,20 @@ def snapshot_api(site: Path) -> None:
         dump_json(site / rel, response.json())
 
 
-def rewrite_index(src: Path, dest: Path) -> None:
+def rewrite_index(src: Path, dest: Path, *, graph: bool = False) -> None:
     html = src.read_text(encoding="utf-8")
     html = html.replace('href="/static/', 'href="./static/')
     html = html.replace('src="/static/', 'src="./static/')
     html = html.replace('href="/llms.txt"', 'href="./llms.txt"')
     html = html.replace('href="/README.md"', 'href="./README.md"')
-    insert = (
-        BANNER
-        + "\n  <script src=\"./pages-adapter.js\"></script>\n"
-        + '  <script>if (!location.hash) location.hash = "graph";</script>\n'
-    )
-    html = html.replace("<body>", "<body>\n  " + insert, 1)
+    html = html.replace('href="/graph"', 'href="./graph.html"')
+    if graph:
+        insert = (
+            BANNER
+            + '\n  <script src="./pages-adapter.js"></script>\n'
+            + '  <script>if (!location.hash) location.hash = "graph";</script>\n'
+        )
+        html = html.replace("<body>", "<body>\n  " + insert, 1)
     dest.write_text(html, encoding="utf-8")
 
 
@@ -127,6 +129,9 @@ def copy_markdown(site: Path) -> None:
             shutil.rmtree(docs_dest)
         shutil.copytree(docs_src, docs_dest)
         write_docs_index(docs_src, docs_dest / "index.html")
+    knowledge_src = ROOT / "knowledge"
+    if knowledge_src.is_dir():
+        shutil.copytree(knowledge_src, site / "knowledge", dirs_exist_ok=True)
 
 
 def build(out: Path) -> Path:
@@ -137,7 +142,8 @@ def build(out: Path) -> Path:
     static_src = ROOT / "src" / "hermes_maintainer" / "ui" / "static"
     static_dest = out / "static"
     shutil.copytree(static_src, static_dest)
-    rewrite_index(static_src / "index.html", out / "index.html")
+    rewrite_index(static_src / "chat.html", out / "index.html")
+    rewrite_index(static_src / "index.html", out / "graph.html", graph=True)
     (out / "pages-adapter.js").write_text(ADAPTER_JS, encoding="utf-8")
     copy_markdown(out)
     snapshot_api(out)

@@ -21,8 +21,13 @@ def test_pages_snapshot_has_llms_and_seed_graph(tmp_path: Path):
     llms = (site / "llms.txt").read_text(encoding="utf-8")
     assert llms.startswith("# hermes-maintainer")
     html = (site / "index.html").read_text(encoding="utf-8")
-    assert "pages-adapter.js" in html
-    assert 'href="./static/styles.css"' in html
+    assert 'id="question"' in html
+    assert 'href="./static/chat.css"' in html
+    assert 'href="./graph.html"' in html
+    assert "pages-adapter.js" not in html
+    graph = (site / "graph.html").read_text(encoding="utf-8")
+    assert "pages-adapter.js" in graph
+    assert 'href="./static/styles.css"' in graph
     assert 'href="/static/' not in html
     demo = json.loads((site / "api" / "graph-demo.json").read_text(encoding="utf-8"))
     assert demo["source"] == "seed"
@@ -30,3 +35,5 @@ def test_pages_snapshot_has_llms_and_seed_graph(tmp_path: Path):
     assert (site / "static" / "graph-app.js").is_file()
     assert (site / ".nojekyll").is_file()
     assert (site / "docs" / "PRD.md").is_file()
+    assert (site / "knowledge" / "START_HERE.md").is_file()
+    assert (site / "static" / "chat.js").is_file()
