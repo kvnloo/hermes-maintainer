@@ -1,5 +1,17 @@
 # hermes-maintainer
 
+**A contributor knowledge base and chat-first Hermes ACP companion.** Learn the source, triage a problem family, or prepare a reviewable contribution without needing somebody else's private memory.
+
+- [Start here](knowledge/START_HERE.md) — newcomer path.
+- [Hermes architecture and public intent](knowledge/HERMES_INTENT.md) — invariants and subsystem entry points.
+- [Run a triage wave](knowledge/TRIAGE_WAVES.md) — live research, overlap, exact-head receipts and disposition.
+- [Review evidence](knowledge/REVIEW_EVIDENCE.md) — red→green tests, native platforms, author credit.
+- [Public cases](knowledge/PUBLIC_CASES.md) — historical real examples.
+- [Current public work radar](knowledge/CURRENT_PUBLIC_WORK.md) — dated open reports, continuity themes, and historical proposals; **not** an official roadmap.
+- [Source / freshness / privacy rules](knowledge/SOURCE_POLICY.md) — authoritative vs inferred.
+
+The home page at `http://127.0.0.1:8766/` is now a single conversation search bar with **Learn, Triage, Contribute** modes. The prior backlog dashboard and xyflow graph remain available at `/board` and `/graph`. In a static GitHub Pages deployment, the same search bar discovers *public guides*; it does not instantiate a privileged model or claim to execute commands.
+
 `hermes-maintainer` is a local-first maintenance intelligence system for
 `NousResearch/hermes-agent`.
 
@@ -30,6 +42,25 @@ and an optional optimization layer.
 6. **Optimize integration, not output volume.** The system should redirect agents toward
    missing evidence and integration work rather than generate another implementation.
 
+## Live chat with Hermes over ACP (local, opt-in)
+
+Hermes itself is the language model, tool runtime and session owner, **not** a new agent implemented in this project. The Python web server acts as a local ACP stdio client using `hermes acp` and creates a fresh ACP session when you submit a new chat. The interface displays streaming messages and asks for **one-time** approval when Hermes requests a dangerous action.
+
+Prerequisites: install and configure Hermes, enable its ACP optional package through the [official ACP setup instructions](https://github.com/NousResearch/hermes-agent/blob/main/website/docs/user-guide/features/acp.md), and check `hermes acp --check`. Choose the least-privileged working directory (ideally an expendable authorized fork clone).
+
+```bash
+# In the hermes-maintainer checkout, after pip install -e '.[dev]'
+export HERMES_MAINTAINER_ACP_ENABLED=1
+export HERMES_MAINTAINER_ACP_WORKSPACE="$HOME/src/hermes-agent-fork"
+# Optional: export HERMES_MAINTAINER_ACP_COMMAND="hermes acp"
+hermes-maintainer serve
+# Visit http://127.0.0.1:8766/
+```
+
+**Security:** This is a **trusted single-user local interface**, not a public multi-tenant service or a hardened execution sandbox. ACP may expose terminal, code execution, plugins and Git credentials available on the Hermes host. Never bind it to a public interface, reverse-proxy it for strangers, or expose it without real identity/authorization and process isolation. A guide prompt and approval UI are **not a security barrier**; configure Hermes toolsets and OS/Git credentials accordingly. Only work on a downstream fork with explicit authorization; no default branch pushes or upstream writes. See [ACP security and limits](docs/ACP_WEBAPP.md).
+
+`HERMES_MAINTAINER_ACP_ENABLED` defaults off; the repo's own GitHub graph/analytics API remains read-only. The local bridge does **not** publish GitHub mutations; a user with separately authorized Hermes tools may elect to write in their own fork after deliberate approval.
+
 ## Quick start
 
 ```bash
@@ -45,9 +76,9 @@ hermes-maintainer analyze
 hermes-maintainer serve
 ```
 
-Open `http://127.0.0.1:8766`. The dashboard uses the Hermes Teal theme (switchable to the other built-in Hermes palettes) and an xyflow campaign graph. Agents can start from [`llms.txt`](./llms.txt) or `http://127.0.0.1:8766/llms.txt`.
+Open `http://127.0.0.1:8766/` for guide search, or `/graph` for the existing Hermes Teal xyflow dashboard. Agents can start from [`llms.txt`](./llms.txt) or the served `/llms.txt`.
 
-Public snapshot (GitHub Pages): https://kvnloo.github.io/hermes-maintainer/ (`llms.txt`, docs, and the dashboard on audit seed campaigns). The live graph still needs a local scan.
+Public snapshot (GitHub Pages): https://kvnloo.github.io/hermes-maintainer/ (static public guide search at root, graph demo at `graph.html`, and `llms.txt`). ACP requires a locally installed and enabled Hermes process and is **not** available on GitHub Pages. The live graph still needs a local scan.
 
 For continuous operation:
 
@@ -60,15 +91,7 @@ deeper PR enrichment less often, rebuilds relations and campaigns, and updates h
 
 ## Maintainer permissions
 
-Driving `NousResearch/hermes-agent` to **0 open issues (~14k) and PRs (~28k)** requires
-maintainer or triage rights on that repository. `kvnloo` has **pull-only** access: GitHub
-returns **403** on foreign ticket closes. This account can comment and post tables; it cannot
-mass-close. Authors can still close their own tickets.
-
-The live close table (duplicate / invalid rows already labeled, waiting on a maintainer) is
-https://github.com/NousResearch/hermes-agent/issues/109552. See `BACKLOG-CLOSE.md` for the
-play: close labeled copies, do not merge the 28k PRs, and leave `needs-repro` / `P0` / Bot
-Screen follow-ups alone.
+`hermes-maintainer` is **not** an official NousResearch account, maintainer, or upstream publisher. Current repository-scoped authorization must be checked for every action; fork write access is not upstream write access. Historical backlog counts in seed audits must never be presented as live counts. See `BACKLOG-CLOSE.md` for a dated triage case, not a standing authority to mass-close tickets. Newcomer success means verified accepted work, not shrinking an issue counter by force.
 
 ## Project map
 
@@ -80,11 +103,13 @@ src/hermes_maintainer/
   analysis/     similarity, campaigns, evidence, root-cause mining
   optimizer/    greedy baseline and optional CP-SAT selection
   scheduler/    frequent batched scan loop
-  api/          local FastAPI dashboard/API (`/api/graph`, campaign explorer, `/llms.txt`)
-  ui/           Hermes-themed static dashboard + bundled xyflow graph
+  api/          local FastAPI UI/API, graph and ACP conversation bridge
+  acp_bridge.py local Hermes ACP stdio JSON-RPC session transport
+  ui/           chat-first interface + Hermes-themed xyflow graph
   agents/       prompts and agent work contracts
 
-docs/           PRD, architecture, security, operations, schemas, execution plan
+knowledge/      public onboarding, architecture, wave, evidence and cases
+docs/           PRD, architecture, security, operations, ACP integration, schemas
 tasks/          parallel Codex/Cursor work packets
 seed/audit/     the prior Hermes repository coordination audit and seed campaigns
 llms.txt        agent-oriented map of this repository
@@ -126,8 +151,7 @@ If the site 404s after the first successful `pages` workflow:
 2. Settings → Actions → General → Workflow permissions: **Read and write**
    (the Pages job needs `pages: write` and `id-token: write`)
 
-Protect `main` and `dev` (PR required, no worker merge). `preview` and `nightly` stay loose
-under the default rolling scheme (`.verified-oss-loop/rollout.yml`).
+Protect `main` and `dev` (PR required, no worker merge). Read `.verified-oss-loop/rollout.yml` for the *current* rollout scheme; do not assume a rolling scheme from old documentation.
 
 ## Seed context
 

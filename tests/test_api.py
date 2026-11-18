@@ -42,14 +42,21 @@ def test_llms_txt_and_dashboard(db):
     page = client.get("/")
     assert page.status_code == 200
     assert "hermes-maintainer" in page.text
-    assert 'id="flow"' in page.text
+    assert 'id="question"' in page.text
+    assert 'data-mode="triage"' in page.text
     llms = client.get("/llms.txt")
     assert llms.status_code == 200
     assert llms.text.startswith("# hermes-maintainer")
     assert "xyflow" in llms.text
     assert "read-only" in llms.text.lower()
     assert client.get("/README.md").status_code == 200
-    assert client.get("/graph").status_code == 200
+    assert 'id="flow"' in client.get("/graph").text
+    assert client.get("/board").status_code == 200
+    assert client.get("/api/chat/status").json()["enabled"] is False
+    assert client.get("/knowledge/START_HERE.md").status_code == 200
+    hits = client.get("/api/knowledge/search?q=review").json()
+    assert any("REVIEW_EVIDENCE.md" in row["path"] for row in hits)
+
 
 
 def test_campaign_graph_roles_and_filters(db):
