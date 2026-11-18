@@ -11,6 +11,7 @@ import json
 import os
 import shlex
 import shutil
+import signal
 import uuid
 from collections import deque
 from pathlib import Path
@@ -152,7 +153,10 @@ class ACPConversation:
                     fut = self._pending.get(req_id)
                     if fut and not fut.done():
                         if "error" in msg:
-                            fut.set_exception(ACPUnavailable(str(msg["error"])[:400]))
+                            err = msg["error"] if isinstance(msg["error"], dict) else {}
+                            code = err.get("code") if isinstance(err.get("code"), int) else "?"
+                            # Never forward agent error text: it can carry paths or credentials.
+                            fut.set_exception(ACPUnavailable(f"Hermes ACP returned error {code}"))
                         else:
                             fut.set_result(msg.get("result"))
                 elif msg.get("method") == "session/update":
@@ -182,6 +186,7 @@ class ACPConversation:
                 *self.command, cwd=str(self.workspace),
                 stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.DEVNULL, limit=1024 * 1024,
+                start_new_session=True,
             )
             self.reader_task = asyncio.create_task(self._read())
             await self.request("initialize", {
@@ -211,8 +216,12 @@ class ACPConversation:
                 "prompt": [{"type": "text", "text": prompt}],
             }, timeout=1800)
             self.emit("turn_end", stopReason=(result or {}).get("stopReason", "end_turn"))
-        except (ACPUnavailable, OSError, TimeoutError, ValueError) as exc:
-            self.emit("error", message=f"Hermes turn failed: {str(exc)[:300]}")
+        except ACPUnavailable as exc:
+            self.emit("error", message=f"Hermes turn failed: {exc}")
+        except TimeoutError:
+            self.emit("error", message="Hermes turn timed out")
+        except (OSError, ValueError) as exc:
+            self.emit("error", message=f"Hermes turn failed ({type(exc).__name__})")
         finally:
             self.busy = False
 
@@ -227,12 +236,17 @@ class ACPConversation:
     async def close(self) -> None:
         self.closed = True
         if self.process and self.process.returncode is None:
-            self.process.terminate()
-            try:
-                await asyncio.wait_for(self.process.wait(), 3)
-            except TimeoutError:
-                self.process.kill()
-                await self.process.wait()
+            # The agent leads its own process group; end tools it spawned too.
+            for sig, wait in ((signal.SIGTERM, 3), (signal.SIGKILL, None)):
+                try:
+                    os.killpg(self.process.pid, sig)
+                except ProcessLookupError:
+                    break
+                try:
+                    await asyncio.wait_for(self.process.wait(), wait)
+                    break
+                except TimeoutError:
+                    continue
         if self.reader_task:
             self.reader_task.cancel()
             await asyncio.gather(self.reader_task, return_exceptions=True)
