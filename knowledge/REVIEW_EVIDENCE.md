@@ -21,7 +21,7 @@ Source: [hermes-maintainer PRD](../docs/PRD.md) for evidence levels; upstream [A
 - Can you quote the line or branch where it manifests? Include the sibling call sites, not only one reported path.
 - Is there a test that is red at *current base* and green at the *exact changed head*?
 - Is the test behavioral using real imports, temp runtime/profile and mock network only at a real dependency edge? No source-text grep assertions, no fake sys.platform pretending to prove Windows behavior.
-- Run **scripts/run_tests.sh**, not bare pytest, for upstream Hermes; run python scripts/check for all blocking lint checks. Note platform-specific suites and the commands you cannot execute.
+- Run **scripts/run_tests.sh**, not bare pytest, for upstream Hermes ([TESTING.md](./TESTING.md)); run python scripts/check for all blocking lint checks. Note platform-specific suites and the commands you cannot execute.
 - Does the patch preserve prompt-cache invariants, existing adapter behavior and strict profile isolation? Did it avoid widening core tools and adding configuration env vars?
 - Does it require documentation changes, config drift tests, lockfile changes or prompt-surface snapshots? Follow area AGENTS.
 - Scan fresh PRs and review comments again at the end. A competing fix or a stale branch changes the disposition.

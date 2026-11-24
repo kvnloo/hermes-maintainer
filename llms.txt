@@ -1,51 +1,37 @@
 # hermes-maintainer
 
-> Public, versioned contributor knowledge base for `NousResearch/hermes-agent`, plus a local-first backlog graph and opt-in Hermes ACP chat. The graph's GitHub API is **read-only**; a locally configured Hermes process may have independently authorized file/tools access, but this app is never an autonomous upstream publisher.
+> Independent community notes on the non-obvious parts of `NousResearch/hermes-agent` (not official Nous policy), plus a local, read-only backlog graph with an xyflow explorer and an opt-in local Hermes ACP chat. The graph's GitHub access is **read-only**; nothing here writes upstream. Facts re-measured 2026-11-24 at hermes-agent main `8545fee`.
 
-The home page is a **chat-first** newcomer interface: local Hermes ACP sessions in opt-in mode; deterministic public knowledge search when ACP is unavailable, including static GitHub Pages. The existing graph is at `/graph` (static Pages: `graph.html`). hermes-maintainer turns issues and PRs into a typed campaign graph: survivors, donors, stacked children, and superseded work. The local dashboard uses the Hermes Teal palette (with additional built-in Hermes themes) and an [xyflow](https://xyflow.com) explorer. Default listen address: `http://127.0.0.1:8766`.
+Upstream source at a stated SHA beats anything here. Every number on a knowledge page has a date and a reproducible `gh` query.
 
-Do not collapse `similar`, `duplicate_of`, `same_root_cause`, `partially_addresses`, and `supersedes` into one relation. kvnloo has pull-only access on hermes-agent (foreign closes return 403).
+## Non-obvious Hermes knowledge
 
-## Public newcomer knowledge
+- [Start here](./knowledge/START_HERE.md): reading order and first-session path.
+- [Invariants](./knowledge/INVARIANTS.md): prompt-cache stability, narrow core and the footprint ladder, profile-aware paths, config.yaml vs .env, rejected PR shapes.
+- [Testing](./knowledge/TESTING.md): scripts/run_tests.sh, isolated HERMES_HOME, real-home guard, banned test shapes.
+- [Security and CI](./knowledge/SECURITY_AND_CI.md): approvals are accident prevention (SECURITY.md §2.2/§2.4); the fork-PR CI approval gate; forks get no secrets.
+- [How work lands](./knowledge/HOW_WORK_LANDS.md): salvage/carrier PRs; measure commits on main, never PRs merged.
+- [Who maintains what](./knowledge/WHO_MAINTAINS_WHAT.md): mergers, reviewers, areas, response times, merge hours.
+- [Plugins and sibling repos](./knowledge/PLUGINS_AND_REPOS.md): catalog SHA pinning; NousResearch plugin repos and their mergers.
+- [Current public work](./knowledge/CURRENT_PUBLIC_WORK.md): board size and a dated open-issue radar; not a roadmap.
+- [Triage waves](./knowledge/TRIAGE_WAVES.md), [Review evidence](./knowledge/REVIEW_EVIDENCE.md), [Public cases](./knowledge/PUBLIC_CASES.md), [Architecture routing](./knowledge/HERMES_INTENT.md), [Source policy](./knowledge/SOURCE_POLICY.md).
 
-- [Start here](./knowledge/START_HERE.md): ten-minute path from ignorance to useful contribution.
-- [How work lands](./knowledge/HOW_WORK_LANDS.md): maintainers salvage contributor commits; measure impact by commits on main, never PRs merged.
-- [Architecture and public intent](./knowledge/HERMES_INTENT.md): source owners, invariants, dated proposals.
-- [Triage waves](./knowledge/TRIAGE_WAVES.md): repeatable issue research and review decisions.
-- [Review evidence](./knowledge/REVIEW_EVIDENCE.md): exact-head red/green, native runtime, credit.
-- [Public case studies](./knowledge/PUBLIC_CASES.md): verified examples with open/merged states.
-- [Current public work radar](./knowledge/CURRENT_PUBLIC_WORK.md): dated live public reports vs official commitments.
-- [Source and privacy policy](./knowledge/SOURCE_POLICY.md): current upstream > memory.
-- [Local ACP webapp](./docs/ACP_WEBAPP.md): setup, trust boundary, and protocol.
+## Graph tool docs
 
-## Docs
-
-- [README](./README.md): install, scan, serve, and product principles
-- [Get started](./GET_STARTED.md): bootstrap, dashboard, and engineering order
-- [AGENTS.md](./AGENTS.md): Verified OSS Loop claim contract (workers never merge)
-- [GitHub Pages](https://kvnloo.github.io/hermes-maintainer/): static llms.txt + seed dashboard
-- [PRD](./docs/PRD.md): outcomes, dispositions, evidence levels, non-goals
-- [Architecture](./docs/ARCHITECTURE.md): scan classes, relationship ontology, campaigns, fix atoms
-- [Schemas](./docs/SCHEMAS.md): node IDs, evidence receipts, work packets
-- [Security](./docs/SECURITY.md): read-only GitHub posture and local-data boundaries
-- [Operations](./docs/OPERATIONS.md): daemon cadence and failure posture
-- [Roadmap](./docs/ROADMAP.md): M0–M6, publisher last
-- [Agent contract](./docs/AGENT_CONTRACT.md): worker roles around the graph
-- [Cloud agent prompt](./docs/CLOUD_AGENT_MASTER_PROMPT.md): parallel task rules
-- [Backlog close play](./BACKLOG-CLOSE.md): #109552 label audit; not a bulk-close list
+- [README](./README.md): install, scan, serve.
+- [Get started](./GET_STARTED.md), [AGENTS.md](./AGENTS.md) (workers never merge), [Local ACP webapp](./docs/ACP_WEBAPP.md).
+- [PRD](./docs/PRD.md), [Architecture](./docs/ARCHITECTURE.md), [Schemas](./docs/SCHEMAS.md), [Security](./docs/SECURITY.md), [Operations](./docs/OPERATIONS.md), [Roadmap](./docs/ROADMAP.md).
+- [Maintainer activity data](./docs/MAINTAINERS-ACTIVITY.md): raw output of scripts/maintainer-activity.py.
+- Do not collapse `similar`, `duplicate_of`, `same_root_cause`, `partially_addresses` and `supersedes` into one relation.
 
 ## Code
 
 - [CLI](./src/hermes_maintainer/cli.py): `init`, `scan`, `analyze`, `serve`, `daemon`, `doctor`
 - [FastAPI app](./src/hermes_maintainer/api/app.py): `/api/graph`, campaign explorer, `/llms.txt`
-- [Graph store](./src/hermes_maintainer/graph/store.py): typed edges, subgraph export, filters
-- [Campaign builder](./src/hermes_maintainer/analysis/campaigns.py): survivor/donor/provenance roles
-- [xyflow graph UI](./src/hermes_maintainer/ui/graph-src/graph-app.jsx): clickable architecture + campaign canvases (bundled to `ui/static/graph-app.js`)
-- [Dashboard theme](./src/hermes_maintainer/ui/static/styles.css): Hermes Teal and sibling palettes
-- [SQLite schema](./src/hermes_maintainer/schema.sql): nodes, relations, FTS5, campaigns, fix atoms
+- [Graph store](./src/hermes_maintainer/graph/store.py), [Campaign builder](./src/hermes_maintainer/analysis/campaigns.py), [SQLite schema](./src/hermes_maintainer/schema.sql)
+- [xyflow graph UI](./src/hermes_maintainer/ui/graph-src/graph-app.jsx), bundled to `ui/static/graph-app.js`
 
-## Optional
+## Optional / historical
 
-- [Task 04 — dashboard graph](./tasks/04_dashboard_graph.md): campaign explorer packet
-- [Seed audit](./seed/audit/HERMES_TRIAGE_AUDIT.md): historical campaign seeds, not live truth
-- [Campaign seeds](./seed/audit/campaign_seeds.json): demo graph for the xyflow canvas before a scan
+- [Seed audit](./seed/audit/HERMES_TRIAGE_AUDIT.md): September 2026 campaign seeds, not live truth. [Campaign seeds](./seed/audit/campaign_seeds.json) power the demo graph.
+- [Archive](./archive/README.md): September 2026 working notes, historical only.

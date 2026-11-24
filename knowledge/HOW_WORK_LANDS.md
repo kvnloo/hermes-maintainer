@@ -1,40 +1,47 @@
-# How contributor work lands in Hermes, and how to measure it
+# How contributor work lands, and how to measure it
 
-**Read this before you report on anyone's contribution record, including your own.** The most common mistake agents make on this project is measuring impact by "PRs merged". On hermes-agent that number is close to meaningless.
+**Read this before you report anyone's contribution record, including your own.** On hermes-agent, "PRs merged" says little about impact.
 
-## The mechanism
+## The mechanism: salvage into a carrier PR
 
-Maintainers land most outside work by **salvage**: they cherry-pick a contributor's commits into their own carrier PR, keep the original author on each commit, merge the carrier, and close the contributor's PR. The contributor's PR shows as *closed, not merged*, yet their code is on `main` under their name.
+Maintainers land most outside work by **salvage**. They cherry-pick a contributor's commits into their own carrier PR, keep the original author on each commit, merge the carrier, and close the contributor's PR. The contributor's PR shows *closed, not merged*, but their code is on `main` under their name. Upstream asks for exactly this: "salvage by cherry-pick so authorship survives" ([AGENTS.md L41](https://github.com/NousResearch/hermes-agent/blob/8545feeb1a53fc73375dfa98cf65cafadba66bf0/AGENTS.md#L41)).
 
-Evidence (merged PRs 2026-10-07..11-06, `docs/MAINTAINERS-ACTIVITY.md`): 2,538 PRs merged; teknium1 merged 1,969 of them. Over the 30 days to 2026-11-24, the top authors of commits on `main` were all maintainers, with outside contributors' commits arriving through their carriers.
+## Measured 2026-11-24 (main `8545fee`, commits 2026-10-25..11-23)
+
+- **11,400 commits** reached `main` from **1,387 distinct GitHub authors** (228 more had no linked account).
+- **5,870 (51%)** were committed by someone other than their author, i.e. carried. teknium1 was committer on 7,773 (68%).
+- 1,203 commit messages carry `Co-authored-by:` or `(cherry picked from …)` trailers.
+- Top commit authors: teknium1 2,831, c2h5oh 1,448, unsupportedpastels 370, yoniebans 361, BearHuddleston 302, alt-glitch 284, kshitijk4poor 260.
+- Over a similar window, 4,229 PRs were merged ([WHO_MAINTAINS_WHAT.md](./WHO_MAINTAINS_WHAT.md)), far fewer than the number of authors whose commits landed.
+
+Source: `gh api --paginate repos/NousResearch/hermes-agent/commits -f sha=8545fee… -f since=2026-10-25T00:00:00Z -f until=2026-11-24T00:00:00Z`, counting `.author.login` vs `.committer.login`.
 
 ## The right metric
 
 Count **commits authored by the person that are on the default branch**:
 
 ```bash
-# commits by <login> on main in the last 30 days
+SINCE=$(date -u -v-30d +%Y-%m-%dT00:00:00Z)   # GNU: date -u -d '30 days ago' +%Y-%m-%dT00:00:00Z
+# commits by <login> on main
 gh api --paginate -X GET repos/NousResearch/hermes-agent/commits \
-  -f author=<login> -f since=$(date -u -v-30d +%Y-%m-%dT00:00:00Z) -f per_page=100 --jq '.[].sha' | wc -l
-# who landed them (committer = the maintainer who carried them)
+  -f author=<login> -f since=$SINCE -f per_page=100 --jq '.[].sha' | wc -l
+# who carried them
 gh api --paginate -X GET repos/NousResearch/hermes-agent/commits \
-  -f author=<login> -f since=... -f per_page=100 --jq '.[].committer.login' | sort | uniq -c | sort -rn
+  -f author=<login> -f since=$SINCE -f per_page=100 --jq '.[].committer.login' | sort | uniq -c | sort -rn
 ```
 
-Then add credit trailers that don't change the author: `Co-authored-by:`, `Reported-by:`, and `(cherry picked from commit ...)`. Rank against all authors on `main` for the same window.
+Then add credit trailers that don't change the author (`Co-authored-by:`, `Reported-by:`, `(cherry picked from commit …)`).
 
 | Number | What it tells you |
 |---|---|
 | Commits authored on `main` | Code that shipped. The headline metric. |
-| Committer of those commits | Which maintainer trusts and carries your work. |
-| Offers adopted / offered | Whether your add-on commits fit maintainers' PRs. |
-| Human replies to your comments | Whether reviewers find your evidence useful. |
-| PRs merged under your name | Almost nothing on this repo. Don't lead with it. |
+| Committer of those commits | Which maintainer carries your work. |
+| PRs merged under your name | Very little on this repo. Don't lead with it. |
 
-## Channel that works
+## The channel that works
 
-An **add-on commit offered on a maintainer's open PR**, with red/green evidence pinned to SHAs, is the highest-yield contribution. Measured across 861 offers (09-20..11-22): 53% adopted on maintainer PRs, about 5% on community PRs and 3% on community issues. Offers made within a day of the carrier PR opening do best.
+A small, **add-on commit offered on a maintainer's open PR**, with red/green evidence pinned to SHAs, is easy for a carrier to cherry-pick. Our own (non-public) offer log, 861 offers from 2026-09-20 to 11-22, saw about 53% adopted on maintainer PRs, against about 5% on community PRs. Treat that as one contributor's anecdote, not a public statistic.
 
 ## Rule for agents
 
-When a document gives a contribution figure older than a week, re-measure it with the commands above before quoting it. If a document cites PR-merge counts as impact, correct it.
+Re-measure any contribution figure older than a week before quoting it. If a document cites PR-merge counts as impact, correct it.

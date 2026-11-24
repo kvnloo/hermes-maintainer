@@ -14,7 +14,15 @@
 6. On a pinned base SHA, make an executable regression fail; on a pinned candidate SHA, make it pass using the repo's native test runner.
 7. Produce a short evidence receipt, identify an owner-side next action, and leave publication or merge to an authorized human.
 
-**Before reporting anyone's record, read [HOW_WORK_LANDS.md](./HOW_WORK_LANDS.md): impact is commits on `main` (maintainers salvage contributor commits), not PRs merged.** **Start with [TRIAGE_WAVES.md](./TRIAGE_WAVES.md) for repeatable research; [REVIEW_EVIDENCE.md](./REVIEW_EVIDENCE.md) for proof; [HERMES_INTENT.md](./HERMES_INTENT.md) for architecture and public direction; [PUBLIC_CASES.md](./PUBLIC_CASES.md) for real examples; [CURRENT_PUBLIC_WORK.md](./CURRENT_PUBLIC_WORK.md) for a dated, publicly sourced issue radar.**
+## Read next, in this order
+
+1. [INVARIANTS.md](./INVARIANTS.md): the upstream rules every review applies (prompt cache, narrow core, profile-aware paths, `config.yaml` vs `.env`).
+2. [TESTING.md](./TESTING.md): `scripts/run_tests.sh`, isolated `HERMES_HOME`, test shapes that get rejected.
+3. [SECURITY_AND_CI.md](./SECURITY_AND_CI.md): approvals are accident prevention; why your first PR's CI is waiting.
+4. [HOW_WORK_LANDS.md](./HOW_WORK_LANDS.md): maintainers salvage commits into carrier PRs, so impact means commits on `main`, not PRs merged.
+5. [WHO_MAINTAINS_WHAT.md](./WHO_MAINTAINS_WHAT.md) and [PLUGINS_AND_REPOS.md](./PLUGINS_AND_REPOS.md): who merges which area and repo, and how fast.
+6. [TRIAGE_WAVES.md](./TRIAGE_WAVES.md), [REVIEW_EVIDENCE.md](./REVIEW_EVIDENCE.md), [PUBLIC_CASES.md](./PUBLIC_CASES.md): how to research, prove and hand off a fix.
+7. [HERMES_INTENT.md](./HERMES_INTENT.md) and [CURRENT_PUBLIC_WORK.md](./CURRENT_PUBLIC_WORK.md): source routing and a dated radar of open issues.
 
 ## Find your level
 

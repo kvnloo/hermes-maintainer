@@ -10,7 +10,7 @@ These are **dated public examples**, not guarantees of present status. Refresh t
 
 ## An open candidate is not acceptance
 
-[NousResearch/hermes-agent PR #130145](https://github.com/NousResearch/hermes-agent/pull/130145), still open when checked on **2026-11-18**, classifies rendered context-overflow delivery failures.
+[NousResearch/hermes-agent PR #130145](https://github.com/NousResearch/hermes-agent/pull/130145), still open when re-checked on **2026-11-24**, classifies rendered context-overflow delivery failures.
 
 **Transferable lesson:** do not record OPEN as merged or assume a positive code review means platform verification is complete. Help close the specific evidence/review gap.
 
