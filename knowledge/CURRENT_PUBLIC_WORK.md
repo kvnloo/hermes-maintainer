@@ -1,6 +1,8 @@
 # Public Hermes work radar — dated, sourced signals
 
-*Snapshot: November 18, 2026, upstream `NousResearch/hermes-agent` main `f7e2898aaefc8f967dbf7345e3999a65672fe60e` at time of source inspection. Individual issue states were checked on GitHub on this date. Every entry may change; refresh before proposing a fix.*
+*Snapshot: 2026-11-24, upstream `NousResearch/hermes-agent` main [`8545fee`](https://github.com/NousResearch/hermes-agent/tree/8545feeb1a53fc73375dfa98cf65cafadba66bf0). First compiled 2026-11-18 at `f7e2898`; every issue below was re-checked OPEN on 2026-11-24 with `gh api graphql`. Refresh before proposing a fix.*
+
+**Board size on 2026-11-24:** 19,810 open issues and 34,392 open PRs (`gh api graphql`, `repository.issues(states:OPEN).totalCount` / `pullRequests(states:OPEN).totalCount`). With 4,229 merges a month ([WHO_MAINTAINS_WHAT.md](./WHO_MAINTAINS_WHAT.md)), most open PRs will never be reviewed as-is. Adding evidence to an existing PR usually beats opening a competing one.
 
 **This is not the team's private roadmap.** Public issue reports and proposals are evidence of community demand, not evidence that NousResearch has committed to build, prioritize or merge them. Read maintainer comments and live PR competition before interpreting an issue.
 
@@ -8,7 +10,7 @@
 
 These are related but **not interchangeable** bugs:
 
-| Public issue (open when checked) | Primary question / evidence seam |
+| Public issue (open on 2026-11-24) | Primary question / evidence seam |
 | --- | --- |
 | [#156777 Windows ACP session/new hang](https://github.com/NousResearch/hermes-agent/issues/156777) | Did a subprocess/version check inherit ACP's stdin reader? Verify on native Windows, not a `sys.platform` patch |
 | [#156173 ACP viewer exit leaves turn running](https://github.com/NousResearch/hermes-agent/issues/156173) | Who owns the admitted turn when viewer process disconnects? How is it safely resumed/cancelled? |
