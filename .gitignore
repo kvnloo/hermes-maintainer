@@ -13,3 +13,4 @@ agent-tools/
 node_modules/
 src/hermes_maintainer/ui/graph-src/node_modules/
 site/
+.uv-cache/
