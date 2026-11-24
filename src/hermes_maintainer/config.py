@@ -69,21 +69,61 @@ class Settings:
     github_token: str | None
 
 
+CONFIG_RELPATH = Path("config") / "hermes-maintainer.toml"
+_DEFAULT_REPO = {
+    "name": "NousResearch/hermes-agent",
+    "clone_url": "https://github.com/NousResearch/hermes-agent.git",
+}
+_DEFAULT_PATHS = {
+    "data_dir": ".data",
+    "mirror_dir": ".data/repos/hermes-agent.git",
+    "database": ".data/hermes-maintainer.db",
+}
+
+
 def _resolve(root: Path, value: str) -> Path:
-    path = Path(value)
+    path = Path(value).expanduser()
     return path if path.is_absolute() else (root / path).resolve()
 
 
-def load_settings(config_path: str | Path | None = None) -> Settings:
-    config_path = Path(
-        config_path or os.environ.get("HERMES_MAINTAINER_CONFIG", "config/hermes-maintainer.toml")
-    ).resolve()
-    root = config_path.parent.parent if config_path.parent.name == "config" else Path.cwd().resolve()
-    with config_path.open("rb") as fh:
-        raw = tomllib.load(fh)
+def _package_repo_root() -> Path | None:
+    """Source checkout root when installed editable (src/hermes_maintainer -> repo)."""
+    candidate = Path(__file__).resolve().parents[2]
+    return candidate if (candidate / CONFIG_RELPATH).is_file() else None
 
-    repo = RepoConfig(**raw["repo"])
-    p = raw["paths"]
+
+def find_config() -> Path | None:
+    """Config lookup: $HERMES_MAINTAINER_CONFIG, ./config/, then the source checkout."""
+    explicit = os.environ.get("HERMES_MAINTAINER_CONFIG")
+    if explicit:
+        return Path(explicit).expanduser().resolve()
+    local = Path.cwd() / CONFIG_RELPATH
+    if local.is_file():
+        return local.resolve()
+    repo_root = _package_repo_root()
+    return repo_root / CONFIG_RELPATH if repo_root else None
+
+
+def load_settings(config_path: str | Path | None = None) -> Settings:
+    path = Path(config_path).expanduser().resolve() if config_path else find_config()
+    if path is None:
+        # Installed without a checkout: built-in defaults, data under the current directory.
+        root, raw = Path.cwd().resolve(), {}
+    else:
+        root = path.parent.parent if path.parent.name == "config" else Path.cwd().resolve()
+        with path.open("rb") as fh:
+            raw = tomllib.load(fh)
+
+    repo = RepoConfig(**raw.get("repo", _DEFAULT_REPO))
+    p = {**_DEFAULT_PATHS, **raw.get("paths", {})}
+    data_override = os.environ.get("HERMES_MAINTAINER_DATA_DIR")
+    if data_override:
+        data_dir = _resolve(Path.cwd(), data_override)
+        p = {
+            "data_dir": str(data_dir),
+            "mirror_dir": str(data_dir / "repos" / "hermes-agent.git"),
+            "database": str(data_dir / "hermes-maintainer.db"),
+        }
     paths = PathsConfig(
         data_dir=_resolve(root, p["data_dir"]),
         mirror_dir=_resolve(root, p["mirror_dir"]),

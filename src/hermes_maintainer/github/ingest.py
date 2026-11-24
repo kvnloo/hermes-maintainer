@@ -46,23 +46,35 @@ def _materialize_explicit_relations(db: Database, node_id: str, body: str) -> No
             )
 
 
-def fast_scan(settings: Settings) -> dict[str, int]:
+def fast_scan(settings: Settings, limit: int | None = None) -> dict[str, int]:
+    """Ingest the most recently updated issues and PRs.
+
+    ``limit`` caps items per kind (and shrinks ``per_page`` to match) so a small sample of a
+    huge repository costs a handful of API requests instead of the configured page budget.
+    """
     db = Database(settings.paths.database)
     db.initialize()
     run_id = _start_run(db, "fast")
     client = GitHubClient(settings.github_token)
     counts = {"issues": 0, "prs": 0}
+    per_page = min(100, limit) if limit else 100
     try:
         for item in client.iter_issues(
-            settings.repo.name, max_pages=settings.scan.issue_pages_per_fast_scan
+            settings.repo.name, max_pages=settings.scan.issue_pages_per_fast_scan,
+            per_page=per_page,
         ):
             db.upsert_node(issue_node(settings.repo.name, item, run_id))
             counts["issues"] += 1
+            if limit and counts["issues"] >= limit:
+                break
         for item in client.iter_pulls(
-            settings.repo.name, max_pages=settings.scan.pr_pages_per_fast_scan
+            settings.repo.name, max_pages=settings.scan.pr_pages_per_fast_scan,
+            per_page=per_page,
         ):
             db.upsert_node(pr_node(settings.repo.name, item, run_id))
             counts["prs"] += 1
+            if limit and counts["prs"] >= limit:
+                break
 
         # Second pass so references can resolve to nodes ingested later in the scan.
         for row in db.rows("SELECT id, body FROM nodes WHERE last_seen_run=? AND kind IN ('issue','pr')", (run_id,)):

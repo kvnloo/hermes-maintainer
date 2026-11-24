@@ -7,8 +7,28 @@ from typing import Any
 import httpx
 
 
+class RateLimitError(RuntimeError):
+    """GitHub primary rate limit exhausted; retrying now cannot succeed."""
+
+
+MAX_RETRIES = 3
+MAX_RETRY_SLEEP = 60.0
+
+
+def _is_secondary_limit(response: httpx.Response) -> bool:
+    if response.status_code == 429:
+        return True
+    if response.status_code != 403:
+        return False
+    if "retry-after" in response.headers:
+        return True
+    return "secondary rate limit" in response.text.lower()
+
+
 class GitHubClient:
     def __init__(self, token: str | None = None, timeout: float = 30.0):
+        self.authenticated = bool(token)
+        self.rate_limit: dict[str, int] = {}
         headers = {
             "Accept": "application/vnd.github+json",
             "X-GitHub-Api-Version": "2022-11-28",
@@ -22,13 +42,31 @@ class GitHubClient:
         self.client.close()
 
     def _get(self, path: str, params: dict[str, Any] | None = None) -> httpx.Response:
-        response = self.client.get(path, params=params)
-        if response.status_code == 403 and response.headers.get("x-ratelimit-remaining") == "0":
-            reset = int(response.headers.get("x-ratelimit-reset", "0"))
-            delay = max(0, reset - int(time.time()))
-            raise RuntimeError(f"GitHub rate limit exhausted; resets in ~{delay}s")
-        response.raise_for_status()
-        return response
+        for attempt in range(MAX_RETRIES + 1):
+            response = self.client.get(path, params=params)
+            for key in ("limit", "remaining", "reset"):
+                value = response.headers.get(f"x-ratelimit-{key}")
+                if value is not None and value.isdigit():
+                    self.rate_limit[key] = int(value)
+            if (
+                response.status_code in (403, 429)
+                and response.headers.get("x-ratelimit-remaining") == "0"
+            ):
+                reset = int(response.headers.get("x-ratelimit-reset", "0"))
+                delay = max(0, reset - int(time.time()))
+                hint = "" if self.authenticated else (
+                    " Unauthenticated requests get 60/hour; export GITHUB_TOKEN for 5000/hour,"
+                    " or lower --limit."
+                )
+                raise RateLimitError(f"GitHub rate limit exhausted; resets in ~{delay}s.{hint}")
+            if _is_secondary_limit(response) and attempt < MAX_RETRIES:
+                retry_after = response.headers.get("retry-after", "")
+                wait = float(retry_after) if retry_after.isdigit() else 2.0 ** (attempt + 1)
+                time.sleep(min(wait, MAX_RETRY_SLEEP))
+                continue
+            response.raise_for_status()
+            return response
+        raise AssertionError("unreachable")
 
     def iter_pages(
         self,
@@ -51,20 +89,24 @@ class GitHubClient:
                 return
             page += 1
 
-    def iter_issues(self, repo: str, *, max_pages: int | None = None) -> Iterator[dict[str, Any]]:
+    def iter_issues(
+        self, repo: str, *, max_pages: int | None = None, per_page: int = 100
+    ) -> Iterator[dict[str, Any]]:
         for page in self.iter_pages(
             f"/repos/{repo}/issues",
-            params={"state": "all", "sort": "updated", "direction": "desc"},
+            params={"state": "all", "sort": "updated", "direction": "desc", "per_page": per_page},
             max_pages=max_pages,
         ):
             for item in page:
                 if "pull_request" not in item:
                     yield item
 
-    def iter_pulls(self, repo: str, *, max_pages: int | None = None) -> Iterator[dict[str, Any]]:
+    def iter_pulls(
+        self, repo: str, *, max_pages: int | None = None, per_page: int = 100
+    ) -> Iterator[dict[str, Any]]:
         for page in self.iter_pages(
             f"/repos/{repo}/pulls",
-            params={"state": "all", "sort": "updated", "direction": "desc"},
+            params={"state": "all", "sort": "updated", "direction": "desc", "per_page": per_page},
             max_pages=max_pages,
         ):
             yield from page
