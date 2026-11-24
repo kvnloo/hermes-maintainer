@@ -10,6 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.responses import Response
 
 from hermes_maintainer.analysis.root_causes import recurring_mechanisms
+from hermes_maintainer.api.chat import make_chat_router
 from hermes_maintainer.config import load_settings
 from hermes_maintainer.db import Database
 from hermes_maintainer.graph.demo import seed_campaign_graph
@@ -23,14 +24,18 @@ def create_app(database: Database | None = None) -> FastAPI:
     db.initialize()
     graph = GraphStore(db)
     app = FastAPI(title="hermes-maintainer", version="0.1.0")
+    app.include_router(make_chat_router(settings.root))
     static = Path(__file__).parent.parent / "ui" / "static"
     docs_dir = settings.root / "docs"
     app.mount("/static", StaticFiles(directory=static), name="static")
     if docs_dir.is_dir():
         app.mount("/docs", StaticFiles(directory=docs_dir), name="docs")
+    knowledge_dir = settings.root / "knowledge"
+    if knowledge_dir.is_dir():
+        app.mount("/knowledge", StaticFiles(directory=knowledge_dir), name="knowledge")
 
-    def _index():
-        response = FileResponse(static / "index.html")
+    def _index(page: str):
+        response = FileResponse(static / page)
         response.headers["Link"] = '</llms.txt>; rel="describedby"'
         return response
 
@@ -39,15 +44,21 @@ def create_app(database: Database | None = None) -> FastAPI:
         response: Response = await call_next(_request)
         if "link" not in response.headers:
             response.headers["Link"] = '</llms.txt>; rel="describedby"'
+        if _request.url.path.startswith("/api/chat"):
+            response.headers["Cache-Control"] = "no-store"
         return response
 
     @app.get("/")
     def index():
-        return _index()
+        return _index("chat.html")
+
+    @app.get("/board")
+    def board_page():
+        return _index("index.html")
 
     @app.get("/graph")
     def graph_page():
-        return _index()
+        return _index("index.html")
 
     @app.get("/llms.txt")
     def llms_txt():

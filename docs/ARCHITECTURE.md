@@ -39,6 +39,30 @@
                             agent work packet generator
 ```
 
+## Contributor knowledge and live assistant
+
+```text
+Public GitHub upstream + verified public cases
+                   |
+                   v
+  versioned knowledge/ + source and freshness rules
+                   |                    |
+          static GitHub Pages      local FastAPI /
+          public search only       opt-in ACP bridge
+                                        |
+                                 JSON-RPC over stdio
+                                        |
+                                  hermes acp
+                                        |
+                          existing Hermes gateway / AIAgent
+                                        |
+                       model, memory, skills, tools, sessions
+```
+
+Hermes is the **sole conversational agent provider**; `hermes-maintainer` holds knowledge, observations and UI/transport only. A fresh web conversation creates a new ACP session, and local approval decisions are forwarded through the ACP permission protocol. The bridge does not implement model prompts or a second inference pipeline; learn/triage/contribute are scoped instructions at session creation. Static Pages never starts a Hermes process. The existing graph remains separately accessible through `/graph`.
+
+See [ACP implementation and threat model](./ACP_WEBAPP.md).
+
 ## Durable core
 
 SQLite is the source of truth for repository-derived maintenance state. FTS5 is used for lexical

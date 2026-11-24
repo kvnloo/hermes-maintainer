@@ -1,10 +1,22 @@
 # hermes-maintainer
 
-> Local-first maintenance intelligence for `NousResearch/hermes-agent`. Python CLI + FastAPI dashboard over a SQLite/FTS5 backlog graph. GitHub access is **read-only**; this tool does not close issues or merge PRs.
+> Public, versioned contributor knowledge base for `NousResearch/hermes-agent`, plus a local-first backlog graph and opt-in Hermes ACP chat. The graph's GitHub API is **read-only**; a locally configured Hermes process may have independently authorized file/tools access, but this app is never an autonomous upstream publisher.
 
-hermes-maintainer turns issues and PRs into a typed campaign graph: survivors, donors, stacked children, and superseded work. The local dashboard uses the Hermes Teal palette (with additional built-in Hermes themes) and an [xyflow](https://xyflow.com) explorer. Default listen address: `http://127.0.0.1:8766`.
+The home page is a **chat-first** newcomer interface: local Hermes ACP sessions in opt-in mode; deterministic public knowledge search when ACP is unavailable, including static GitHub Pages. The existing graph is at `/graph` (static Pages: `graph.html`). hermes-maintainer turns issues and PRs into a typed campaign graph: survivors, donors, stacked children, and superseded work. The local dashboard uses the Hermes Teal palette (with additional built-in Hermes themes) and an [xyflow](https://xyflow.com) explorer. Default listen address: `http://127.0.0.1:8766`.
 
 Do not collapse `similar`, `duplicate_of`, `same_root_cause`, `partially_addresses`, and `supersedes` into one relation. kvnloo has pull-only access on hermes-agent (foreign closes return 403).
+
+## Public newcomer knowledge
+
+- [Start here](./knowledge/START_HERE.md): ten-minute path from ignorance to useful contribution.
+- [How work lands](./knowledge/HOW_WORK_LANDS.md): maintainers salvage contributor commits; measure impact by commits on main, never PRs merged.
+- [Architecture and public intent](./knowledge/HERMES_INTENT.md): source owners, invariants, dated proposals.
+- [Triage waves](./knowledge/TRIAGE_WAVES.md): repeatable issue research and review decisions.
+- [Review evidence](./knowledge/REVIEW_EVIDENCE.md): exact-head red/green, native runtime, credit.
+- [Public case studies](./knowledge/PUBLIC_CASES.md): verified examples with open/merged states.
+- [Current public work radar](./knowledge/CURRENT_PUBLIC_WORK.md): dated live public reports vs official commitments.
+- [Source and privacy policy](./knowledge/SOURCE_POLICY.md): current upstream > memory.
+- [Local ACP webapp](./docs/ACP_WEBAPP.md): setup, trust boundary, and protocol.
 
 ## Docs
 
