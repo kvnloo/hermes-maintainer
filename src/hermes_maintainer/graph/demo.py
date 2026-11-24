@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from hermes_maintainer.db import Database
+
 _ROLE_MAP = {
     "minimal_predicate_donor": "donor",
     "overlapping_predicate": "active_implementation",
@@ -140,3 +142,54 @@ def seed_campaign_graph(root: Path, family_id: str | None = None) -> dict[str, A
         "source": "seed",
         "families": [family.get("id") for family in families],
     }
+
+def _seed_families(root: Path) -> list[str]:
+    path = root / "seed" / "audit" / "campaign_seeds.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return [family["id"] for family in payload.get("families") or [] if family.get("id")]
+
+
+def import_seed_graph(db: Database, root: Path, repo: str = "NousResearch/hermes-agent") -> dict:
+    """Load the audit seed campaigns into the live graph so a fresh install has data.
+
+    Idempotent: nodes/relations upsert and seed campaigns are replaced. Seed nodes carry
+    ``metadata.seed = true``; a real scan overwrites them with live GitHub state, and
+    ``analyze`` rebuilds campaigns from live relations.
+    """
+    db.initialize()
+    node_ids: set[str] = set()
+    relation_keys: set[tuple[str, str, str]] = set()
+    campaigns = 0
+    for family_id in _seed_families(root):
+        graph = seed_campaign_graph(root, family_id)
+        campaign = graph["campaign"]
+        for node in graph["nodes"]:
+            metadata = {**(node.get("metadata") or {}), "seed": True, "seed_family": family_id}
+            db.upsert_node({
+                "id": node["id"], "repo": repo, "kind": node["kind"], "number": node["number"],
+                "title": node["title"], "body": metadata.get("notes", ""), "state": node["state"],
+                "author": node["author"], "url": node["url"], "labels_json": "[]", "draft": 0,
+                "metadata_json": json.dumps(metadata),
+            })
+            node_ids.add(node["id"])
+        for rel in graph["relations"]:
+            db.add_relation(
+                rel["src_id"], rel["dst_id"], rel["relation_type"],
+                confidence=rel["confidence"], evidence_level=rel["evidence_level"],
+                evidence=rel["evidence"], source="seed",
+            )
+            relation_keys.add((rel["src_id"], rel["dst_id"], rel["relation_type"]))
+        with db.connect() as conn:
+            conn.execute("DELETE FROM campaigns WHERE id=?", (campaign["id"],))
+            conn.execute(
+                "INSERT INTO campaigns(id,title,status,score,summary) VALUES(?,?,?,?,?)",
+                (campaign["id"], campaign["title"], "seed", campaign["score"], campaign["summary"]),
+            )
+            for node in graph["nodes"]:
+                conn.execute(
+                    "INSERT OR REPLACE INTO campaign_members(campaign_id,node_id,role,confidence) "
+                    "VALUES(?,?,?,?)",
+                    (campaign["id"], node["id"], node.get("role") or "member", 0.5),
+                )
+        campaigns += 1
+    return {"nodes": len(node_ids), "relations": len(relation_keys), "campaigns": campaigns}

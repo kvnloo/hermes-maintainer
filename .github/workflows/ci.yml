@@ -4,10 +4,24 @@ on:
   push:
   pull_request:
 
+# Untrusted fork PRs run here with a read-only token: never pull_request_target, no secrets.
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  hygiene:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: No absolute local paths in tracked files
+        run: bash scripts/check-no-local-paths.sh
+      - name: Shell syntax
+        run: for f in scripts/*.sh; do bash -n "$f"; done
+
   python:
     runs-on: ubuntu-latest
     steps:
@@ -23,6 +37,11 @@ jobs:
         run: python -m pytest -q
       - name: Pages snapshot
         run: python3 scripts/build-pages.py --out /tmp/hermes-pages-site
+      - name: Demo DB, doctor, dashboard smoke (serve + curl /, /api/graph, /llms.txt)
+        run: |
+          hermes-maintainer init --no-fetch-git --demo
+          hermes-maintainer doctor
+          python3 scripts/smoke-serve.py "$(command -v hermes-maintainer)"
 
   frontend:
     runs-on: ubuntu-latest
@@ -46,3 +65,18 @@ jobs:
             echo "No npm test script on this revision; verifying esbuild bundle"
             npx esbuild graph-app.jsx --bundle --format=iife --outfile=/tmp/graph-app.js --minify --jsx=transform
           fi
+      - name: Rebuild UI bundle and fail on drift from the committed bundle
+        working-directory: .
+        run: |
+          ./scripts/build-ui.sh
+          git diff --exit-code -- src/hermes_maintainer/ui/static/
+
+  fresh-clone:
+    # Agent-ready proof: git clone + scripts/setup.sh with an empty HOME, then serve + curl.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fresh clone, one-command setup, dashboard smoke
+        run: bash scripts/fresh-clone-check.sh "$GITHUB_SHA"
