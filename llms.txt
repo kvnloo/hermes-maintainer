@@ -9,6 +9,7 @@ Do not collapse `similar`, `duplicate_of`, `same_root_cause`, `partially_address
 ## Public newcomer knowledge
 
 - [Start here](./knowledge/START_HERE.md): ten-minute path from ignorance to useful contribution.
+- [How work lands](./knowledge/HOW_WORK_LANDS.md): maintainers salvage contributor commits; measure impact by commits on main, never PRs merged.
 - [Architecture and public intent](./knowledge/HERMES_INTENT.md): source owners, invariants, dated proposals.
 - [Triage waves](./knowledge/TRIAGE_WAVES.md): repeatable issue research and review decisions.
 - [Review evidence](./knowledge/REVIEW_EVIDENCE.md): exact-head red/green, native runtime, credit.

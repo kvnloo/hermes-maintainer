@@ -14,7 +14,7 @@
 6. On a pinned base SHA, make an executable regression fail; on a pinned candidate SHA, make it pass using the repo's native test runner.
 7. Produce a short evidence receipt, identify an owner-side next action, and leave publication or merge to an authorized human.
 
-**Start with [TRIAGE_WAVES.md](./TRIAGE_WAVES.md) for repeatable research; [REVIEW_EVIDENCE.md](./REVIEW_EVIDENCE.md) for proof; [HERMES_INTENT.md](./HERMES_INTENT.md) for architecture and public direction; [PUBLIC_CASES.md](./PUBLIC_CASES.md) for real examples; [CURRENT_PUBLIC_WORK.md](./CURRENT_PUBLIC_WORK.md) for a dated, publicly sourced issue radar.**
+**Before reporting anyone's record, read [HOW_WORK_LANDS.md](./HOW_WORK_LANDS.md): impact is commits on `main` (maintainers salvage contributor commits), not PRs merged.** **Start with [TRIAGE_WAVES.md](./TRIAGE_WAVES.md) for repeatable research; [REVIEW_EVIDENCE.md](./REVIEW_EVIDENCE.md) for proof; [HERMES_INTENT.md](./HERMES_INTENT.md) for architecture and public direction; [PUBLIC_CASES.md](./PUBLIC_CASES.md) for real examples; [CURRENT_PUBLIC_WORK.md](./CURRENT_PUBLIC_WORK.md) for a dated, publicly sourced issue radar.**
 
 ## Find your level
 
